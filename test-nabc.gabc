@@ -1,0 +1,9 @@
+name: Test NABC;
+mode: 8;
+nabc-lines: 1;
+%%
+(c4) Test(f|vi) with(g|ca) NABC(h|mi) notation(f)
+
+Test without NABC: Al(f)le(g)lu(h)ia.(f)
+
+Multiple segments: Al(f|vi|extra)le(g)lu(h)ia.(f)
