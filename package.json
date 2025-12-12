@@ -1,0 +1,109 @@
+{
+  "name": "vscode-gregorio",
+  "displayName": "Gregorio Language Support",
+  "description": "Language support for GABC/NABC notation with LSP integration and syntax highlighting",
+  "version": "0.1.0",
+  "publisher": "AISCGre-BR",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AISCGre-BR/vscode-gregorio"
+  },
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "gabc",
+    "nabc",
+    "gregorio",
+    "chant",
+    "gregorian",
+    "notation",
+    "music"
+  ],
+  "activationEvents": [
+    "onLanguage:gabc"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "gabc",
+        "aliases": [
+          "GABC",
+          "gabc",
+          "Gregorio"
+        ],
+        "extensions": [
+          ".gabc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gabc",
+        "scopeName": "source.gabc",
+        "path": "./syntaxes/gabc.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "gregorio.restartServer",
+        "title": "Restart Gregorio Language Server",
+        "category": "Gregorio"
+      }
+    ],
+    "configuration": {
+      "title": "Gregorio",
+      "properties": {
+        "gregorio.lsp.serverPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the gregorio-lsp server.js file. If empty, will search in common locations."
+        },
+        "gregorio.lsp.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.107.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.27.1",
+    "eslint": "^9.39.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.1"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "GABC",
+  "scopeName": "source.gabc",
+  "fileTypes": ["gabc"],
+  "patterns": [
+    { "include": "#header" },
+    { "include": "#section-separator" },
+    { "include": "#syllable-text" },
+    { "include": "#note-group" }
+  ],
+  "repository": {
+    "header": {
+      "patterns": [
+        {
+          "name": "meta.header.gabc",
+          "begin": "^([a-zA-Z][a-zA-Z0-9_-]*)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "patterns": [
+            { "include": "#header-value" }
+          ]
+        }
+      ]
+    },
+    "header-value": {
+      "patterns": [
+        {
+          "name": "constant.numeric.gabc",
+          "match": "\\b\\d+\\b"
+        },
+        {
+          "name": "string.unquoted.gabc",
+          "match": "[^;\\n]+"
+        }
+      ]
+    },
+    "section-separator": {
+      "name": "keyword.control.separator.gabc",
+      "match": "^%%$"
+    },
+    "syllable-text": {
+      "patterns": [
+        { "include": "#syllable-style" },
+        { "include": "#syllable-special" }
+      ]
+    },
+    "syllable-style": {
+      "patterns": [
+        {
+          "name": "markup.bold.gabc",
+          "begin": "<b>",
+          "end": "</b>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "markup.italic.gabc",
+          "begin": "<i>",
+          "end": "</i>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "markup.underline.gabc",
+          "begin": "<ul>",
+          "end": "</ul>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "markup.heading.gabc",
+          "begin": "<sc>",
+          "end": "</sc>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "markup.raw.gabc",
+          "begin": "<tt>",
+          "end": "</tt>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "markup.underline.link.gabc",
+          "begin": "<c>",
+          "end": "</c>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        }
+      ]
+    },
+    "syllable-special": {
+      "patterns": [
+        {
+          "name": "string.other.verbatim.gabc",
+          "begin": "<v>",
+          "end": "</v>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "string.other.above-lines.gabc",
+          "begin": "<alt>",
+          "end": "</alt>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        },
+        {
+          "name": "string.other.special-char.gabc",
+          "begin": "<sp>",
+          "end": "</sp>",
+          "captures": {
+            "0": { "name": "punctuation.definition.tag.gabc" }
+          }
+        }
+      ]
+    },
+    "note-group": {
+      "name": "meta.note-group.gabc",
+      "begin": "\\(",
+      "end": "\\)",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.group.begin.gabc" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.section.group.end.gabc" }
+      },
+      "patterns": [
+        { "include": "#clef" },
+        { "include": "#alteration" },
+        { "include": "#pitch" },
+        { "include": "#modifier" },
+        { "include": "#bar" },
+        { "include": "#spacing" },
+        { "include": "#attribute" },
+        { "include": "#nabc-separator" },
+        { "include": "#line-break" }
+      ]
+    },
+    "clef": {
+      "patterns": [
+        {
+          "name": "keyword.control.clef.gabc",
+          "match": "c[b1-4]|f[1-4]|cb[b1-4]"
+        }
+      ]
+    },
+    "alteration": {
+      "patterns": [
+        {
+          "name": "constant.language.alteration.gabc",
+          "match": "[xy#]|\\([xy#]\\)"
+        }
+      ]
+    },
+    "pitch": {
+      "patterns": [
+        {
+          "name": "constant.character.pitch.gabc",
+          "match": "[a-mA-M]"
+        }
+      ]
+    },
+    "modifier": {
+      "patterns": [
+        {
+          "name": "storage.type.modifier.gabc",
+          "match": "[owOqWvVs~<>_]"
+        }
+      ]
+    },
+    "bar": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.bar.gabc",
+          "match": "[`,;:`:|::|\\[\\]]|r0|r[1-9]"
+        }
+      ]
+    },
+    "spacing": {
+      "patterns": [
+        {
+          "name": "keyword.operator.spacing.gabc",
+          "match": "!|@|/[0-9]*|//[0-9]*"
+        }
+      ]
+    },
+    "attribute": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.gabc",
+          "begin": "\\[",
+          "end": "\\]",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.attribute.begin.gabc" }
+          },
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.attribute.end.gabc" }
+          },
+          "patterns": [
+            {
+              "name": "entity.name.function.gabc",
+              "match": "\\b(nv|gv|ev|alt|oh|uh|ob|ub|ocb|ocba|oll|ull|oslur|uslur|ll|cs|cn|nocustos|shape|stroke)\\b"
+            },
+            {
+              "name": "string.quoted.single.gabc",
+              "begin": "'",
+              "end": "'"
+            },
+            {
+              "name": "punctuation.separator.gabc",
+              "match": ":"
+            }
+          ]
+        }
+      ]
+    },
+    "nabc-separator": {
+      "name": "keyword.operator.nabc.gabc",
+      "match": "\\|"
+    },
+    "line-break": {
+      "patterns": [
+        {
+          "name": "keyword.control.linebreak.gabc",
+          "match": "z0?|Z0?"
+        }
+      ]
+    }
+  }
+}
