@@ -7,6 +7,7 @@ import {
   TransportKind,
   DidChangeConfigurationNotification
 } from 'vscode-languageclient/node';
+import { GabcSemanticTokensProvider, legend } from './semanticTokensProvider';
 
 let client: LanguageClient | undefined;
 
@@ -33,7 +34,35 @@ export function activate(context: vscode.ExtensionContext) {
     );
   });
 
-  context.subscriptions.push(restartCommand, toggleLintingCommand);
+  const toggleSemanticHighlightingCommand = vscode.commands.registerCommand('gregorio.toggleSemanticHighlighting', async () => {
+    const config = vscode.workspace.getConfiguration('gregorio.highlighting');
+    const currentValue = config.get<boolean>('semantic', true);
+    await config.update('semantic', !currentValue, vscode.ConfigurationTarget.Global);
+    vscode.window.showInformationMessage(
+      `Gregorio semantic highlighting ${!currentValue ? 'enabled' : 'disabled'}`
+    );
+    // Trigger refresh of highlighting
+    vscode.window.visibleTextEditors.forEach(editor => {
+      if (editor.document.languageId === 'gabc') {
+        // Force reparse by making a dummy edit and undoing
+        const pos = new vscode.Position(0, 0);
+        editor.edit(editBuilder => editBuilder.insert(pos, ' ')).then(() => {
+          vscode.commands.executeCommand('undo');
+        });
+      }
+    });
+  });
+
+  context.subscriptions.push(restartCommand, toggleLintingCommand, toggleSemanticHighlightingCommand);
+
+  // Register semantic tokens provider for advanced syntax highlighting
+  const semanticTokensProvider = new GabcSemanticTokensProvider();
+  const semanticTokensRegistration = vscode.languages.registerDocumentSemanticTokensProvider(
+    { language: 'gabc', scheme: 'file' },
+    semanticTokensProvider,
+    legend
+  );
+  context.subscriptions.push(semanticTokensRegistration);
 
   const serverPath = findServerPath(context);
   

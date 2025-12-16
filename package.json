@@ -57,8 +57,62 @@
         "command": "gregorio.toggleLinting",
         "title": "Toggle Linting",
         "category": "Gregorio"
+      },
+      {
+        "command": "gregorio.toggleSemanticHighlighting",
+        "title": "Toggle Semantic Highlighting",
+        "category": "Gregorio"
       }
     ],
+    "semanticTokenScopes": [
+      {
+        "scopes": {
+          "header": ["entity.name.section.gabc"],
+          "property": ["entity.name.tag.gabc", "support.type.property-name.gabc"],
+          "keyword": ["keyword.control.gabc", "storage.type.gabc"],
+          "string": ["string.quoted.gabc", "meta.header.value.gabc"],
+          "comment": ["comment.line.gabc", "comment.block.gabc"],
+          "number": ["constant.numeric.gabc"],
+          "operator": ["keyword.operator.gabc", "punctuation.separator.gabc"],
+          "parameter": ["variable.parameter.gabc", "entity.name.function.gabc"],
+          "variable": ["variable.other.gabc", "entity.name.note.gabc"],
+          "class": ["entity.name.type.gabc", "support.class.gabc"],
+          "decorator": ["entity.name.decorator.gabc", "meta.decorator.gabc"],
+          "macro": ["entity.name.function.macro.gabc"],
+          "type": ["entity.name.type.gabc", "support.type.gabc"],
+          "modifier": ["storage.modifier.gabc"],
+          "customLiteral": ["constant.other.gabc"]
+        }
+      }
+    ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "[Default Dark+]": {
+          "rules": {
+            "property:gabc": "#9CDCFE",
+            "keyword:gabc": "#C586C0",
+            "class:gabc": "#4EC9B0",
+            "decorator:gabc": "#DCDCAA",
+            "macro:gabc": "#569CD6",
+            "parameter:gabc": "#9CDCFE",
+            "variable:gabc": "#4FC1FF",
+            "customLiteral:gabc": "#CE9178"
+          }
+        },
+        "[Default Light+]": {
+          "rules": {
+            "property:gabc": "#0070C1",
+            "keyword:gabc": "#AF00DB",
+            "class:gabc": "#267F99",
+            "decorator:gabc": "#795E26",
+            "macro:gabc": "#0000FF",
+            "parameter:gabc": "#001080",
+            "variable:gabc": "#0070C1",
+            "customLiteral:gabc": "#A31515"
+          }
+        }
+      }
+    },
     "configuration": {
       "title": "Gregorio",
       "properties": {
@@ -104,6 +158,11 @@
           },
           "default": [],
           "description": "List of linting rule codes to ignore (e.g., ['missing-clef', 'invalid-note'])."
+        },
+        "gregorio.highlighting.semantic": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable semantic syntax highlighting using the GABC parser. Provides more accurate highlighting based on document structure."
         }
       }
     }

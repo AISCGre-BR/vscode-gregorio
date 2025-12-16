@@ -5,11 +5,14 @@ VS Code extension providing language support for GABC/NABC notation used in Greg
 ## Features
 
 ### 🎵 Syntax Highlighting
+- **Semantic highlighting**: Parser-based, context-aware syntax highlighting
+- **TextMate grammar**: Fast, regex-based baseline highlighting
 - Complete GABC notation support: pitches, neumes, modifiers, clefs, bars, spacing
 - NABC support: pipe-separated alternations
 - Header syntax with proper highlighting
 - Syllable styling: bold, italic, underline, small caps, teletype, colored text
 - Attributes: shape, stroke, custos, choral signs, braces, slurs, episema
+- Customizable token colors for different note types and elements
 
 ### 🔍 Language Server Integration
 - **Bundled LSP server**: No external dependencies required
@@ -28,6 +31,7 @@ VS Code extension providing language support for GABC/NABC notation used in Greg
 ### ⚙️ Commands
 - Restart Gregorio Language Server
 - Toggle Linting
+- Toggle Semantic Highlighting
 
 ## Requirements
 
@@ -58,7 +62,11 @@ The extension automatically searches for external LSP servers in:
 * `gregorio.linting.onSave`: Only lint when saving files (default: `false`)
 * `gregorio.linting.ignoreRules`: Array of rule codes to ignore (default: `[]`)
 
+### Highlighting
+* `gregorio.highlighting.semantic`: Enable semantic syntax highlighting (default: `true`)
+
 See [LINTING.md](docs/LINTING.md) for detailed linting documentation.
+See [SEMANTIC_HIGHLIGHTING.md](docs/SEMANTIC_HIGHLIGHTING.md) for semantic highlighting details.
 
 ## Usage
 

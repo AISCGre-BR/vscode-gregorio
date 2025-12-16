@@ -6,11 +6,16 @@ All notable changes to the "vscode-gregorio" extension will be documented in thi
 
 ### Added
 - Bundled gregorio-lsp language server - no external dependencies required
+- **Semantic syntax highlighting** using the bundled parser for context-aware colors
 - Optional linting support with configurable severity levels and rule filtering
 - Toggle linting command for quick enable/disable
+- Toggle semantic highlighting command
 - Configuration for linting behavior (on-save vs real-time)
+- Configuration for semantic highlighting
+- Custom semantic token colors for light and dark themes
 - Architecture documentation explaining design decisions
 - Comprehensive linting documentation
+- Semantic highlighting documentation with customization guide
 
 ### Changed
 - LSP server now bundled with extension for better reliability
