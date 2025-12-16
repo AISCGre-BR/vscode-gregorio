@@ -13,6 +13,28 @@ let client: LanguageClient | undefined;
 export function activate(context: vscode.ExtensionContext) {
   console.log('Gregorio Language Support extension is now active!');
 
+  // Register commands first, so they're available even if server isn't found
+  const restartCommand = vscode.commands.registerCommand('gregorio.restartServer', async () => {
+    if (client) {
+      await client.stop();
+      await client.start();
+      vscode.window.showInformationMessage('Gregorio Language Server restarted');
+    } else {
+      vscode.window.showWarningMessage('Gregorio Language Server is not running');
+    }
+  });
+
+  const toggleLintingCommand = vscode.commands.registerCommand('gregorio.toggleLinting', async () => {
+    const config = vscode.workspace.getConfiguration('gregorio.linting');
+    const currentValue = config.get<boolean>('enabled', true);
+    await config.update('enabled', !currentValue, vscode.ConfigurationTarget.Global);
+    vscode.window.showInformationMessage(
+      `Gregorio linting ${!currentValue ? 'enabled' : 'disabled'}`
+    );
+  });
+
+  context.subscriptions.push(restartCommand, toggleLintingCommand);
+
   const serverPath = findServerPath();
   
   if (!serverPath) {
@@ -69,25 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
   );
-
-  const restartCommand = vscode.commands.registerCommand('gregorio.restartServer', async () => {
-    if (client) {
-      await client.stop();
-      await client.start();
-      vscode.window.showInformationMessage('Gregorio Language Server restarted');
-    }
-  });
-
-  const toggleLintingCommand = vscode.commands.registerCommand('gregorio.toggleLinting', async () => {
-    const config = vscode.workspace.getConfiguration('gregorio.linting');
-    const currentValue = config.get<boolean>('enabled', true);
-    await config.update('enabled', !currentValue, vscode.ConfigurationTarget.Global);
-    vscode.window.showInformationMessage(
-      `Gregorio linting ${!currentValue ? 'enabled' : 'disabled'}`
-    );
-  });
-
-  context.subscriptions.push(restartCommand, toggleLintingCommand);
 }
 
 export async function deactivate(): Promise<void> {
