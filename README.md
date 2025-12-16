@@ -17,8 +17,16 @@ VS Code extension providing language support for GABC/NABC notation used in Greg
 - Diagnostic reporting with precise locations
 - Auto-discovery of gregorio-lsp server
 
+### 🔬 Optional Linting
+- Configurable GABC code linting
+- Real-time or on-save diagnostics
+- Severity level filtering (error, warning, info)
+- Rule-based filtering to ignore specific diagnostics
+- Quick toggle command for enabling/disabling linting
+
 ### ⚙️ Commands
 - Restart Gregorio Language Server
+- Toggle Linting
 
 ## Requirements
 
@@ -38,8 +46,17 @@ npm run build
 
 ## Extension Settings
 
-* \`gregorio.lsp.serverPath\`: Custom path to gregorio-lsp server.js
-* \`gregorio.lsp.trace.server\`: LSP communication tracing
+### Language Server
+* `gregorio.lsp.serverPath`: Custom path to gregorio-lsp server.js
+* `gregorio.lsp.trace.server`: LSP communication tracing
+
+### Linting
+* `gregorio.linting.enabled`: Enable/disable linting (default: `true`)
+* `gregorio.linting.severity`: Minimum severity to report: `error`, `warning`, or `info` (default: `warning`)
+* `gregorio.linting.onSave`: Only lint when saving files (default: `false`)
+* `gregorio.linting.ignoreRules`: Array of rule codes to ignore (default: `[]`)
+
+See [LINTING.md](docs/LINTING.md) for detailed linting documentation.
 
 ## Usage
 

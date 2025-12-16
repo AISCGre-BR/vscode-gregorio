@@ -23,9 +23,7 @@
     "notation",
     "music"
   ],
-  "activationEvents": [
-    "onLanguage:gabc"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "languages": [
@@ -54,6 +52,11 @@
         "command": "gregorio.restartServer",
         "title": "Restart Gregorio Language Server",
         "category": "Gregorio"
+      },
+      {
+        "command": "gregorio.toggleLinting",
+        "title": "Toggle Linting",
+        "category": "Gregorio"
       }
     ],
     "configuration": {
@@ -73,6 +76,34 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the language server."
+        },
+        "gregorio.linting.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable linting for GABC files. When enabled, the language server will report syntax errors and warnings."
+        },
+        "gregorio.linting.severity": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "default": "warning",
+          "description": "Minimum severity level to report. Choose 'error' to show only errors, 'warning' for errors and warnings, or 'info' for all diagnostic messages."
+        },
+        "gregorio.linting.onSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Only run linting when the file is saved. When disabled, linting runs as you type."
+        },
+        "gregorio.linting.ignoreRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "List of linting rule codes to ignore (e.g., ['missing-clef', 'invalid-note'])."
         }
       }
     }

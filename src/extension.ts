@@ -4,7 +4,8 @@ import {
   LanguageClient,
   LanguageClientOptions,
   ServerOptions,
-  TransportKind
+  TransportKind,
+  DidChangeConfigurationNotification
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient | undefined;
@@ -41,7 +42,11 @@ export function activate(context: vscode.ExtensionContext) {
       { scheme: 'untitled', language: 'gabc' }
     ],
     synchronize: {
-      fileEvents: vscode.workspace.createFileSystemWatcher('**/*.gabc')
+      fileEvents: vscode.workspace.createFileSystemWatcher('**/*.gabc'),
+      configurationSection: ['gregorio']
+    },
+    initializationOptions: {
+      linting: getLintingConfig()
     }
   };
 
@@ -54,6 +59,17 @@ export function activate(context: vscode.ExtensionContext) {
 
   client.start();
 
+  // Handle configuration changes
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration('gregorio.linting')) {
+        client?.sendNotification(DidChangeConfigurationNotification.type, {
+          settings: { linting: getLintingConfig() }
+        });
+      }
+    })
+  );
+
   const restartCommand = vscode.commands.registerCommand('gregorio.restartServer', async () => {
     if (client) {
       await client.stop();
@@ -62,7 +78,16 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(restartCommand);
+  const toggleLintingCommand = vscode.commands.registerCommand('gregorio.toggleLinting', async () => {
+    const config = vscode.workspace.getConfiguration('gregorio.linting');
+    const currentValue = config.get<boolean>('enabled', true);
+    await config.update('enabled', !currentValue, vscode.ConfigurationTarget.Global);
+    vscode.window.showInformationMessage(
+      `Gregorio linting ${!currentValue ? 'enabled' : 'disabled'}`
+    );
+  });
+
+  context.subscriptions.push(restartCommand, toggleLintingCommand);
 }
 
 export async function deactivate(): Promise<void> {
@@ -95,4 +120,14 @@ function findServerPath(): string | undefined {
   }
 
   return undefined;
+}
+
+function getLintingConfig() {
+  const config = vscode.workspace.getConfiguration('gregorio.linting');
+  return {
+    enabled: config.get<boolean>('enabled', true),
+    severity: config.get<string>('severity', 'warning'),
+    onSave: config.get<boolean>('onSave', false),
+    ignoreRules: config.get<string[]>('ignoreRules', [])
+  };
 }
