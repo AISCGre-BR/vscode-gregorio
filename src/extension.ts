@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(restartCommand, toggleLintingCommand);
 
-  const serverPath = findServerPath();
+  const serverPath = findServerPath(context);
   
   if (!serverPath) {
     vscode.window.showWarningMessage(
@@ -99,14 +99,26 @@ export async function deactivate(): Promise<void> {
   }
 }
 
-function findServerPath(): string | undefined {
+function findServerPath(context: vscode.ExtensionContext): string | undefined {
   const config = vscode.workspace.getConfiguration('gregorio.lsp');
   const configuredPath = config.get<string>('serverPath');
   
+  // If user configured a custom path, use it
   if (configuredPath) {
-    return configuredPath;
+    if (require('fs').existsSync(configuredPath)) {
+      return configuredPath;
+    } else {
+      console.warn(`Configured LSP server path does not exist: ${configuredPath}`);
+    }
   }
 
+  // Try bundled server first (shipped with extension)
+  const bundledPath = context.asAbsolutePath(path.join('dist', 'server.js'));
+  if (require('fs').existsSync(bundledPath)) {
+    return bundledPath;
+  }
+
+  // Fallback: search for external installations (for development)
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (workspaceFolders && workspaceFolders.length > 0) {
     const workspaceRoot = workspaceFolders[0].uri.fsPath;

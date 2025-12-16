@@ -4,8 +4,9 @@
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
     "sourceMap": true,
-    "rootDir": "src",
     "strict": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src/**/*", "lsp-server/**/*"],
+  "exclude": ["lsp-server/**/__tests__/**", "node_modules"]
 }

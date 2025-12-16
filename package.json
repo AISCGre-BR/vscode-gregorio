@@ -65,7 +65,7 @@
         "gregorio.lsp.serverPath": {
           "type": "string",
           "default": "",
-          "description": "Path to the gregorio-lsp server.js file. If empty, will search in common locations."
+          "description": "Path to a custom gregorio-lsp server.js file. If empty, the bundled LSP server will be used."
         },
         "gregorio.lsp.trace.server": {
           "type": "string",
@@ -135,6 +135,8 @@
     "typescript-eslint": "^8.48.1"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11"
   }
 }

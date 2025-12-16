@@ -24,7 +24,8 @@ const esbuildProblemMatcherPlugin = {
 };
 
 async function main() {
-	const ctx = await esbuild.context({
+	// Build extension
+	const extensionCtx = await esbuild.context({
 		entryPoints: [
 			'src/extension.ts'
 		],
@@ -38,16 +39,39 @@ async function main() {
 		external: ['vscode'],
 		logLevel: 'silent',
 		plugins: [
-			/* add to the end of plugins array */
 			esbuildProblemMatcherPlugin,
 		],
 	});
+
+	// Build bundled LSP server
+	const serverCtx = await esbuild.context({
+		entryPoints: [
+			'lsp-server/server.ts'
+		],
+		bundle: true,
+		format: 'cjs',
+		minify: production,
+		sourcemap: !production,
+		sourcesContent: false,
+		platform: 'node',
+		outfile: 'dist/server.js',
+		external: [],
+		logLevel: 'silent',
+		plugins: [
+			esbuildProblemMatcherPlugin,
+		],
+	});
+
+	const ctx = extensionCtx;
 	if (watch) {
-		await ctx.watch();
+		await extensionCtx.watch();
+		await serverCtx.watch();
 		console.log("Watching for changes...");
 	} else {
-		await ctx.rebuild();
-		await ctx.dispose();
+		await extensionCtx.rebuild();
+		await serverCtx.rebuild();
+		await extensionCtx.dispose();
+		await serverCtx.dispose();
 	}
 }
 

@@ -12,10 +12,11 @@ VS Code extension providing language support for GABC/NABC notation used in Greg
 - Attributes: shape, stroke, custos, choral signs, braces, slurs, episema
 
 ### 🔍 Language Server Integration
+- **Bundled LSP server**: No external dependencies required
 - Real-time validation via gregorio-lsp
 - Error detection for missing headers, NABC mismatches, invalid constructions
 - Diagnostic reporting with precise locations
-- Auto-discovery of gregorio-lsp server
+- Robust TypeScript-based parser (tree-sitter disabled to avoid native module issues)
 
 ### 🔬 Optional Linting
 - Configurable GABC code linting
@@ -30,19 +31,20 @@ VS Code extension providing language support for GABC/NABC notation used in Greg
 
 ## Requirements
 
-Requires **gregorio-lsp** server. The extension searches in:
-1. `gregorio.lsp.serverPath` setting
-2. `../gregorio-lsp/dist/server.js` (sibling folder)
-3. `./gregorio-lsp/dist/server.js` (workspace subfolder)
+**None!** The extension comes with a bundled LSP server that works out of the box.
 
-### Installing gregorio-lsp
+### Optional: Custom LSP Server
 
-\`\`\`bash
-git clone https://github.com/AISCGre-BR/gregorio-lsp.git
-cd gregorio-lsp
-npm install
-npm run build
-\`\`\`
+If you want to use a custom or development version of gregorio-lsp, you can configure the path:
+
+1. Set `gregorio.lsp.serverPath` in your settings to point to your custom server.js
+2. The extension will use your custom server instead of the bundled one
+
+The extension automatically searches for external LSP servers in:
+1. `gregorio.lsp.serverPath` setting (if configured)
+2. Bundled server (shipped with extension) - **default**
+3. `../gregorio-lsp/dist/server.js` (sibling folder, for development)
+4. `./gregorio-lsp/dist/server.js` (workspace subfolder)
 
 ## Extension Settings
 

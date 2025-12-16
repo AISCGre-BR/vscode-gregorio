@@ -3,6 +3,7 @@
 out/**
 node_modules/**
 src/**
+lsp-server/**
 .gitignore
 .yarnrc
 esbuild.js
