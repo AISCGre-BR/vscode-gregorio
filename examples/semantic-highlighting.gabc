@@ -1,0 +1,34 @@
+name: Semantic Highlighting Example;
+mode: 1;
+office-part: Introitus;
+annotation: Example;
+%%
+(c4) KY(f)ri(e)e(f) *() e(g)lé(h)i(g)son.(f.) (::)
+
+(c3) Chri(h)ste(i) e(g)lé(h)i(i)son.(h.) (::)
+
+(f3) <v>\GreStar</v>(h) Ký(h)ri(h)e(g) e(f)lé(h!iw)i(g)son.(f.) (::)
+
+% This demonstrates various note shapes and modifiers
+(c4) Punc(f)tum(g) Vir(gh)ga(h) Qui(gw!hvGE)lis(f)ma(f) (,)
+Or(go)is(e)cus(f) Stro(ghgfg/hvGFg)pha(g) Li(ge~)ques(f.)cent(ef) (::)
+
+% Clefs and accidentals
+(c4) C(f) clef(g) (c3) now(h) C3(i) (f2) F(h) clef(g) (::)
+
+% Accidentals
+(c4) Flat(fxe) sharp(f#g) na(fyf)tu(g)ral(f) (::)
+
+% Bars and divisions
+(c4) Vir(f)gu(g)la(h) (,) mi(g)ni(f)ma(e) (`) mi(g)nor(f) (;)
+ma(g)i(f)or(e) (:) fi(g)na(f)lis(e.) (::)
+
+% Custos and attributes
+(c4) Cus(f)tos(g) at(h) end(g) (f+) (::)
+At(f[ocba:1])tri(g)bu(h[ll:1])tes(g.) (::)
+
+% NABC notation
+(c4) NA(gsss|vi-hjlss)BC(hg|cl-) ex(f|ta)am(gf|cl)ple(f.|ta) (::)
+
+% Style tags in text
+(c4) <b>Bold</b>(f) <i>italic</i>(g) <sc>small caps</sc>(h) text.(f.) (::)
