@@ -141,25 +141,7 @@
       "begin": "\\|",
       "end": "(?=\\||\\))",
       "beginCaptures": { "0": { "name": "keyword.operator.nabc-separator.gabc" } },
-      "patterns": [
-        { "include": "#nabc-glyph" }
-      ]
-    },
-    "nabc-glyph": {
-      "patterns": [
-        {
-          "name": "entity.name.type.nabc-glyph.gabc",
-          "match": "\\b(vi|pu|ta|gr|cl|pe|po|sc|to|tr|di|vv|tv|cv|sv|cs|vs|tg|gv|pq|ql|qp|su[0-9]*|pp[0-9]*)([SGM\\-~<>]*)\\b"
-        },
-        {
-          "name": "keyword.operator.nabc-fusion.gabc",
-          "match": "!"
-        },
-        {
-          "name": "entity.name.type.nabc-letter.gabc",
-          "match": "l[st][a-z0-9]+"
-        }
-      ]
+      "contentName": "meta.nabc-content.gabc"
     },
     "clef": {
       "patterns": [
