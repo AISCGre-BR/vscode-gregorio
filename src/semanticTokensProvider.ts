@@ -298,10 +298,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   
   private tokenizeNoteGroupContent(content: string, line: number, startChar: number, builder: vscode.SemanticTokensBuilder): void {
     // Tokenize individual notes and elements within the group
+    // Stop at NABC separator (|) - NABC content is handled by TextMate grammar
+    const nabcSeparator = content.indexOf('|');
+    const gabcContent = nabcSeparator >= 0 ? content.substring(0, nabcSeparator) : content;
+    
     let pos = 0;
     
-    while (pos < content.length) {
-      const char = content[pos];
+    while (pos < gabcContent.length) {
+      const char = gabcContent[pos];
       
       // Note pitches (a-m)
       if (/[a-m]/.test(char)) {
@@ -313,22 +317,22 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         let isSpecial = false;
         
         // Virga: note followed by v
-        if (nextIdx < content.length && content[nextIdx] === 'v') {
+        if (nextIdx < gabcContent.length && gabcContent[nextIdx] === 'v') {
           tokenType = this.getTokenType('class');
           isSpecial = true;
         }
         // Quilisma: note followed by w
-        else if (nextIdx < content.length && content[nextIdx] === 'w') {
+        else if (nextIdx < gabcContent.length && gabcContent[nextIdx] === 'w') {
           tokenType = this.getTokenType('decorator');
           isSpecial = true;
         }
         // Oriscus: note followed by o
-        else if (nextIdx < content.length && content[nextIdx] === 'o') {
+        else if (nextIdx < gabcContent.length && gabcContent[nextIdx] === 'o') {
           tokenType = this.getTokenType('decorator');
           isSpecial = true;
         }
         // Stropha: note followed by s
-        else if (nextIdx < content.length && content[nextIdx] === 's') {
+        else if (nextIdx < gabcContent.length && gabcContent[nextIdx] === 's') {
           tokenType = this.getTokenType('macro');
           isSpecial = true;
         }
@@ -358,10 +362,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       else if (char === ' ' || char === '/' || char === '!') {
         builder.push(line, startChar + pos, 1, this.getTokenType('operator'), 0);
       }
-      // NABC separator
-      else if (char === '|') {
-        builder.push(line, startChar + pos, 1, this.getTokenType('operator'), 0);
-      }
       // Custos
       else if (char === 'z' || char === '+') {
         builder.push(line, startChar + pos, 1, this.getTokenType('parameter'), 0);
@@ -372,6 +372,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
       
       pos++;
+    }
+    
+    // Highlight NABC separator if present
+    // The NABC content itself is handled by TextMate grammar for better accuracy
+    if (nabcSeparator >= 0) {
+      builder.push(line, startChar + nabcSeparator, 1, this.getTokenType('operator'), 0);
     }
   }
   
