@@ -186,41 +186,25 @@ export class GabcParser {
     const noteStart = this.getCurrentPosition();
     let gabcContent = '';
     let nabcSnippets: string[] = [];
-    let inNabc = false;
 
-    while (this.pos < this.text.length && this.peek() !== ')') {
-      const char = this.peek();
+    // First, collect everything until first '|' or ')' as GABC
+    while (this.pos < this.text.length && this.peek() !== ')' && this.peek() !== '|') {
+      gabcContent += this.peek();
+      this.advance(1);
+    }
 
-      if (char === '|') {
-        // NABC separator
-        if (!inNabc && gabcContent.trim().length > 0) {
-          // This is first NABC separator, gabcContent is GABC
-          inNabc = true;
-        }
-        
-        if (inNabc) {
-          // Save previous NABC snippet if any
-          const nabcStart = this.pos + 1;
-          this.advance(1); // Skip '|'
-          
-          let nabcContent = '';
-          while (this.pos < this.text.length && this.peek() !== ')' && this.peek() !== '|') {
-            nabcContent += this.peek();
-            this.advance(1);
-          }
-          
-          if (nabcContent.length > 0) {
-            nabcSnippets.push(nabcContent);
-          }
-          continue;
-        } else {
-          this.advance(1);
-        }
-      } else {
-        if (!inNabc) {
-          gabcContent += char;
-        }
+    // Then, collect NABC snippets (text after each '|')
+    while (this.pos < this.text.length && this.peek() === '|') {
+      this.advance(1); // Skip '|'
+      
+      let nabcContent = '';
+      while (this.pos < this.text.length && this.peek() !== ')' && this.peek() !== '|') {
+        nabcContent += this.peek();
         this.advance(1);
+      }
+      
+      if (nabcContent.length > 0) {
+        nabcSnippets.push(nabcContent);
       }
     }
 
