@@ -121,6 +121,7 @@
       "endCaptures": { "0": { "name": "punctuation.section.group.end.gabc" } },
       "patterns": [
         { "include": "#clef" },
+        { "include": "#nabc-section" },
         { "include": "#gabc-content" }
       ]
     },
@@ -132,7 +133,6 @@
         { "include": "#bar" },
         { "include": "#spacing" },
         { "include": "#attribute" },
-        { "include": "#nabc-section" },
         { "include": "#line-break" }
       ]
     },
@@ -142,18 +142,22 @@
       "end": "(?=\\||\\))",
       "beginCaptures": { "0": { "name": "keyword.operator.nabc-separator.gabc" } },
       "patterns": [
-        { "include": "#nabc-content" }
+        { "include": "#nabc-glyph" }
       ]
     },
-    "nabc-content": {
+    "nabc-glyph": {
       "patterns": [
         {
-          "name": "string.other.nabc.gabc",
-          "match": "[a-zA-Z0-9]+"
+          "name": "entity.name.type.nabc-glyph.gabc",
+          "match": "\\b(vi|pu|ta|gr|cl|pe|po|sc|to|tr|di|vv|tv|cv|sv|cs|vs|tg|gv|pq|ql|qp|su[0-9]*|pp[0-9]*)([SGM\\-~<>]*)\\b"
         },
         {
-          "name": "keyword.operator.nabc-connector.gabc",
-          "match": "-"
+          "name": "keyword.operator.nabc-fusion.gabc",
+          "match": "!"
+        },
+        {
+          "name": "entity.name.type.nabc-letter.gabc",
+          "match": "l[st][a-z0-9]+"
         }
       ]
     },
