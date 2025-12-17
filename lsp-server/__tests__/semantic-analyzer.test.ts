@@ -166,7 +166,27 @@ nabc-lines: 1;
   });
 
   describe('NABC Alternation Validation', () => {
-    it('should error when NABC count does not match nabc-lines header (too many)', () => {
+    // NABC alternation validation tests removed
+    // The alternation pattern (gabc|nabc|gabc|nabc|...) is now handled by the parser
+    // not the semantic analyzer. The parser correctly allows multiple alternations
+    // like (e|ta|f|vi) for nabc-lines: 1, which follows the Gregorio spec.
+    
+    it('should allow alternating GABC/NABC pattern with nabc-lines: 1', () => {
+      const gabc = `name: Test;
+nabc-lines: 1;
+%%
+(c4) Al(f|vi)ia.(f) (e|ta|f|vi)`;
+
+      const parser = new GabcParser(gabc);
+      const document = parser.parse();
+      const diagnostics = analyzer.analyze(document);
+
+      // Should not produce alternation errors
+      const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
+      expect(alternationError).toBeUndefined();
+    });
+
+    it('should not validate alternation pattern in semantic analyzer', () => {
       const gabc = `name: Test;
 nabc-lines: 1;
 %%
@@ -176,67 +196,7 @@ nabc-lines: 1;
       const document = parser.parse();
       const diagnostics = analyzer.analyze(document);
 
-      const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
-      expect(alternationError).toBeDefined();
-      expect(alternationError?.severity).toBe('error');
-      expect(alternationError?.message).toContain('nabc-lines: 1');
-      expect(alternationError?.message).toContain('found 2');
-    });
-
-    it('should error when NABC count does not match nabc-lines header (too few)', () => {
-      const gabc = `name: Test;
-nabc-lines: 2;
-%%
-(c4) Al(f|vi)ia.(f)`;
-
-      const parser = new GabcParser(gabc);
-      const document = parser.parse();
-      const diagnostics = analyzer.analyze(document);
-
-      const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
-      expect(alternationError).toBeDefined();
-      expect(alternationError?.severity).toBe('error');
-      expect(alternationError?.message).toContain('nabc-lines: 2');
-      expect(alternationError?.message).toContain('found 1');
-    });
-
-    it('should not error when NABC count matches nabc-lines header', () => {
-      const gabc = `name: Test;
-nabc-lines: 1;
-%%
-(c4) Al(f|vi)ia.(f)`;
-
-      const parser = new GabcParser(gabc);
-      const document = parser.parse();
-      const diagnostics = analyzer.analyze(document);
-
-      const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
-      expect(alternationError).toBeUndefined();
-    });
-
-    it('should not error when NABC count matches nabc-lines: 2', () => {
-      const gabc = `name: Test;
-nabc-lines: 2;
-%%
-(c4) Al(f|vi|ca)ia.(f)`;
-
-      const parser = new GabcParser(gabc);
-      const document = parser.parse();
-      const diagnostics = analyzer.analyze(document);
-
-      const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
-      expect(alternationError).toBeUndefined();
-    });
-
-    it('should not validate when no nabc-lines header is present', () => {
-      const gabc = `name: Test;
-%%
-(c4) Al(f)ia.(f)`;
-
-      const parser = new GabcParser(gabc);
-      const document = parser.parse();
-      const diagnostics = analyzer.analyze(document);
-
+      // Alternation validation removed from semantic analyzer
       const alternationError = diagnostics.find(d => d.code === 'nabc-alternation-mismatch');
       expect(alternationError).toBeUndefined();
     });

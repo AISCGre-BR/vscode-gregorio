@@ -1,0 +1,4 @@
+name: test-nabc-alternation;
+nabc-lines: 1;
+%%
+(c4) (e|ta|f|vi) (h|vi) (gh|pe|f|ta|e|vi)

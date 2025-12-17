@@ -184,27 +184,35 @@ export class GabcParser {
     this.advance(1); // Skip '('
 
     const noteStart = this.getCurrentPosition();
-    let gabcContent = '';
-    let nabcSnippets: string[] = [];
-
-    // First, collect everything until first '|' or ')' as GABC
-    while (this.pos < this.text.length && this.peek() !== ')' && this.peek() !== '|') {
-      gabcContent += this.peek();
-      this.advance(1);
-    }
-
-    // Then, collect NABC snippets (text after each '|')
-    while (this.pos < this.text.length && this.peek() === '|') {
-      this.advance(1); // Skip '|'
+    
+    // Parse alternating GABC and NABC segments
+    // Pattern: (gabc|nabc|gabc|nabc|...)
+    // We concatenate all GABC content but track original positions for each character
+    
+    const segments: Array<{type: 'gabc' | 'nabc', content: string, start: Position}> = [];
+    let isNabc = false; // Start with GABC
+    
+    while (this.pos < this.text.length && this.peek() !== ')') {
+      if (this.peek() === '|') {
+        this.advance(1); // Skip '|'
+        isNabc = !isNabc; // Toggle between GABC and NABC
+        continue;
+      }
       
-      let nabcContent = '';
+      const segmentStart = this.getCurrentPosition();
+      let content = '';
+      
       while (this.pos < this.text.length && this.peek() !== ')' && this.peek() !== '|') {
-        nabcContent += this.peek();
+        content += this.peek();
         this.advance(1);
       }
       
-      if (nabcContent.length > 0) {
-        nabcSnippets.push(nabcContent);
+      if (content.length > 0) {
+        segments.push({
+          type: isNabc ? 'nabc' : 'gabc',
+          content,
+          start: segmentStart
+        });
       }
     }
 
@@ -214,15 +222,34 @@ export class GabcParser {
 
     const parenEnd = this.getCurrentPosition();
 
+    // Collect GABC and NABC segments separately
+    const gabcSegments = segments.filter(s => s.type === 'gabc');
+    const nabcSegments = segments.filter(s => s.type === 'nabc');
+    
+    // Concatenate GABC content
+    const gabcContent = gabcSegments.map(s => s.content).join('');
+    const nabcSnippets = nabcSegments.map(s => s.content);
+    
+    // Build position map: for each character in concatenated GABC, track its original position
+    const positionMap: Position[] = [];
+    for (const segment of gabcSegments) {
+      for (let i = 0; i < segment.content.length; i++) {
+        positionMap.push({
+          line: segment.start.line,
+          character: segment.start.character + i
+        });
+      }
+    }
+
     // Parse clef if present (with precise position)
     clef = this.parseClefWithPosition(gabcContent, noteStart);
     
     // Parse bar if present (with precise position)
     bar = this.parseBarWithPosition(gabcContent, noteStart);
 
-    // Parse note group if it's not just a clef or bar
+    // Parse note group with position map
     if (gabcContent.trim().length > 0) {
-      const noteGroup = this.parseNoteGroup(gabcContent, nabcSnippets, noteStart);
+      const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap);
       if (noteGroup) {
         notes.push(noteGroup);
       }
@@ -563,6 +590,240 @@ export class GabcParser {
         const noteEnd: Position = {
           line: start.line,
           character: start.character + i
+        };
+
+        notes.push({
+          pitch,
+          shape,
+          modifiers,
+          range: { start: noteStart, end: noteEnd }
+        });
+      } else {
+        // Skip unknown characters
+        i++;
+      }
+    }
+
+    return {
+      gabc,
+      nabc: nabc.length > 0 ? nabc : undefined,
+      nabcParsed: nabc.length > 0 ? parseNABCSnippets(nabc, start) : undefined,
+      range: { start, end },
+      notes,
+      custos: custos || undefined,
+      attributes: attributes.length > 0 ? attributes : undefined
+    };
+  }
+
+  /**
+   * Parse note group with position map for alternating GABC/NABC segments
+   * This method uses a position map to correctly track character positions when
+   * GABC content is concatenated from multiple segments separated by NABC
+   */
+  private parseNoteGroupWithPositionMap(
+    gabc: string,
+    nabc: string[],
+    start: Position,
+    positionMap: Position[]
+  ): NoteGroup | null {
+    const notes: Note[] = [];
+    const end = this.getCurrentPosition();
+    let custos: any = undefined;
+    const attributes: any[] = [];
+
+    // Parse individual notes from GABC string
+    let i = 0;
+    while (i < gabc.length) {
+      const char = gabc[i];
+      
+      // Get actual position from map, fallback to calculated position if not available
+      const getPosition = (index: number): Position => {
+        if (index < positionMap.length) {
+          return positionMap[index];
+        }
+        // Fallback (shouldn't happen if map is correct)
+        return { line: start.line, character: start.character + index };
+      };
+
+      // Skip whitespace and separators
+      if (/[\s\/`!]/.test(char)) {
+        i++;
+        continue;
+      }
+
+      // Parse custos (z0 or +pitch)
+      if (char === 'z' && i + 1 < gabc.length && gabc[i + 1] === '0') {
+        custos = {
+          type: 'auto',
+          range: { start: getPosition(i), end: getPosition(i + 2) }
+        };
+        i += 2;
+        continue;
+      }
+
+      // Parse explicit custos (+pitch)
+      if (char === '+' && i + 1 < gabc.length && /[a-n]/.test(gabc[i + 1])) {
+        custos = {
+          type: 'explicit',
+          pitch: gabc[i + 1],
+          range: { start: getPosition(i), end: getPosition(i + 2) }
+        };
+        i += 2;
+        continue;
+      }
+
+      // Parse attributes [name:value] or [name]
+      if (char === '[') {
+        const attrResult = this.parseAttribute(gabc.substring(i), getPosition(i));
+        if (attrResult) {
+          attributes.push(attrResult.attribute);
+          i += attrResult.length;
+          continue;
+        }
+      }
+
+      // Check for pitch letters (lowercase or uppercase)
+      if (/[a-np]/i.test(char)) {
+        const noteStartIndex = i;
+        const noteStart = getPosition(i);
+        const isUpperCase = /[A-NP]/.test(char);
+        const pitch = char.toLowerCase();
+        let shape = isUpperCase ? NoteShape.PunctumInclinatum : NoteShape.Punctum;
+        const modifiers: any[] = [];
+        let noteLength = 1;
+
+        i++;
+
+        // Parse shape modifiers and note modifiers
+        while (i < gabc.length) {
+          const mod = gabc[i];
+
+          // Leaning modifiers for punctum inclinatum
+          if (isUpperCase && /[012]/.test(mod)) {
+            noteLength++;
+            i++;
+            continue;
+          }
+
+          // Shape modifiers
+          if (mod === 'o') {
+            shape = NoteShape.Oriscus;
+            noteLength++;
+            i++;
+            if (i < gabc.length && /[01]/.test(gabc[i])) {
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'O') {
+            shape = NoteShape.Oriscus;
+            noteLength++;
+            i++;
+          } else if (mod === 'w') {
+            shape = NoteShape.Quilisma;
+            noteLength++;
+            i++;
+          } else if (mod === 'W') {
+            shape = NoteShape.Quilisma;
+            noteLength++;
+            i++;
+          } else if (mod === 'v') {
+            if (i + 1 < gabc.length && gabc[i + 1] === 'v') {
+              noteLength++;
+              i++;
+              if (i + 1 < gabc.length && gabc[i + 1] === 'v') {
+                noteLength++;
+                i++;
+              }
+            } else {
+              shape = NoteShape.Virga;
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'V') {
+            shape = NoteShape.VirgaReversa;
+            noteLength++;
+            i++;
+          } else if (mod === 's') {
+            if (i + 1 < gabc.length && gabc[i + 1] === 's') {
+              noteLength++;
+              i++;
+              if (i + 1 < gabc.length && gabc[i + 1] === 's') {
+                noteLength++;
+                i++;
+              }
+            } else {
+              shape = NoteShape.Stropha;
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'r') {
+            shape = NoteShape.Cavum;
+            noteLength++;
+            i++;
+            if (i < gabc.length && /[0-9]/.test(gabc[i])) {
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'R') {
+            shape = NoteShape.Cavum;
+            noteLength++;
+            i++;
+          } else if (mod === '=') {
+            shape = NoteShape.Linea;
+            noteLength++;
+            i++;
+          } else if (mod === 'q') {
+            modifiers.push({ type: ModifierType.Quadratum });
+            noteLength++;
+            i++;
+          } else if (mod === '.') {
+            modifiers.push({ type: ModifierType.PunctumMora });
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '.') {
+              noteLength++;
+              i++;
+            }
+          } else if (mod === '_') {
+            modifiers.push({ type: ModifierType.HorizontalEpisema });
+            noteLength++;
+            i++;
+            while (i < gabc.length && /[0-5]/.test(gabc[i])) {
+              noteLength++;
+              i++;
+            }
+          } else if (mod === '~') {
+            shape = NoteShape.Liquescent;
+            modifiers.push({ type: ModifierType.Liquescent });
+            noteLength++;
+            i++;
+          } else if (mod === '<') {
+            shape = NoteShape.Liquescent;
+            modifiers.push({ type: ModifierType.Liquescent });
+            noteLength++;
+            i++;
+          } else if (mod === '>') {
+            shape = NoteShape.Liquescent;
+            modifiers.push({ type: ModifierType.Liquescent });
+            noteLength++;
+            i++;
+          } else if (mod === 'r' && i + 1 < gabc.length && /[1-8]/.test(gabc[i + 1])) {
+            noteLength += 2;
+            i += 2;
+          } else if (mod === '@') {
+            modifiers.push({ type: ModifierType.Fusion });
+            noteLength++;
+            i++;
+          } else {
+            // Unknown modifier or next note
+            break;
+          }
+        }
+
+        // Calculate end position based on start position + length in actual document
+        const noteEnd: Position = {
+          line: noteStart.line,
+          character: noteStart.character + (i - noteStartIndex)
         };
 
         notes.push({

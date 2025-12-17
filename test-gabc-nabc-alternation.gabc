@@ -1,0 +1,13 @@
+name: test-alternation;
+nabc-lines: 1;
+%%
+(c4) Test alternation:
+(e|ta|f|vi) 
+Should parse as:
+- GABC: ef (two pitches)
+- NABC: ta, vi (two snippets)
+
+(gh|pe|f|ta|e|vi)
+Should parse as:
+- GABC: ghfe (four pitches)
+- NABC: pe, ta, vi (three snippets)
