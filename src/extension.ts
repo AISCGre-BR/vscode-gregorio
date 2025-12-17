@@ -12,7 +12,25 @@ import { GabcSemanticTokensProvider, legend } from './semanticTokensProvider';
 let client: LanguageClient | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Gregorio Language Support extension is now active!');
+  console.log('[Gregorio] Extension is now active!');
+  
+  // Check if semantic highlighting is enabled in VS Code
+  const editorConfig = vscode.workspace.getConfiguration('editor');
+  const semanticEnabled = editorConfig.get<boolean>('semanticHighlighting.enabled');
+  console.log('[Gregorio] VS Code semantic highlighting enabled:', semanticEnabled);
+  
+  if (semanticEnabled === false) {
+    vscode.window.showWarningMessage(
+      'Semantic highlighting is disabled in VS Code settings. To see improved GABC syntax highlighting, enable "editor.semanticHighlighting.enabled" in your settings.',
+      'Enable Now',
+      'Later'
+    ).then(selection => {
+      if (selection === 'Enable Now') {
+        editorConfig.update('semanticHighlighting.enabled', true, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage('Semantic highlighting enabled! Reload the window to apply changes.');
+      }
+    });
+  }
 
   // Register commands first, so they're available even if server isn't found
   const restartCommand = vscode.commands.registerCommand('gregorio.restartServer', async () => {
@@ -56,13 +74,24 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(restartCommand, toggleLintingCommand, toggleSemanticHighlightingCommand);
 
   // Register semantic tokens provider for advanced syntax highlighting
+  console.log('[Gregorio] Registering semantic tokens provider');
   const semanticTokensProvider = new GabcSemanticTokensProvider();
-  const semanticTokensRegistration = vscode.languages.registerDocumentSemanticTokensProvider(
+  
+  // Register for both file and untitled schemes
+  const semanticTokensRegistrationFile = vscode.languages.registerDocumentSemanticTokensProvider(
     { language: 'gabc', scheme: 'file' },
     semanticTokensProvider,
     legend
   );
-  context.subscriptions.push(semanticTokensRegistration);
+  
+  const semanticTokensRegistrationUntitled = vscode.languages.registerDocumentSemanticTokensProvider(
+    { language: 'gabc', scheme: 'untitled' },
+    semanticTokensProvider,
+    legend
+  );
+  
+  console.log('[Gregorio] Semantic tokens provider registered');
+  context.subscriptions.push(semanticTokensRegistrationFile, semanticTokensRegistrationUntitled);
 
   const serverPath = findServerPath(context);
   

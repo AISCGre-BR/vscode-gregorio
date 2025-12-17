@@ -63,9 +63,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     document: vscode.TextDocument,
     token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.SemanticTokens> {
+    console.log('[Gregorio] Semantic tokens provider called for:', document.uri.toString());
+    
     // Check if semantic highlighting is enabled
     const config = vscode.workspace.getConfiguration('gregorio.highlighting');
-    if (!config.get<boolean>('semantic', true)) {
+    const enabled = config.get<boolean>('semantic', true);
+    console.log('[Gregorio] Semantic highlighting enabled:', enabled);
+    
+    if (!enabled) {
       return null;
     }
     
@@ -74,8 +79,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     try {
       // Parse the document
       const text = document.getText();
+      console.log('[Gregorio] Parsing document, length:', text.length);
+      
       this.parser = new GabcParser(text);
       const parsed = this.parser.parse();
+      
+      console.log('[Gregorio] Parse complete. Headers:', parsed.headers.size, 
+                  'Syllables:', parsed.notation.syllables.length,
+                  'Errors:', parsed.errors.length);
       
       // Tokenize headers
       this.tokenizeHeaders(parsed, tokensBuilder);
@@ -86,55 +97,118 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       // Tokenize notation
       this.tokenizeNotation(parsed, tokensBuilder);
       
+      const tokens = tokensBuilder.build();
+      console.log('[Gregorio] Built tokens, data length:', tokens.data.length);
+      
+      return tokens;
+      
     } catch (error) {
-      // Silently fail - TextMate grammar will provide fallback highlighting
-      console.error('Semantic tokens provider error:', error);
+      console.error('[Gregorio] Semantic tokens provider error:', error);
+      return tokensBuilder.build(); // Return empty tokens instead of null
     }
-    
-    return tokensBuilder.build();
   }
   
   private tokenizeHeaders(parsed: ParsedDocument, builder: vscode.SemanticTokensBuilder): void {
-    // Note: We need to re-parse to get exact header positions
-    // The current parser doesn't preserve all header ranges
     const text = this.parser?.['text'] || '';
     const lines = text.split('\n');
     
-    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    let inHeader = true;
+    let currentHeaderName = '';
+    let headerStartLine = -1;
+    
+    for (let lineIdx = 0; lineIdx < lines.length && inHeader; lineIdx++) {
       const line = lines[lineIdx];
+      const trimmed = line.trim();
       
-      // Check for header separator
-      if (line.trim() === '%%') {
-        builder.push(lineIdx, 0, 2, this.getTokenType('operator'), 0);
-        break; // No more headers after separator
+      // Skip empty lines and comments
+      if (trimmed === '' || trimmed.startsWith('%')) {
+        continue;
       }
       
-      // Match header pattern: name: value;
-      const headerMatch = line.match(/^([a-zA-Z0-9-]+):\s*(.+?)(;{1,2})?$/);
-      if (headerMatch) {
-        const name = headerMatch[1];
-        const nameStart = line.indexOf(name);
-        
-        // Highlight header name
-        builder.push(lineIdx, nameStart, name.length, this.getTokenType('property'), this.getModifier('readonly'));
-        
-        // Highlight colon
-        builder.push(lineIdx, nameStart + name.length, 1, this.getTokenType('operator'), 0);
-        
-        // Highlight value
-        if (headerMatch[2]) {
-          const value = headerMatch[2].trim();
-          const valueStart = line.indexOf(value, nameStart + name.length);
-          if (valueStart !== -1) {
-            builder.push(lineIdx, valueStart, value.length, this.getTokenType('string'), 0);
+      // Check for header separator
+      if (trimmed === '%%') {
+        const separatorStart = line.indexOf('%%');
+        builder.push(lineIdx, separatorStart, 2, this.getTokenType('operator'), 0);
+        inHeader = false;
+        break;
+      }
+      
+      // Check if this line starts a new header (has colon)
+      const colonIndex = line.indexOf(':');
+      if (colonIndex !== -1 && colonIndex < 50) { // Reasonable position for header name
+        // Extract header name (everything before colon)
+        const beforeColon = line.substring(0, colonIndex).trim();
+        if (/^[a-zA-Z0-9-]+$/.test(beforeColon)) {
+          currentHeaderName = beforeColon;
+          headerStartLine = lineIdx;
+          
+          // Find the actual start position of the header name
+          const nameStart = line.indexOf(currentHeaderName);
+          
+          // Highlight header name
+          builder.push(lineIdx, nameStart, currentHeaderName.length, 
+                      this.getTokenType('property'), this.getModifier('readonly'));
+          
+          // Highlight colon
+          builder.push(lineIdx, colonIndex, 1, this.getTokenType('operator'), 0);
+          
+          // Get the value part (after colon)
+          const afterColon = line.substring(colonIndex + 1);
+          const semicolonMatch = afterColon.match(/;{1,2}/);
+          
+          if (semicolonMatch) {
+            // Single line header with semicolon
+            const valueText = afterColon.substring(0, semicolonMatch.index).trim();
+            if (valueText.length > 0) {
+              const valueStart = line.indexOf(valueText, colonIndex);
+              if (valueStart !== -1) {
+                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+              }
+            }
+            
+            // Highlight semicolon
+            const semicolonStart = colonIndex + 1 + semicolonMatch.index!;
+            builder.push(lineIdx, semicolonStart, semicolonMatch[0].length, this.getTokenType('operator'), 0);
+            
+            currentHeaderName = '';
+          } else {
+            // Multiline header - highlight the first line's value
+            const valueText = afterColon.trim();
+            if (valueText.length > 0) {
+              const valueStart = line.indexOf(valueText, colonIndex);
+              if (valueStart !== -1) {
+                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+              }
+            }
           }
         }
+      } else if (currentHeaderName !== '') {
+        // Continuation of multiline header
+        const semicolonMatch = line.match(/;{1,2}/);
         
-        // Highlight semicolon
-        if (headerMatch[3]) {
-          const semicolonStart = line.indexOf(headerMatch[3], nameStart + name.length);
-          if (semicolonStart !== -1) {
-            builder.push(lineIdx, semicolonStart, headerMatch[3].length, this.getTokenType('operator'), 0);
+        if (semicolonMatch) {
+          // End of multiline header
+          const valueText = line.substring(0, semicolonMatch.index).trim();
+          if (valueText.length > 0) {
+            const valueStart = line.indexOf(valueText);
+            if (valueStart !== -1) {
+              builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+            }
+          }
+          
+          // Highlight semicolon
+          const semicolonStart = line.indexOf(semicolonMatch[0]);
+          builder.push(lineIdx, semicolonStart, semicolonMatch[0].length, this.getTokenType('operator'), 0);
+          
+          currentHeaderName = '';
+        } else {
+          // Middle of multiline header
+          const valueText = trimmed;
+          if (valueText.length > 0) {
+            const valueStart = line.indexOf(valueText);
+            if (valueStart !== -1) {
+              builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+            }
           }
         }
       }
@@ -155,20 +229,173 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   }
   
   private tokenizeNotation(parsed: ParsedDocument, builder: vscode.SemanticTokensBuilder): void {
+    // Use parsed structure when available
     for (const syllable of parsed.notation.syllables) {
       this.tokenizeSyllable(syllable, builder);
+    }
+    
+    // Additionally, do a regex-based pass for notation elements
+    // This catches things the parser might not have precise positions for
+    this.tokenizeNotationWithRegex(builder);
+  }
+  
+  private tokenizeNotationWithRegex(builder: vscode.SemanticTokensBuilder): void {
+    const text = this.parser?.['text'] || '';
+    const lines = text.split('\n');
+    
+    let inNotation = false;
+    
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+      const line = lines[lineIdx];
+      
+      // Check if we've passed the header separator
+      if (line.trim() === '%%') {
+        inNotation = true;
+        continue;
+      }
+      
+      if (!inNotation) {
+        continue;
+      }
+      
+      // Skip comments
+      if (line.trim().startsWith('%')) {
+        continue;
+      }
+      
+      // Find clefs: c1-c4, f1-f4, cb1-cb4, fb1-fb4
+      const clefRegex = /\b([cf]b?)([1-4])\b/g;
+      let match;
+      while ((match = clefRegex.exec(line)) !== null) {
+        const start = match.index;
+        const length = match[0].length;
+        builder.push(lineIdx, start, length, this.getTokenType('keyword'), this.getModifier('readonly'));
+      }
+      
+      // Find bars and divisions
+      const barRegex = /(::|:|;|,|`)/g;
+      while ((match = barRegex.exec(line)) !== null) {
+        const start = match.index;
+        const length = match[0].length;
+        builder.push(lineIdx, start, length, this.getTokenType('operator'), 0);
+      }
+      
+      // Find note groups in parentheses
+      const noteGroupRegex = /\(([^)]+)\)/g;
+      while ((match = noteGroupRegex.exec(line)) !== null) {
+        const content = match[1];
+        const groupStart = match.index;
+        
+        // Highlight parentheses
+        builder.push(lineIdx, groupStart, 1, this.getTokenType('operator'), 0);
+        builder.push(lineIdx, groupStart + match[0].length - 1, 1, this.getTokenType('operator'), 0);
+        
+        // Parse the content for notes
+        this.tokenizeNoteGroupContent(content, lineIdx, groupStart + 1, builder);
+      }
+    }
+  }
+  
+  private tokenizeNoteGroupContent(content: string, line: number, startChar: number, builder: vscode.SemanticTokensBuilder): void {
+    // Tokenize individual notes and elements within the group
+    let pos = 0;
+    
+    while (pos < content.length) {
+      const char = content[pos];
+      
+      // Note pitches (a-m)
+      if (/[a-m]/.test(char)) {
+        let tokenType = this.getTokenType('variable');
+        
+        // Check for special note shapes
+        // Look ahead for modifiers
+        let nextIdx = pos + 1;
+        let isSpecial = false;
+        
+        // Virga: note followed by v
+        if (nextIdx < content.length && content[nextIdx] === 'v') {
+          tokenType = this.getTokenType('class');
+          isSpecial = true;
+        }
+        // Quilisma: note followed by w
+        else if (nextIdx < content.length && content[nextIdx] === 'w') {
+          tokenType = this.getTokenType('decorator');
+          isSpecial = true;
+        }
+        // Oriscus: note followed by o
+        else if (nextIdx < content.length && content[nextIdx] === 'o') {
+          tokenType = this.getTokenType('decorator');
+          isSpecial = true;
+        }
+        // Stropha: note followed by s
+        else if (nextIdx < content.length && content[nextIdx] === 's') {
+          tokenType = this.getTokenType('macro');
+          isSpecial = true;
+        }
+        
+        // Highlight the note
+        builder.push(line, startChar + pos, 1, tokenType, 0);
+        
+        // Highlight the shape modifier if present
+        if (isSpecial) {
+          builder.push(line, startChar + nextIdx, 1, this.getTokenType('modifier'), 0);
+          pos = nextIdx;
+        }
+      }
+      // Accidentals
+      else if (char === 'x' || char === '#' || char === 'y') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('keyword'), 0);
+      }
+      // Liquescent modifier
+      else if (char === '~') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('type'), 0);
+      }
+      // Other modifiers
+      else if (/[._'`-]/.test(char)) {
+        builder.push(line, startChar + pos, 1, this.getTokenType('modifier'), 0);
+      }
+      // Space or special chars
+      else if (char === ' ' || char === '/' || char === '!') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('operator'), 0);
+      }
+      // NABC separator
+      else if (char === '|') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('operator'), 0);
+      }
+      // Custos
+      else if (char === 'z' || char === '+') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('parameter'), 0);
+      }
+      // Attributes in brackets
+      else if (char === '[' || char === ']') {
+        builder.push(line, startChar + pos, 1, this.getTokenType('parameter'), 0);
+      }
+      
+      pos++;
     }
   }
   
   private tokenizeSyllable(syllable: Syllable, builder: vscode.SemanticTokensBuilder): void {
+    const range = syllable.range;
+    
     // Tokenize clef if present
     if (syllable.clef) {
       this.tokenizeClef(syllable.clef, builder);
     }
     
-    // Tokenize syllable text (if we have range information)
-    // Note: Current parser doesn't preserve exact syllable text positions
-    // This would need parser enhancement
+    // Tokenize syllable text if we have the text
+    // The syllable text appears before the parentheses
+    if (syllable.text && range) {
+      // Syllable text is before the notes, so we need to find it
+      // This is approximate but works for most cases
+      const line = range.start.line;
+      const char = range.start.character;
+      
+      // Tokenize as regular text (use namespace for syllable text to make it distinctive)
+      if (syllable.text.length > 0) {
+        builder.push(line, char, syllable.text.length, this.getTokenType('namespace'), 0);
+      }
+    }
     
     // Tokenize note groups
     for (const noteGroup of syllable.notes) {
