@@ -1,65 +1,45 @@
 /**
  * Tree-sitter Integration Module
  * Integrates tree-sitter-gregorio parser with the LSP
+ * NOTE: Tree-sitter is disabled in bundled version to avoid native module issues
  */
 
+// import Parser from 'tree-sitter';
 import { ParsedDocument, ParseError, Position, Range } from '../parser/types';
 
-// Define Parser type locally to avoid import errors when tree-sitter is not installed
-type Parser = any;
-type Tree = any;
-type SyntaxNode = any;
-
-// Tree-sitter is disabled in the bundled LSP server due to native module complications
-// Native modules (like tree-sitter) are difficult to bundle and distribute in VS Code extensions:
-// - Require platform-specific compilation (Windows, macOS, Linux, ARM, x64)
-// - Cause bundling issues with esbuild/webpack
-// - Increase extension size significantly
-// - May fail to load due to missing dependencies or incorrect binaries
-//
-// The fallback TypeScript parser is robust and provides all necessary functionality
-// for GABC/NABC validation and parsing without these complications.
-
-let ParserClass: any;
 let Gregorio: any;
 
-// Explicitly disable tree-sitter loading in bundled version
-const ENABLE_TREE_SITTER = false;
-
-if (ENABLE_TREE_SITTER) {
-  try {
-    // Try to load tree-sitter and tree-sitter-gregorio
-    ParserClass = require('tree-sitter');
-    Gregorio = require('tree-sitter-gregorio');
-  } catch (error) {
-    // Both tree-sitter and tree-sitter-gregorio are optional
-    // The LSP will use the fallback parser instead
-  }
-}
+// Tree-sitter disabled in bundled version
+// try {
+//   // Try to load tree-sitter-gregorio
+//   Gregorio = require('tree-sitter-gregorio');
+// } catch (error) {
+//   console.warn('tree-sitter-gregorio not available, will use fallback parser');
+// }
 
 export class TreeSitterParser {
-  private parser: any = null;
+  private parser: any | null = null;
   private isAvailable: boolean = false;
 
   constructor() {
-    // Tree-sitter is disabled in bundled version
-    if (ENABLE_TREE_SITTER && ParserClass && Gregorio) {
-      try {
-        this.parser = new ParserClass();
-        this.parser.setLanguage(Gregorio);
-        this.isAvailable = true;
-      } catch (error) {
-        // Silently fall back to TypeScript parser
-        this.isAvailable = false;
-      }
-    }
+    // Tree-sitter disabled in bundled version
+    // if (Gregorio) {
+    //   try {
+    //     this.parser = new Parser();
+    //     this.parser.setLanguage(Gregorio);
+    //     this.isAvailable = true;
+    //   } catch (error) {
+    //     // Silently fall back to TypeScript parser
+    //     this.isAvailable = false;
+    //   }
+    // }
   }
 
   isTreeSitterAvailable(): boolean {
     return this.isAvailable;
   }
 
-  parse(text: string): Tree | null {
+  parse(text: string): any | null {
     if (!this.parser) {
       return null;
     }
@@ -72,10 +52,10 @@ export class TreeSitterParser {
     }
   }
 
-  extractErrors(tree: Tree): ParseError[] {
+  extractErrors(tree: any): ParseError[] {
     const errors: ParseError[] = [];
 
-    const visitNode = (node: SyntaxNode) => {
+    const visitNode = (node: any) => {
       if (node.hasError) {
         if (node.type === 'ERROR' || node.isMissing) {
           errors.push({
@@ -95,16 +75,16 @@ export class TreeSitterParser {
     return errors;
   }
 
-  findNodeAt(tree: Tree, position: Position): SyntaxNode | null {
+  findNodeAt(tree: any, position: Position): any | null {
     const point = { row: position.line, column: position.character };
     return tree.rootNode.descendantForPosition(point);
   }
 
-  getNodeText(node: SyntaxNode, text: string): string {
-    return text.substring(node.startIndex, node.endIndex);
+  getNodeText(node: any, text: string): string {
+    return text.slice(node.startIndex, node.endIndex);
   }
 
-  nodeToRange(node: SyntaxNode): Range {
+  nodeToRange(node: any): Range {
     return {
       start: {
         line: node.startPosition.row,
@@ -120,10 +100,10 @@ export class TreeSitterParser {
   /**
    * Extract headers from tree-sitter parse tree
    */
-  extractHeaders(tree: Tree, text: string): Map<string, string> {
+  extractHeaders(tree: any, text: string): Map<string, string> {
     const headers = new Map<string, string>();
-    
-    const findHeaders = (node: SyntaxNode) => {
+
+    const findHeaders = (node: any) => {
       if (node.type === 'header' || node.type === 'header_line') {
         const nameNode = node.childForFieldName('name');
         const valueNode = node.childForFieldName('value');
@@ -147,10 +127,10 @@ export class TreeSitterParser {
   /**
    * Extract notation syllables from tree-sitter parse tree
    */
-  extractNotation(tree: Tree, text: string): any[] {
+  extractNotation(tree: any, text: string): any[] {
     const syllables: any[] = [];
 
-    const findSyllables = (node: SyntaxNode) => {
+    const findSyllables = (node: any) => {
       if (node.type === 'syllable' || node.type === 'word') {
         const textNode = node.childForFieldName('text');
         const notesNode = node.childForFieldName('notes');
@@ -174,19 +154,19 @@ export class TreeSitterParser {
   /**
    * Check if a node represents a NABC section
    */
-  isNabcNode(node: SyntaxNode): boolean {
+  isNabcNode(node: any): boolean {
     return node.type === 'nabc_snippet' || node.type === 'nabc_content';
   }
 
   /**
    * Extract NABC snippets from a notes section
    */
-  extractNabcSnippets(node: SyntaxNode, text: string): string[] {
-    const snippets: string[] = [];
+  extractNabcSnippets(node: any, text: string): string[] {
+    const nabcSnippets: string[] = [];
 
-    const findNabc = (n: SyntaxNode) => {
+    const findNabc = (n: any) => {
       if (this.isNabcNode(n)) {
-        snippets.push(this.getNodeText(n, text));
+        nabcSnippets.push(this.getNodeText(n, text));
       }
 
       for (const child of n.children) {
@@ -195,7 +175,7 @@ export class TreeSitterParser {
     };
 
     findNabc(node);
-    return snippets;
+    return nabcSnippets;
   }
 }
 
