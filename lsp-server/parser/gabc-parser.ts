@@ -18,7 +18,7 @@ import {
   Range,
   Comment
 } from './types';
-import { parseNABCSnippets } from './nabc-parser';
+import { parseNABCSnippets, parseNABCSnippetsWithPositions } from './nabc-parser';
 
 export class GabcParser {
   private text: string;
@@ -27,6 +27,7 @@ export class GabcParser {
   private character: number;
   private errors: ParseError[];
   private comments: Comment[];
+  private headers: Map<string, string>;
 
   constructor(text: string) {
     this.text = text;
@@ -35,15 +36,16 @@ export class GabcParser {
     this.character = 0;
     this.errors = [];
     this.comments = [];
+    this.headers = new Map();
   }
 
   parse(): ParsedDocument {
-    const headers = this.parseHeaders();
+    this.headers = this.parseHeaders();
     this.skipWhitespaceAndComments(); // Skip whitespace after header separator
     const notation = this.parseNotation();
 
     return {
-      headers,
+      headers: this.headers,
       notation,
       comments: this.comments,
       errors: this.errors
@@ -186,16 +188,31 @@ export class GabcParser {
     const noteStart = this.getCurrentPosition();
     
     // Parse alternating GABC and NABC segments
-    // Pattern: (gabc|nabc|gabc|nabc|...)
+    // Pattern depends on nabc-lines header:
+    // - nabc-lines: 1 => (gabc|nabc|gabc|nabc|...)
+    // - nabc-lines: 2 => (gabc|nabc1|nabc2|gabc|nabc1|nabc2|...)
     // We concatenate all GABC content but track original positions for each character
     
+    const nabcLines = parseInt(this.headers?.get('nabc-lines') || '1', 10);
     const segments: Array<{type: 'gabc' | 'nabc', content: string, start: Position}> = [];
     let isNabc = false; // Start with GABC
+    let nabcCount = 0; // Count how many NABC segments we've added in current group
     
     while (this.pos < this.text.length && this.peek() !== ')') {
       if (this.peek() === '|') {
         this.advance(1); // Skip '|'
-        isNabc = !isNabc; // Toggle between GABC and NABC
+        
+        if (!isNabc) {
+          // Switching from GABC to first NABC
+          isNabc = true;
+          nabcCount = 0;
+        } else if (nabcCount >= nabcLines) {
+          // We've already added enough NABC segments, switch back to GABC
+          isNabc = false;
+          nabcCount = 0;
+        }
+        // else: stay in NABC mode for next segment
+        
         continue;
       }
       
@@ -208,11 +225,17 @@ export class GabcParser {
       }
       
       if (content.length > 0) {
+        const segmentType = isNabc ? 'nabc' : 'gabc';
         segments.push({
-          type: isNabc ? 'nabc' : 'gabc',
+          type: segmentType,
           content,
           start: segmentStart
         });
+        
+        // If we just added a NABC segment, increment the counter
+        if (segmentType === 'nabc') {
+          nabcCount++;
+        }
       }
     }
 
@@ -249,7 +272,7 @@ export class GabcParser {
 
     // Parse note group with position map
     if (gabcContent.trim().length > 0) {
-      const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap);
+      const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap, nabcSegments);
       if (noteGroup) {
         notes.push(noteGroup);
       }
@@ -624,7 +647,8 @@ export class GabcParser {
     gabc: string,
     nabc: string[],
     start: Position,
-    positionMap: Position[]
+    positionMap: Position[],
+    nabcSegments?: Array<{type: 'gabc' | 'nabc', content: string, start: Position}>
   ): NoteGroup | null {
     const notes: Note[] = [];
     const end = this.getCurrentPosition();

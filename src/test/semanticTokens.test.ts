@@ -340,4 +340,75 @@ nabc-lines: 1;
       });
     }
   });
+
+  test('Should handle NABC with nabc-lines: 2 correctly', async () => {
+    const text = `name: teste;
+nabc-lines: 2;
+%%
+(c4) Foo(e|ta|un) Bar(f|vi|un)`;
+    
+    // Create document
+    const doc = await vscode.workspace.openTextDocument({
+      content: text,
+      language: 'gabc'
+    });
+    
+    const provider = new GabcSemanticTokensProvider();
+    const tokens = provider.provideDocumentSemanticTokens(doc, new vscode.CancellationTokenSource().token) as vscode.SemanticTokens;
+    
+    assert.ok(tokens, 'Tokens should be provided');
+    assert.ok(tokens.data.length > 0, 'Should have tokens');
+    
+    const decoded = decodeSemanticTokens(tokens.data);
+    
+    console.log('\nAll tokens:');
+    decoded.forEach(token => {
+      printToken(token, text);
+    });
+    
+    // Find NABC tokens (class type)
+    const nabcTokens = decoded.filter(t => getTokenTypeName(t.type) === 'class');
+    
+    console.log('\nNABC tokens only:');
+    nabcTokens.forEach(token => {
+      const lines = text.split('\n');
+      const content = lines[token.line]?.substring(token.char, token.char + token.length) || '';
+      console.log(`  [${token.line}:${token.char}-${token.char + token.length}] "${content}" (type=${getTokenTypeName(token.type)})`);
+    });
+    
+    // Verify we have the correct NABC tokens
+    assert.ok(nabcTokens.length >= 4, `Should have at least 4 NABC tokens (ta, un, vi, un), got ${nabcTokens.length}`);
+    
+    // Find tokens for 'un' - should be tokenized as complete 'un', not 'u' and 'n' separately
+    const unTokens = nabcTokens.filter(token => {
+      const lines = text.split('\n');
+      const content = lines[token.line]?.substring(token.char, token.char + token.length) || '';
+      return content === 'un';
+    });
+    
+    console.log(`\nFound ${unTokens.length} tokens for 'un'`);
+    assert.strictEqual(unTokens.length, 2, 'Should have exactly 2 tokens for "un" (one in each note group)');
+    
+    // Verify each 'un' token has length 2 (not 1)
+    unTokens.forEach((token, index) => {
+      assert.strictEqual(token.length, 2, `Token ${index} for "un" should have length 2, got ${token.length}`);
+    });
+    
+    // Verify there are no isolated 'n' tokens in NABC positions
+    const isolatedNTokens = nabcTokens.filter(token => {
+      const lines = text.split('\n');
+      const content = lines[token.line]?.substring(token.char, token.char + token.length) || '';
+      return content === 'n' && token.length === 1;
+    });
+    
+    console.log(`\nFound ${isolatedNTokens.length} isolated 'n' tokens`);
+    if (isolatedNTokens.length > 0) {
+      console.log('Isolated n tokens:');
+      isolatedNTokens.forEach(token => {
+        printToken(token, text);
+      });
+    }
+    
+    assert.strictEqual(isolatedNTokens.length, 0, 'Should not have isolated "n" tokens - "un" should be tokenized as a single NABC glyph');
+  });
 });
