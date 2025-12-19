@@ -314,19 +314,19 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     
     let pos = 0;
     
-    // 1. Tokenize pitch [a-npA-NP] as variable (nome de variável)
+    // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.parameter/variable.name)
     if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
       builder.push(
         range.start.line,
         range.start.character + pos,
         1,
-        this.getTokenType('variable'),
+        this.getTokenType('parameter'),
         0
       );
       pos++;
     }
     
-    // 2. Tokenize note shape specifiers as keyword (const/let style)
+    // 2. Tokenize note shape specifiers as type (maps to storage.type)
     while (pos < noteText.length) {
       const char = noteText[pos];
       
@@ -337,7 +337,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('keyword'),
+          this.getTokenType('type'),
           0
         );
         pos++;
@@ -359,7 +359,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('keyword'),
+          this.getTokenType('type'),
           0
         );
         pos++;
@@ -519,13 +519,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         );
         pos++;
         
-        // Pitch letter (a-n or p) - highlight as variable (nome de variável)
+        // Pitch letter (a-n or p) - highlight as parameter (maps to variable.parameter/variable.name)
         if (pos < glyphText.length && /[a-np]/.test(glyphText[pos])) {
           builder.push(
             range.start.line,
             range.start.character + pos,
             1,
-            this.getTokenType('variable'),
+            this.getTokenType('parameter'),
             0
           );
           pos++;
