@@ -331,8 +331,8 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       const char = noteText[pos];
       
       // Note shape specifiers: w (virga), v (virga reversa), o (oriscus), 
-      // q (quilisma), s (stropha), r (cavum/linea), ~ (liquescent), < (augmentive), > (diminutive)
-      if (/[wvosqr~<>]/.test(char)) {
+      // q (quilisma), s (stropha), r (cavum), = (linea), ~ (liquescent), < (augmentive), > (diminutive)
+      if (/[wvosqr=~<>]/.test(char)) {
         builder.push(
           range.start.line,
           range.start.character + pos,
@@ -390,20 +390,63 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   
   private tokenizeAttribute(attr: GabcAttribute, builder: vscode.SemanticTokensBuilder): void {
     const range = attr.range;
+    const text = this.parser?.['text'] || '';
+    const lines = text.split('\n');
+    const attrText = lines[range.start.line]?.substring(range.start.character, range.end.character) || '';
     
-    // Highlight attribute name
+    // Parse attribute text to find positions
+    // Format: [name:value] or [name]
+    if (!attrText.startsWith('[')) {
+      return;
+    }
+    
+    // Skip opening bracket
+    let pos = 1;
+    
+    // Find attribute name
+    const nameStart = pos;
+    while (pos < attrText.length && attrText[pos] !== ':' && attrText[pos] !== ']') {
+      pos++;
+    }
+    const nameLength = pos - nameStart;
+    
+    // Highlight attribute name (entity.other.attribute-name style)
     builder.push(
       range.start.line,
-      range.start.character,
-      attr.name.length,
-      this.getTokenType('parameter'),
-      this.getModifier('readonly')
+      range.start.character + nameStart,
+      nameLength,
+      this.getTokenType('property'),
+      0
     );
     
-    // Highlight attribute value if present
-    if (attr.value) {
-      // Value position would need to be calculated
-      // This requires parser enhancement
+    // Highlight colon if present
+    if (pos < attrText.length && attrText[pos] === ':') {
+      builder.push(
+        range.start.line,
+        range.start.character + pos,
+        1,
+        this.getTokenType('operator'),
+        0
+      );
+      pos++; // Skip colon
+      
+      // Find attribute value
+      const valueStart = pos;
+      while (pos < attrText.length && attrText[pos] !== ']') {
+        pos++;
+      }
+      const valueLength = pos - valueStart;
+      
+      if (valueLength > 0) {
+        // Highlight attribute value (string.quoted style)
+        builder.push(
+          range.start.line,
+          range.start.character + valueStart,
+          valueLength,
+          this.getTokenType('string'),
+          0
+        );
+      }
     }
   }
   
