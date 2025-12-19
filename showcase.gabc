@@ -161,15 +161,54 @@ an(c4)o(d)ther(e) clef(f) (::)
 % SECTION 9: ATTRIBUTES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-(c4) Shape(gh[shape:stroke]i) at(j)tri(k)bute(l) (::)
+% Shape modifier attributes
+(c4) Shape(gh[shape:stroke]i) stro(j)ke(k) (::)
 
-(c4) Cho(d[cs:vi]e)ral(f[cn:pu]) signs(g) (::)
+% Choral signs and NABC notation
+(c4) Cho(d[cs:sign]e)ral(f[cn:pu]) signs(g[cn:clhg]) (::)
 
-(c4) Bra(d[ob:0;2mm]e[ub:1{]f[ub:1}])ces(g) (::)
+(c4) NABC(d[cn:viM]e) with(f[cs:text]) mo(g[cn:su2])di(h)fiers(i) (::)
 
-(c4) Point(d[ocb:1{]e[ocb:1}])and(f)brace(g) (::)
+% Braces (round and curly)
+(c4) Round(d[ob:0;2mm]e[ub:1{]f[ub:1}])bra(g)ces(h) (::)
 
-(c4) Tex(d[alt:Alternative])tual(e) al(f)ter(g)na(h)tive(i) (::)
+(c4) Cur(d[ocb:1{]e[ocb:1}])ly(f) brace(g) (::)
+
+(c4) Ac(d[ocba:1{]e[ocba:1}])cent(f) brace(g) (::)
+
+% Above lines text
+(c4) A(d[alt:Above])bove(e) li(f)nes(g) (::)
+
+% LaTeX verbatim attributes (nv, gv, ev accept LaTeX macros)
+(c4) Note(d[nv:\textbf{bold}]e) ver(f)ba(g)tim(h) (::)
+
+(c4) Glyph(de[gv:\textit{italic}]f) ver(g)ba(h)tim(i) (::)
+
+(c4) Ele(d)ment(e) (::[ev:\hspace{5mm}]) ver(f)ba(g)tim(h) (::)
+
+% Stem length control
+(c4) Short(d[ll:0]e) long(d[ll:1]f) stem(g) (::)
+
+% Custom ledger lines
+(c4) Le(p[oll:1;2mm]q)dger(r) li(a[ull:1;2mm]b)nes(c) (::)
+
+% Ledger line with braces
+(c4) Led(p[oll:1{]q[oll:]}r) ger(g) (::)
+
+% Simple slurs
+(c4) O(d[oslur:0;4mm,2mm]e)ver(f) slu(g[uslur:0;4mm,2mm]h)red(i) (::)
+
+% Slurs with braces
+(c4) Slur(d[oslur:0{]ef[oslur:0}]g) bra(h)ces(i) (::)
+
+% Horizontal episema positioning
+(c4) E(d_[oh:m]e_[oh:l+0.5mm]f_[uh:h-0.3mm])pi(g)se(h)ma(i) (::)
+
+% Episema blocks
+(c4) Block(d[oh:{]e f[oh:}]g) e(h)pi(i)se(j)ma(k) (::)
+
+% No custos
+(c4) No(d) cus(e)tos(f) [nocustos] (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 10: COMPLEX NEUMES

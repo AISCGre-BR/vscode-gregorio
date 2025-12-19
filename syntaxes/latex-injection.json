@@ -1,0 +1,74 @@
+{
+  "scopeName": "latex.injection",
+  "injectionSelector": "L:source.gabc",
+  "patterns": [
+    {
+      "comment": "LaTeX injection for nv attribute",
+      "begin": "(\\[)(nv)(:)",
+      "end": "(\\])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.attribute.begin.gabc" },
+        "2": { "name": "entity.other.attribute-name.gabc" },
+        "3": { "name": "punctuation.separator.gabc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.attribute.end.gabc" }
+      },
+      "contentName": "meta.embedded.inline.latex",
+      "patterns": [
+        { "include": "text.tex.latex" }
+      ]
+    },
+    {
+      "comment": "LaTeX injection for gv attribute",
+      "begin": "(\\[)(gv)(:)",
+      "end": "(\\])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.attribute.begin.gabc" },
+        "2": { "name": "entity.other.attribute-name.gabc" },
+        "3": { "name": "punctuation.separator.gabc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.attribute.end.gabc" }
+      },
+      "contentName": "meta.embedded.inline.latex",
+      "patterns": [
+        { "include": "text.tex.latex" }
+      ]
+    },
+    {
+      "comment": "LaTeX injection for ev attribute",
+      "begin": "(\\[)(ev)(:)",
+      "end": "(\\])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.attribute.begin.gabc" },
+        "2": { "name": "entity.other.attribute-name.gabc" },
+        "3": { "name": "punctuation.separator.gabc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.attribute.end.gabc" }
+      },
+      "contentName": "meta.embedded.inline.latex",
+      "patterns": [
+        { "include": "text.tex.latex" }
+      ]
+    },
+    {
+      "comment": "LaTeX injection for alt attribute",
+      "begin": "(\\[)(alt)(:)",
+      "end": "(\\])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.attribute.begin.gabc" },
+        "2": { "name": "entity.other.attribute-name.gabc" },
+        "3": { "name": "punctuation.separator.gabc" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.attribute.end.gabc" }
+      },
+      "contentName": "meta.embedded.inline.latex",
+      "patterns": [
+        { "include": "text.tex.latex" }
+      ]
+    }
+  ]
+}

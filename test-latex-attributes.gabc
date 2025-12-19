@@ -1,0 +1,61 @@
+name: LaTeX Attributes Test;
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LATEX VERBATIM ATTRIBUTES TEST
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Note-level verbatim (nv) - LaTeX code attached to a single note
+(c4) Bo(d[nv:\textbf{bold}]e)ld(f) text(g) (::)
+
+(c4) I(d[nv:\textit{italic}]e)ta(f)lic(g) (::)
+
+(c4) Co(d[nv:\textcolor{red}{colored}]e)lor(f) text(g) (::)
+
+(c4) Em(d[nv:\emph{emphasis}]e)pha(f)sis(g) (::)
+
+(c4) Un(d[nv:\underline{underlined}]e)der(f)line(g) (::)
+
+% Glyph-level verbatim (gv) - LaTeX code attached to a glyph (multiple notes)
+(c4) Glyph(de[gv:\textbf{bold glyph}]f) bold(g) (::)
+
+(c4) Glyph(de[gv:\textit{italic glyph}]f) italic(g) (::)
+
+(c4) Glyph(de[gv:\textsc{Small Caps}]f) caps(g) (::)
+
+% Element-level verbatim (ev) - LaTeX code attached to entire element
+(c4) Spa(d)cing(e) (::[ev:\hspace{5mm}]) test(f) (::)
+
+(c4) Ver(d)ti(e)cal(f) (::[ev:\vspace{2mm}]) space(g) (::)
+
+(c4) Cus(d)tom(e) (::[ev:\GreStar]) mark(f) (::)
+
+% Above lines text with LaTeX (alt)
+(c4) A(d[alt:\textit{above}]e)bove(f) text(g) (::)
+
+(c4) Mul(d[alt:\textbf{Bold} \textit{Italic}]e)ti(f)ple(g) (::)
+
+(c4) Co(d[alt:\textcolor{blue}{Colored}]e)lo(f)red(g) (::)
+
+% Complex LaTeX examples
+(c4) Ma(d[nv:\begin{small}text\end{small}]e)th(f) env(g) (::)
+
+(c4) Nest(d[nv:\textbf{\textit{nested}}]e)ed(f) tags(g) (::)
+
+(c4) Cmd(d[gv:\makebox[2em][c]{center}]e)box(f) (::)
+
+% Multiple attributes on same note
+(c4) Mul(d[nv:\textbf{bold}][cn:pu]e)ti(f)ple(g) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NON-LATEX ATTRIBUTES (for comparison)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% These should NOT receive LaTeX highlighting
+(c4) Cho(d[cs:sign]e)ral(f) sign(g) (::)
+
+(c4) Bra(d[ob:0;2mm]e)ces(f) (::)
+
+(c4) Stem(d[ll:0]e) length(f) (::)
+
+(c4) No(d) cus(e)tos(f) [nocustos] (::)

@@ -1,0 +1,39 @@
+name: GABC Attributes Visual Test;
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GABC ATTRIBUTES - Visual Highlight Test
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Shape attribute
+(c4) Shape(gh[shape:stroke]i) at(j)tri(k)bute(l) (::)
+
+% Choral signs (cs uses string highlight, cn uses NABC highlighting)
+(c4) Cho(d[cs:sign]e)ral(f[cn:pu])signs(g[cn:clhg])with(h[cn:to2])NABC(i) (::)
+
+% More cn examples with various NABC glyphs
+(c4) Basic(d[cn:pu])glyph(e[cn:vi])test(f) (::)
+
+(c4) Modified(d[cn:viM])glyph(e[cn:clS])test(f) (::)
+
+(c4) With(d[cn:clhg])pitch(e[cn:tohd])descriptor(f) (::)
+
+(c4) Sub(d[cn:su2])punctis(e[cn:pp3])test(f) (::)
+
+% Braces with point and bar
+(c4) Bra(d[ob:0;2mm]e[ub:1{]f[ub:1}])ces(g) (::)
+
+% Point and brace
+(c4) Point(d[ocb:1{]e[ocb:1}])and(f)brace(g) (::)
+
+% Textual alternative (should be string, not NABC)
+(c4) Tex(d[alt:Alternative])tual(e) al(f)ter(g)na(h)tive(i) (::)
+
+% No custos
+(c4) No(g) cus(h)tos(i[nocustos]) here(j) (::)
+
+% Multiple attributes on same note, including cn
+(c4) Mul(d[cs:vi][cn:pu][alt:Text])ti(e)ple(f) (::)
+
+% Complex combinations with cn
+(c4) Com(d[ob:0;2mm][cn:clhg])plex(e[ub:1{][cn:to2])notes(f[ub:1}]) (::)

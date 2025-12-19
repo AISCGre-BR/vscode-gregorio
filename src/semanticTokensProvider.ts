@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { GabcParser } from '../lsp-server/parser/gabc-parser';
+import { parseNABCSnippet } from '../lsp-server/parser/nabc-parser';
 import {
   ParsedDocument,
   Syllable,
@@ -354,6 +355,15 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     while (pos < gabcText.length) {
       const char = gabcText[pos];
       
+      // Skip attributes - they will be tokenized separately by tokenizeAttribute()
+      if (char === '[') {
+        const closingBracket = gabcText.indexOf(']', pos);
+        if (closingBracket !== -1) {
+          pos = closingBracket + 1;
+          continue;
+        }
+      }
+      
       // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)
       if (char === 'r' && pos + 1 < gabcText.length && /[1-8]/.test(gabcText[pos + 1])) {
         builder.push(
@@ -520,6 +530,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       pos++;
     }
     const nameLength = pos - nameStart;
+    const attributeName = attrText.substring(nameStart, nameStart + nameLength);
     
     // Highlight attribute name (entity.other.attribute-name style)
     builder.push(
@@ -549,14 +560,35 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       const valueLength = pos - valueStart;
       
       if (valueLength > 0) {
-        // Highlight attribute value (string.quoted style)
-        builder.push(
-          range.start.line,
-          range.start.character + valueStart,
-          valueLength,
-          this.getTokenType('string'),
-          0
-        );
+        const attributeValue = attrText.substring(valueStart, valueStart + valueLength);
+        
+        // Special case: 'cn' attribute contains NABC code - tokenize as NABC
+        if (attributeName === 'cn') {
+          // Parse the NABC value
+          const nabcStartPos = {
+            line: range.start.line,
+            character: range.start.character + valueStart
+          };
+          const nabcGlyphs = parseNABCSnippet(attributeValue, nabcStartPos);
+          
+          // Tokenize each NABC glyph
+          for (const glyph of nabcGlyphs) {
+            this.tokenizeNABCGlyph(glyph, builder);
+          }
+        } else if (['nv', 'gv', 'ev', 'alt'].includes(attributeName)) {
+          // Attributes that accept LaTeX/TeX code
+          // Do NOT add semantic tokens here - let TextMate grammar handle LaTeX injection
+          // Semantic tokens have higher precedence and would override the LaTeX syntax
+        } else {
+          // Default: Highlight attribute value as string (string.quoted style)
+          builder.push(
+            range.start.line,
+            range.start.character + valueStart,
+            valueLength,
+            this.getTokenType('string'),
+            0
+          );
+        }
       }
     }
   }

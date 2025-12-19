@@ -45,6 +45,11 @@
         "language": "gabc",
         "scopeName": "source.gabc",
         "path": "./syntaxes/gabc.tmLanguage.json"
+      },
+      {
+        "scopeName": "latex.injection",
+        "path": "./syntaxes/latex-injection.json",
+        "injectTo": ["source.gabc"]
       }
     ],
     "commands": [

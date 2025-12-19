@@ -194,24 +194,75 @@
     "attribute": {
       "patterns": [
         {
-          "name": "entity.other.attribute-name.gabc",
+          "comment": "LaTeX verbatim attributes: nv (note), gv (glyph), ev (element)",
+          "name": "meta.attribute.verbatim.gabc",
+          "begin": "\\[(nv|gv|ev):",
+          "end": "\\]",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.attribute.begin.gabc" },
+            "1": { "name": "entity.other.attribute-name.gabc" }
+          },
+          "endCaptures": { "0": { "name": "punctuation.definition.attribute.end.gabc" } },
+          "patterns": [
+            {
+              "name": "meta.embedded.inline.latex",
+              "contentName": "source.latex",
+              "begin": "(?<=:)",
+              "end": "(?=\\])",
+              "patterns": [
+                { "include": "text.tex.latex" }
+              ]
+            }
+          ]
+        },
+        {
+          "comment": "Above lines text attribute with LaTeX support",
+          "name": "meta.attribute.alt.gabc",
+          "begin": "\\[(alt):",
+          "end": "\\]",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.attribute.begin.gabc" },
+            "1": { "name": "entity.other.attribute-name.gabc" }
+          },
+          "endCaptures": { "0": { "name": "punctuation.definition.attribute.end.gabc" } },
+          "patterns": [
+            {
+              "name": "meta.embedded.inline.latex",
+              "contentName": "source.latex",
+              "begin": "(?<=:)",
+              "end": "(?=\\])",
+              "patterns": [
+                { "include": "text.tex.latex" }
+              ]
+            }
+          ]
+        },
+        {
+          "comment": "Generic attributes",
+          "name": "meta.attribute.gabc",
           "begin": "\\[",
           "end": "\\]",
           "beginCaptures": { "0": { "name": "punctuation.definition.attribute.begin.gabc" } },
           "endCaptures": { "0": { "name": "punctuation.definition.attribute.end.gabc" } },
           "patterns": [
             {
-              "name": "entity.name.function.gabc",
-              "match": "\\b(nv|gv|ev|alt|oh|uh|ob|ub|ocb|ocba|oll|ull|oslur|uslur|ll|cs|cn|nocustos|shape|stroke)\\b"
+              "comment": "Attribute name and value pattern: name:value",
+              "match": "([a-z]+)(:)([^\\]]+)",
+              "captures": {
+                "1": { "name": "entity.other.attribute-name.gabc" },
+                "2": { "name": "punctuation.separator.gabc" },
+                "3": { "name": "string.unquoted.gabc" }
+              }
+            },
+            {
+              "comment": "Attribute name only (no value): name",
+              "match": "[a-z]+",
+              "name": "entity.other.attribute-name.gabc"
             },
             {
               "name": "string.quoted.single.gabc",
               "begin": "'",
               "end": "'"
-            },
-            {
-              "name": "punctuation.separator.gabc",
-              "match": ":"
             }
           ]
         }
