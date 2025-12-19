@@ -405,33 +405,131 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
     
     const range = glyph.range;
+    const text = this.parser?.['text'] || '';
+    const lines = text.split('\n');
+    const glyphText = lines[range.start.line]?.substring(range.start.character, range.end.character) || '';
     
-    // Determine token type based on glyph type
-    let tokenType = this.getTokenType('class');
+    // Track current position within the glyph text
+    let pos = 0;
     
-    // Basic glyphs are highlighted as constants (like tree-sitter)
-    if (glyph.basicGlyph) {
-      tokenType = this.getTokenType('class');
-    }
-    
-    // Subpunctis/Prepunctis are highlighted as keywords
+    // 1. Tokenize subpunctis/prepunctis (if present)
     if (glyph.subpunctis || glyph.prepunctis) {
-      tokenType = this.getTokenType('keyword');
+      // 'pp' or 'su' prefix - highlight as class (nome de classe)
+      const prefix = glyphText.substring(0, 2);
+      if (prefix === 'pp' || prefix === 'su') {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          2,
+          this.getTokenType('class'),
+          this.getModifier('readonly')
+        );
+        pos += 2;
+        
+        // Modifier letter (t, n, z, etc.) - highlight as string (valor de atributo)
+        if (pos < glyphText.length && /[a-z]/.test(glyphText[pos])) {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('string'),
+            0
+          );
+          pos++;
+        }
+        
+        // Numeric value - highlight as number
+        while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
+          const numStart = pos;
+          while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
+            pos++;
+          }
+          builder.push(
+            range.start.line,
+            range.start.character + numStart,
+            pos - numStart,
+            this.getTokenType('number'),
+            0
+          );
+        }
+      }
+    } else if (glyph.basicGlyph) {
+      // 2. Tokenize basic glyph (2 letters) - highlight as keyword
+      const basicGlyphText = glyphText.substring(pos, pos + 2);
+      if (basicGlyphText.length === 2) {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          2,
+          this.getTokenType('keyword'),
+          this.getModifier('readonly')
+        );
+        pos += 2;
+      }
+      
+      // 3. Tokenize modifiers (S, G, M, -, >, ~, variant numbers)
+      while (pos < glyphText.length) {
+        const char = glyphText[pos];
+        
+        if (/[SGM\->~]/.test(char)) {
+          // Modifier character - highlight as operator
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('operator'),
+            0
+          );
+          pos++;
+        } else if (/[1-9]/.test(char)) {
+          // Variant number - highlight as number
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('number'),
+            0
+          );
+          pos++;
+        } else if (char === 'h') {
+          // 4. Pitch descriptor starts with 'h'
+          break;
+        } else if (char === 'l') {
+          // 5. Significant letters start with 'l'
+          break;
+        } else {
+          // Unknown character, skip
+          pos++;
+        }
+      }
+      
+      // 4. Tokenize pitch descriptor (h + pitch letter)
+      if (pos < glyphText.length && glyphText[pos] === 'h') {
+        // 'h' - highlight as function (nome de função)
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('function'),
+          0
+        );
+        pos++;
+        
+        // Pitch letter (a-n or p) - highlight as parameter (parâmetro de função)
+        if (pos < glyphText.length && /[a-np]/.test(glyphText[pos])) {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('parameter'),
+            0
+          );
+          pos++;
+        }
+      }
     }
     
-    // Highlight the entire glyph descriptor
-    builder.push(
-      range.start.line,
-      range.start.character,
-      range.end.character - range.start.character,
-      tokenType,
-      this.getModifier('readonly')
-    );
-    
-    // Highlight modifiers if we have their positions
-    // This would require more detailed position tracking in the parser
-    
-    // Highlight significant letters if present
+    // 5. Highlight significant letters if present
     if (glyph.significantLetters && glyph.significantLetters.length > 0) {
       for (const letter of glyph.significantLetters) {
         if (letter.range) {
