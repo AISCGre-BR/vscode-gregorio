@@ -437,33 +437,63 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       
       // Extra symbols: . (punctum mora), ' (ictus/vertical episema), _ (horizontal episema), ` (rare symbols)
       if (char === '.' || char === "'" || char === '_' || char === '`') {
-        let symbolLength = 1;
-        
         // Check for double punctum mora (..)
         if (char === '.' && pos + 1 < noteText.length && noteText[pos + 1] === '.') {
-          symbolLength = 2;
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2,
+            this.getTokenType('variable'),
+            0
+          );
+          pos += 2;
         }
-        // Check for ictus with position ('0, '1)
-        else if (char === "'" && pos + 1 < noteText.length && /[01]/.test(noteText[pos + 1])) {
-          symbolLength = 2;
+        // Ictus, episema, backtick - tokenize symbol separately from position digit
+        else {
+          // Tokenize the symbol itself
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('variable'),
+            0
+          );
+          pos++;
+          
+          // Check for position digit after ' (ictus: 0, 1)
+          if (char === "'" && pos < noteText.length && /[01]/.test(noteText[pos])) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('number'),
+              0
+            );
+            pos++;
+          }
+          // Check for position digit after _ (episema: 0-5)
+          else if (char === '_' && pos < noteText.length && /[0-5]/.test(noteText[pos])) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('number'),
+              0
+            );
+            pos++;
+          }
+          // Check for position digit after ` (backtick: 0, 1)
+          else if (char === '`' && pos < noteText.length && /[01]/.test(noteText[pos])) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('number'),
+              0
+            );
+            pos++;
+          }
         }
-        // Check for horizontal episema with position (_0 to _5)
-        else if (char === '_' && pos + 1 < noteText.length && /[0-5]/.test(noteText[pos + 1])) {
-          symbolLength = 2;
-        }
-        // Check for backtick combinations like `0
-        else if (char === '`' && pos + 1 < noteText.length && /[01]/.test(noteText[pos + 1])) {
-          symbolLength = 2;
-        }
-        
-        builder.push(
-          range.start.line,
-          range.start.character + pos,
-          symbolLength,
-          this.getTokenType('variable'),
-          0
-        );
-        pos += symbolLength;
         continue;
       }
       
