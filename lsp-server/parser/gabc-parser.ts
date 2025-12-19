@@ -383,6 +383,51 @@ export class GabcParser {
         }
       }
 
+      // Check for initio debilis prefix (-)
+      if (char === '-' && i + 1 < gabc.length && /[a-np]/i.test(gabc[i + 1])) {
+        const noteStart: Position = {
+          line: start.line,
+          character: start.character + i
+        };
+        const isUpperCase = /[A-NP]/.test(gabc[i + 1]);
+        const pitch = gabc[i + 1].toLowerCase();
+        let shape = isUpperCase ? NoteShape.PunctumInclinatum : NoteShape.Punctum;
+        const modifiers: any[] = [{ type: ModifierType.InitioDebilis }];
+        let noteLength = 2; // '-' + pitch
+
+        i += 2; // Skip '-' and pitch
+
+        // Parse shape modifiers and note modifiers (same logic as regular notes)
+        while (i < gabc.length) {
+          const mod = gabc[i];
+
+          // Leaning modifiers for punctum inclinatum
+          if (isUpperCase && /[012]/.test(mod)) {
+            noteLength++;
+            i++;
+            continue;
+          }
+
+          // Other modifiers like alterations, episema, etc. - same as below
+          // For now, break to keep it simple
+          break;
+        }
+
+        const noteEnd: Position = {
+          line: start.line,
+          character: start.character + noteLength
+        };
+
+        notes.push({
+          pitch,
+          shape,
+          modifiers,
+          range: { start: noteStart, end: noteEnd }
+        });
+
+        continue;
+      }
+
       // Check for pitch letters (lowercase or uppercase)
       if (/[a-np]/i.test(char)) {
         const noteStart: Position = {
@@ -562,11 +607,6 @@ export class GabcParser {
               noteLength++;
               i++;
             }
-          } else if (mod === '-') {
-            // Initio debilis (must be before the note, but we handle it here)
-            modifiers.push({ type: ModifierType.InitioDebilis });
-            noteLength++;
-            i++;
           }
           
           // Liquescence modifiers
@@ -706,6 +746,46 @@ export class GabcParser {
         }
       }
 
+      // Check for initio debilis prefix (-)
+      if (char === '-' && i + 1 < gabc.length && /[a-np]/i.test(gabc[i + 1])) {
+        const noteStartIndex = i;
+        const noteStart = getPosition(i);
+        const isUpperCase = /[A-NP]/.test(gabc[i + 1]);
+        const pitch = gabc[i + 1].toLowerCase();
+        let shape = isUpperCase ? NoteShape.PunctumInclinatum : NoteShape.Punctum;
+        const modifiers: any[] = [{ type: ModifierType.InitioDebilis }];
+        let noteLength = 2; // '-' + pitch
+
+        i += 2; // Skip '-' and pitch
+
+        // Parse shape modifiers and note modifiers (simple version)
+        while (i < gabc.length) {
+          const mod = gabc[i];
+
+          // Leaning modifiers for punctum inclinatum
+          if (isUpperCase && /[012]/.test(mod)) {
+            noteLength++;
+            i++;
+            continue;
+          }
+
+          // For now, break to avoid complexity
+          break;
+        }
+
+        const noteEndIndex = noteStartIndex + noteLength;
+        const noteEnd = getPosition(noteEndIndex);
+
+        notes.push({
+          pitch,
+          shape,
+          modifiers,
+          range: { start: noteStart, end: noteEnd }
+        });
+
+        continue;
+      }
+
       // Check for pitch letters (lowercase or uppercase)
       if (/[a-np]/i.test(char)) {
         const noteStartIndex = i;
@@ -742,6 +822,11 @@ export class GabcParser {
             shape = NoteShape.Oriscus;
             noteLength++;
             i++;
+            // Check for orientation (0=downwards, 1=upwards)
+            if (i < gabc.length && /[01]/.test(gabc[i])) {
+              noteLength++;
+              i++;
+            }
           } else if (mod === 'w') {
             shape = NoteShape.Quilisma;
             noteLength++;

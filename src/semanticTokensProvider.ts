@@ -314,6 +314,18 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     
     let pos = 0;
     
+    // 0. Check for initio debilis prefix (-)
+    if (pos < noteText.length && noteText[pos] === '-') {
+      builder.push(
+        range.start.line,
+        range.start.character + pos,
+        1,
+        this.getTokenType('class'),
+        0
+      );
+      pos++;
+    }
+    
     // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.name via semanticTokenScopes)
     if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
       const isUpperCase = /[A-NP]/.test(noteText[pos]);
@@ -345,6 +357,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       
       // Note shape specifiers: w (virga), v (virga reversa), o/O (oriscus/oriscus scapus), 
       // q (quilisma), s (stropha), r (cavum), = (linea), ~ (liquescent), < (augmentive), > (diminutive)
+      // Note: - (initio debilis) is handled as prefix before pitch
       if (/[wvosqr=~<>O]/.test(char)) {
         const isOriscus = char === 'o' || char === 'O';
         
