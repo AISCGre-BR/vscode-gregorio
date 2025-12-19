@@ -1,0 +1,35 @@
+/**
+ * Visual test for extra symbols highlighting
+ * Open this file in VS Code with the extension loaded
+ */
+
+name: Extra Symbols Visual Test;
+%%
+
+% Case 1: Ictus followed by episema with digit
+(c4) Test(g'_0) (::)
+%    Expected: g (pitch), ' (ictus/variable), _ (episema/variable), 0 (number)
+
+% Case 2: Episema with digit followed by ictus
+(c4) Test(g_0') (::)
+%    Expected: g (pitch), _ (episema/variable), 0 (number), ' (ictus/variable)
+
+% Case 3: Episema followed by ictus (no digit)
+(c4) Test(g_') (::)
+%    Expected: g (pitch), _ (episema/variable), ' (ictus/variable)
+
+% Case 4: Ictus followed by episema (no digit)
+(c4) Test(g'_) (::)
+%    Expected: g (pitch), ' (ictus/variable), _ (episema/variable)
+
+% Case 5: Multiple combinations
+(c4) A(j'_0)B(k_')C(l_0')D(m'_) (::)
+
+% Case 6: With episema position indicators
+(c4) E(n_0)F(o_1)G(p_2)H(q_3)I(r_4)J(s_5) (::)
+
+% Case 7: With ictus position indicators
+(c4) K(a'0)L(b'1) (::)
+
+% Case 8: Complex combinations
+(c4) Test(g'_0h_'i_1'j'_k_2) (::)

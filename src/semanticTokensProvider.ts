@@ -458,10 +458,11 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             this.getTokenType('variable'),
             0
           );
+          const currentSymbol = char;
           pos++;
           
           // Check for position digit after ' (ictus: 0, 1)
-          if (char === "'" && pos < noteText.length && /[01]/.test(noteText[pos])) {
+          if (currentSymbol === "'" && pos < noteText.length && /[01]/.test(noteText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -472,7 +473,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             pos++;
           }
           // Check for position digit after _ (episema: 0-5)
-          else if (char === '_' && pos < noteText.length && /[0-5]/.test(noteText[pos])) {
+          if (currentSymbol === '_' && pos < noteText.length && /[0-5]/.test(noteText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -483,7 +484,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             pos++;
           }
           // Check for position digit after ` (backtick: 0, 1)
-          else if (char === '`' && pos < noteText.length && /[01]/.test(noteText[pos])) {
+          if (currentSymbol === '`' && pos < noteText.length && /[01]/.test(noteText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
