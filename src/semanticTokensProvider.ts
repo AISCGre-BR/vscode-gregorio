@@ -320,20 +320,20 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         range.start.line,
         range.start.character + pos,
         1,
-        this.getTokenType('class'),
+        this.getTokenType('parameter'),
         0
       );
       pos++;
     }
     
-    // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.name via semanticTokenScopes)
+    // 1. Tokenize pitch [a-npA-NP] as class (maps to variable.language via semanticTokenScopes)
     if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
       const isUpperCase = /[A-NP]/.test(noteText[pos]);
       builder.push(
         range.start.line,
         range.start.character + pos,
         1,
-        this.getTokenType('parameter'),
+        this.getTokenType('class'),
         0
       );
       pos++;
@@ -387,7 +387,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           range.start.line,
           range.start.character + pos,
           shapeLength,
-          this.getTokenType('class'),
+          this.getTokenType('parameter'),
           0
         );
         pos += shapeLength;
