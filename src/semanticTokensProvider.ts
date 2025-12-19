@@ -308,63 +308,67 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   
   private tokenizeNote(note: Note, builder: vscode.SemanticTokensBuilder): void {
     const range = note.range;
+    const text = this.parser?.['text'] || '';
+    const lines = text.split('\n');
+    const noteText = lines[range.start.line]?.substring(range.start.character, range.end.character) || '';
     
-    // Determine token type based on note shape
-    // Following tree-sitter-gregorio conventions:
-    // - Basic pitches: constant.builtin
-    // - Special shapes (virga, quilisma, oriscus, stropha): type
-    // - Alterations (flat, sharp, natural): operator
-    let tokenType = this.getTokenType('variable'); // Default for basic pitch
-    let modifier = 0;
+    let pos = 0;
     
-    switch (note.shape) {
-      case NoteShape.Virga:
-      case NoteShape.VirgaReversa:
-        // Virga shapes - highlight as type (like tree-sitter @type)
-        tokenType = this.getTokenType('type');
-        break;
-      case NoteShape.Quilisma:
-      case NoteShape.Oriscus:
-        // Special neume shapes - highlight as type (like tree-sitter @type)
-        tokenType = this.getTokenType('type');
-        break;
-      case NoteShape.Stropha:
-        // Stropha - highlight as type (like tree-sitter @type)
-        tokenType = this.getTokenType('type');
-        break;
-      case NoteShape.Liquescent:
-        // Liquescence - highlight as type with abstract modifier
-        tokenType = this.getTokenType('type');
-        modifier = this.getModifier('abstract');
-        break;
-      case NoteShape.Cavum:
-      case NoteShape.Linea:
-        // Cavum/Linea - highlight as type
-        tokenType = this.getTokenType('type');
-        break;
-      case NoteShape.Flat:
-      case NoteShape.Sharp:
-      case NoteShape.Natural:
-        // Alterations - highlight as operator (like tree-sitter @operator)
-        tokenType = this.getTokenType('operator');
-        break;
-      case NoteShape.Punctum:
-      case NoteShape.PunctumInclinatum:
-      default:
-        // Basic punctum - highlight pitch as variable
-        tokenType = this.getTokenType('variable');
-        break;
+    // 1. Tokenize pitch [a-npA-NP] as variable (nome de variável)
+    if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
+      builder.push(
+        range.start.line,
+        range.start.character + pos,
+        1,
+        this.getTokenType('variable'),
+        0
+      );
+      pos++;
     }
     
-    // Highlight the entire note (pitch + modifiers)
-    const length = range.end.character - range.start.character;
-    builder.push(
-      range.start.line,
-      range.start.character,
-      length,
-      tokenType,
-      modifier
-    );
+    // 2. Tokenize note shape specifiers as keyword (const/let style)
+    while (pos < noteText.length) {
+      const char = noteText[pos];
+      
+      // Note shape specifiers: w (virga), v (virga reversa), o (oriscus), 
+      // q (quilisma), s (stropha), r (cavum/linea), < (liquescence)
+      if (/[wvosqr<>]/.test(char)) {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('keyword'),
+          0
+        );
+        pos++;
+      }
+      // Alterations: x (flat), y (natural), # (sharp)
+      else if (/[xy#]/.test(char)) {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('operator'),
+          0
+        );
+        pos++;
+      }
+      // Punctum inclinatum
+      else if (char === 'G' || char === 'O') {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('keyword'),
+          0
+        );
+        pos++;
+      }
+      // Other modifiers continue with default handling
+      else {
+        pos++;
+      }
+    }
   }
   
   private tokenizeAttribute(attr: GabcAttribute, builder: vscode.SemanticTokensBuilder): void {
@@ -515,13 +519,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         );
         pos++;
         
-        // Pitch letter (a-n or p) - highlight as parameter (parâmetro de função)
+        // Pitch letter (a-n or p) - highlight as variable (nome de variável)
         if (pos < glyphText.length && /[a-np]/.test(glyphText[pos])) {
           builder.push(
             range.start.line,
             range.start.character + pos,
             1,
-            this.getTokenType('parameter'),
+            this.getTokenType('variable'),
             0
           );
           pos++;
