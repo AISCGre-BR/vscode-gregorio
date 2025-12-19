@@ -206,13 +206,13 @@ export enum NABCGlyphModifier {
 
 export interface NABCSubpunctis {
   count: number; // Mandatory positive number
-  modifier?: 't' | 'u' | 'v' | 'w' | 'x' | 'y'; // St. Gall modifiers
+  modifier?: 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'n' | 'q' | 'z'; // St. Gall: t,u,v,w,x,y | Laon: n,q,z,x
   range?: Range;
 }
 
 export interface NABCPrepunctis {
   count: number; // Mandatory positive number
-  modifier?: 't' | 'u' | 'v' | 'w' | 'x' | 'y'; // St. Gall modifiers
+  modifier?: 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'n' | 'q' | 'z'; // St. Gall: t,u,v,w,x,y | Laon: n,q,z,x
   range?: Range;
 }
 

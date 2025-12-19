@@ -291,7 +291,9 @@ function parseBasicGlyph(code: string): NABCBasicGlyph | null {
 
 /**
  * Parse subpunctis or prepunctis descriptor
- * Format: su/pp + optional modifier (t,u,v,w,x,y) + mandatory count (1-9)
+ * Format: su/pp + optional modifier + mandatory count (1-9)
+ * St. Gall modifiers: t, u, v, w, x, y
+ * Laon modifiers: n, q, z, x
  * Returns the descriptor and the number of characters consumed
  */
 function parseSubpunctisPrepunctis(
@@ -301,11 +303,12 @@ function parseSubpunctisPrepunctis(
   const type = nabc.substring(0, 2);
   let pos = 2;
 
-  // Parse optional modifier (t, u, v, w, x, y for St. Gall)
-  // Note: Laon uses different modifiers (n, q, z, x) which should be handled separately
-  let modifier: 't' | 'u' | 'v' | 'w' | 'x' | 'y' | undefined;
-  if (pos < nabc.length && /[tuvwxy]/.test(nabc[pos])) {
-    modifier = nabc[pos] as 't' | 'u' | 'v' | 'w' | 'x' | 'y';
+  // Parse optional modifier
+  // St. Gall: t (tractulus), u (tractulus + episema), v (tractulus + double episema), w (gravis), x (liquescens stropha), y (gravis + episema)
+  // Laon: n (uncinus), q (quilisma), z (virga), x (cephalicus)
+  let modifier: 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'n' | 'q' | 'z' | undefined;
+  if (pos < nabc.length && /[tuvwxynqz]/.test(nabc[pos])) {
+    modifier = nabc[pos] as 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'n' | 'q' | 'z';
     pos++;
   }
 
