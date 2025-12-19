@@ -1,0 +1,10 @@
+name: Test NABC Highlighting;
+nabc-lines: 1;
+%%
+(c4) Test(e|vi) with(f|pu) basic(g|ta) glyphs(h|un)
+
+With(e|vihf) pitch(f|puhg) descriptors(g|tahc)
+
+With(e|ppn2) subpunctis(f|ppt1) and(g|sun3) prepunctis(h|suz2)
+
+With(e|viS) modifiers(f|puG-) various(g|ta>~) types(h|un1)

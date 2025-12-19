@@ -800,7 +800,69 @@ export class GabcParser {
             modifiers.push({ type: ModifierType.Quadratum });
             noteLength++;
             i++;
-          } else if (mod === '.') {
+          }
+          
+          // Alteration modifiers
+          else if (mod === 'x') {
+            shape = NoteShape.Flat;
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '?') {
+              // Parenthesized flat
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'X') {
+            // Soft flat
+            shape = NoteShape.Flat;
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '?') {
+              // Parenthesized soft flat
+              noteLength++;
+              i++;
+            }
+          } else if (mod === '#') {
+            shape = NoteShape.Sharp;
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '#') {
+              // Double sharp (##)
+              noteLength++;
+              i++;
+              if (i < gabc.length && gabc[i] === '?') {
+                // Parenthesized double sharp (##?)
+                noteLength++;
+                i++;
+              }
+            } else if (i < gabc.length && gabc[i] === '?') {
+              // Parenthesized sharp (#?)
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'y') {
+            shape = NoteShape.Natural;
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '?') {
+              // Parenthesized natural
+              noteLength++;
+              i++;
+            }
+          } else if (mod === 'Y') {
+            // Soft natural
+            shape = NoteShape.Natural;
+            noteLength++;
+            i++;
+            if (i < gabc.length && gabc[i] === '?') {
+              // Parenthesized soft natural
+              noteLength++;
+              i++;
+            }
+          }
+          
+          // Rhythmic and expression modifiers
+          else if (mod === '.') {
             modifiers.push({ type: ModifierType.PunctumMora });
             noteLength++;
             i++;

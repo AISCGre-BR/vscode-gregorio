@@ -342,16 +342,33 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         );
         pos++;
       }
-      // Alterations: x (flat), y (natural), # (sharp)
-      else if (/[xy#]/.test(char)) {
+      // Alterations: x/X (flat/soft flat), y/Y (natural/soft natural), #/## (sharp/soft sharp)
+      // With optional ? for parenthesized versions: x?, y?, #?, X?, Y?, ##?
+      else if (/[xyXY#]/.test(char)) {
+        let alterationLength = 1;
+        
+        // Check for double sharp (##)
+        if (char === '#' && pos + 1 < noteText.length && noteText[pos + 1] === '#') {
+          alterationLength = 2;
+          // Check for ##?
+          if (pos + 2 < noteText.length && noteText[pos + 2] === '?') {
+            alterationLength = 3;
+          }
+        } else {
+          // Check for single character alteration with ? (x?, y?, #?, X?, Y?)
+          if (pos + 1 < noteText.length && noteText[pos + 1] === '?') {
+            alterationLength = 2;
+          }
+        }
+        
         builder.push(
           range.start.line,
           range.start.character + pos,
-          1,
-          this.getTokenType('operator'),
+          alterationLength,
+          this.getTokenType('macro'),
           0
         );
-        pos++;
+        pos += alterationLength;
       }
       // Punctum inclinatum
       else if (char === 'G' || char === 'O') {

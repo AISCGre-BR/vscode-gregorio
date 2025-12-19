@@ -1,0 +1,160 @@
+name: GABC/NABC Syntax Showcase;
+office-part: Sanctus;
+occasion: Example;
+meter: Free;
+commentary: Comprehensive showcase of GABC and NABC notation features;
+annotation: Example;
+arranger: Test Suite;
+gabc-copyright: Public Domain;
+mode: 8;
+initial-style: 1;
+%%
+
+% ===== CLEFS AND BASIC NOTES =====
+% Different clef types
+(c4) BA-sic(g) notes(h) with(i) clef(j) c4.(::)
+
+(f3) Clef(a) f3(h) here.(f ::)
+
+(cb3) Clef(f) cb3(g) here.(::)
+
+% ===== NOTE SHAPES =====
+% All note shape specifiers
+(c4) Vir-ga(gv) vir-ga(hv) re-ver-sa(gV) 
+qui-lis-ma(gw) o-ris-cus(go) stro-pha(gs)
+ca-vum(gr) punc-tum(g) in-cli-na-tum(G) (,)
+in-cli-na-tum(GO) li-ques-cens(g<) as-cen-dens(g>) (::)
+
+% ===== ALTERATIONS (STANDARD) =====
+% Flat, natural, sharp
+(c4) Flat(gx) na-tu-ral(gy) sharp(g#) (::)
+
+% ===== ALTERATIONS (SOFT) =====
+% Soft alterations (uppercase)
+(c4) Soft(gX) flat(hX) soft(iY) na-tu-ral(jY) 
+dou-ble(g##) sharp(h##) (::)
+
+% ===== ALTERATIONS (PARENTHESIZED) =====
+% Alterations with question mark
+(c4) Pa-ren(gx?) flat(hx?)
+pa-ren(gy?) na-tu-ral(hy?)
+pa-ren(g#?) sharp(h#?) (::)
+
+% ===== LIQUESCENCES =====
+% Different types of liquescence
+(c4) Li-ques-cens(ge<) i-ni-ti-o(f>g) au-cta(ghij<) (::)
+
+% ===== COMPLEX NEUMES =====
+% Pes, clivis, scandicus, climacus, torculus, porrectus
+(c4) Pes(gh) cli-vis(hg) scan-di-cus(ghi) 
+cli-ma-cus(jihg) tor-cu-lus(ghg) por-rec-tus(gef) (::)
+
+% Neumes with multiple notes
+(c4) Sal-i-cus(ghih) pes(gh) sub-bi-punc-tis(ghi!jvIH) (::)
+
+% ===== BARS =====
+% Different bar types
+(c4) Quar-ter(g) bar(h) (,) 
+half(i) bar(j) (;)
+full(g) bar(h) (:)
+fi-nal(i) bar(j) (::)
+do-mi-ni-cus(g) (::)
+
+% ===== ATTRIBUTES =====
+% Note and neume attributes
+(c4) I-ni-ti-um(g[oll:1]) De-bi-lis(h[oll:0])
+cus-tos(i) at-tri-bu-te(z) test.(::)
+
+% ===== SPACES =====
+% Different spacing
+(c4) Nor-mal(g) spa-cing(h) lar-ger(i) (!) space(j)
+no(g) break(h/ij) here.(::)
+
+% ===== NABC NOTATION =====
+% Basic NABC glyphs
+(c4) Vi-[al:vi1]r(g)ga(h) punc-[al:pu1]tum(i) 
+ta-[al:ta1]le-a(j) un-[al:un1]ci-nus(g) (::)
+
+% NABC with modifiers
+(c4) Glyph-[al:viS1]es(g) with-[al:puG2]es(h)
+mo-[al:ta-3]di-fi-ers(i) here-[al:un>4].(j) (::)
+
+% NABC with significant letters
+(c4) Sig-[al:visa5]ni-fi-cant(g) let-[al:pubk6]ters(h)
+test-[al:tals7]ing(i) here-[al:uned8].(j) (::)
+
+% NABC subpunctis (St. Gall)
+(c4) Sub-[al:sut1]punc-tis(g) with-[al:suu2]mod-i-fi-ers(h)
+va-[al:suv3]ri-ous(i) types-[al:suw4].(j) (::)
+
+% NABC subpunctis (Laon)
+(c4) La-[al:sun1]on(g) mo-[al:suq2]di-fi-ers(h)
+al-[al:suz3]so(i) here-[al:sux4].(j) (::)
+
+% NABC prepunctis
+(c4) Pre-[al:prt1]punc-tis(g) with-[al:pru2]mod-i-fi-ers(h)
+va-[al:prv3]ri-ous(i) types-[al:prw4].(j) (::)
+
+% NABC complex descriptors
+(c4) Com-[al:peGlsa6tohl]plex(g) 
+des-[al:viSta-hl]crip-tors(h) 
+mul-[al:pu>un1]ti-ple(i) here-[al:taM2sa3].(j) (::)
+
+% NABC pitch descriptors
+(c4) Pitch-[al:vihl]es(g) des-[al:puhl]crip-tors(h)
+with-[al:talh]h(i) lett-[al:unhl]ers.(j) (::)
+
+% NABC connecting strokes
+(c4) Con-[al:pe*to]nect-ing(g) strokes-[al:vi*pu]here(h)
+mul-[al:ta*un]ti-ple(i) test-[al:pu*pu*ta].(j) (::)
+
+% NABC numbers and positions
+(c4) Num-[al:vi1ta2pu3]bers(g) and-[al:un4pe5to6]
+po-[al:pu7ta8un9]si-tions(h) here-[al:vi10].(i) (::)
+
+% ===== CUSTOS =====
+% Custos at different pitches
+(c4) Be-fore(g) cus-tos(h) (z) af-ter(i) cus-tos.(j) (::)
+
+(c4) An-oth-er(g) cus-tos(h) (z0) here.(i) (::)
+
+% ===== COMBINED FEATURES =====
+% Notes with multiple modifiers
+(c4) Com-plex(gvxq) note(hw>#?) with(io<Y?) 
+mul-ti-ple(jGx##?) mo-di-fi-ers.(::)
+
+% Neumes with shapes and alterations
+(c4) Pes(gvhw) with(ixjo) shapes(gx?hy?i#?) test.(::)
+
+% Complex melismas
+(c4) Me-lis-ma(ghijhgfgef!gvFEfgf) test(ghijhijhg)
+long(ghijklkjihgfghijihg) pas-sage.(::)
+
+% ===== COMMENTS =====
+% Comments should be highlighted correctly
+% This is a comment at the start of a line
+(c4) Text(g) here(h) % inline comment
+more(i) text.(j) (::)
+
+% Multi-line comments work like this
+% spanning several lines
+% for documentation
+
+% ===== SPECIAL CASES =====
+% Empty syllables and special characters
+(c4) Em-pty() syl-la-ble(g) test.(::)
+
+% Hyphenation and special characters  
+(c4) Hy-phen-a-tion(gh) test(ij) here.(g) (::)
+
+% Text with special markup
+(c4) <sp>V/</sp>.(::) <sp>R/</sp>.(::)
+
+% Uppercase pitches
+(c4) Up-per(A) case(H) pitch(N) test(P) here.(::)
+
+% All alterations showcase in one syllable
+(c4) Al-ter-a-tions(gx gy g# gX gY g## gx? gy? g#? gX? gY? g##?) (::)
+
+% ===== END =====
+(c4) Fi-ni-tus.(g) (::)

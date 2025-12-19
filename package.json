@@ -77,11 +77,11 @@
           "parameter": ["variable.other.constant.gabc"],
           "variable": ["variable.other.gabc", "entity.name.note.gabc"],
           "class": ["storage.type.gabc"],
-          "decorator": ["entity.name.decorator.gabc", "meta.decorator.gabc"],
-          "macro": ["entity.name.function.macro.gabc"],
+          "macro": ["string.regexp.gabc"],
           "type": ["entity.name.type.gabc", "support.type.gabc"],
           "function": ["entity.name.function.gabc"],
           "modifier": ["storage.modifier.gabc"],
+          "regexp": ["string.regexp.gabc"],
           "customLiteral": ["constant.other.gabc"]
         }
       }
