@@ -69,17 +69,18 @@
         "scopes": {
           "header": ["entity.name.section.gabc"],
           "property": ["entity.name.tag.gabc", "support.type.property-name.gabc"],
-          "keyword": ["keyword.control.gabc", "storage.type.gabc"],
+          "keyword": ["keyword.control.gabc"],
           "string": ["string.quoted.gabc", "meta.header.value.gabc"],
           "comment": ["comment.line.gabc", "comment.block.gabc"],
           "number": ["constant.numeric.gabc"],
           "operator": ["keyword.operator.gabc", "punctuation.separator.gabc"],
-          "parameter": ["variable.parameter.gabc", "entity.name.function.gabc"],
+          "parameter": ["variable.other.constant.gabc"],
           "variable": ["variable.other.gabc", "entity.name.note.gabc"],
-          "class": ["entity.name.type.gabc", "support.class.gabc"],
+          "class": ["storage.type.gabc"],
           "decorator": ["entity.name.decorator.gabc", "meta.decorator.gabc"],
           "macro": ["entity.name.function.macro.gabc"],
           "type": ["entity.name.type.gabc", "support.type.gabc"],
+          "function": ["entity.name.function.gabc"],
           "modifier": ["storage.modifier.gabc"],
           "customLiteral": ["constant.other.gabc"]
         }

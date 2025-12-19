@@ -314,7 +314,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     
     let pos = 0;
     
-    // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.parameter/variable.name)
+    // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.name via semanticTokenScopes)
     if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
       builder.push(
         range.start.line,
@@ -326,7 +326,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       pos++;
     }
     
-    // 2. Tokenize note shape specifiers as type (maps to storage.type)
+    // 2. Tokenize note shape specifiers as class (maps to storage.type via semanticTokenScopes)
     while (pos < noteText.length) {
       const char = noteText[pos];
       
@@ -337,7 +337,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('type'),
+          this.getTokenType('class'),
           0
         );
         pos++;
@@ -359,7 +359,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('type'),
+          this.getTokenType('class'),
           0
         );
         pos++;
@@ -519,7 +519,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         );
         pos++;
         
-        // Pitch letter (a-n or p) - highlight as parameter (maps to variable.parameter/variable.name)
+        // Pitch letter (a-n or p) - highlight as parameter (maps to variable.name via semanticTokenScopes)
         if (pos < glyphText.length && /[a-np]/.test(glyphText[pos])) {
           builder.push(
             range.start.line,
