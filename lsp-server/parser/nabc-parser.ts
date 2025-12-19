@@ -15,39 +15,127 @@ import {
 } from './types';
 
 /**
- * Parse a single NABC snippet into a glyph descriptor
+ * Parse a single NABC snippet into an array of glyph descriptors
+ * A snippet can contain a sequence of complex neume descriptors
  */
-export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDescriptor | null {
+export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDescriptor[] {
   if (!nabc || nabc.trim().length === 0) {
-    return null;
+    return [];
   }
 
-  let pos = 0;
   // Remove all whitespace from NABC snippet
   const trimmed = nabc.trim().replace(/\s+/g, '');
+  
+  return parseComplexNeumeDescriptors(trimmed, startPos);
+}
 
-  // Check for fusion (!) - parse left and right sides recursively
-  const fusionIndex = trimmed.indexOf('!');
-  if (fusionIndex > 0) {
-    const left = trimmed.substring(0, fusionIndex);
-    const right = trimmed.substring(fusionIndex + 1);
-    
-    const leftDescriptor = parseNABCSnippet(left, startPos);
-    const rightDescriptor = parseNABCSnippet(right, startPos);
-    
-    if (leftDescriptor && rightDescriptor) {
-      leftDescriptor.fusion = rightDescriptor;
-      return leftDescriptor;
+/**
+ * Parse a sequence of complex neume descriptors from a NABC snippet
+ * Returns an array of glyph descriptors
+ */
+function parseComplexNeumeDescriptors(nabc: string, startPos?: Position): NABCGlyphDescriptor[] {
+  const descriptors: NABCGlyphDescriptor[] = [];
+  let pos = 0;
+
+  while (pos < nabc.length) {
+    // Skip horizontal spacing adjustments (/, //, `, ``)
+    while (pos < nabc.length && (nabc[pos] === '/' || nabc[pos] === '`')) {
+      pos++;
+    }
+
+    if (pos >= nabc.length) {
+      break;
+    }
+
+    const currentPos = startPos ? {
+      line: startPos.line,
+      character: startPos.character + pos
+    } : undefined;
+
+    const result = parseSingleComplexDescriptor(nabc, pos, currentPos);
+    if (result) {
+      descriptors.push(result.descriptor);
+      pos = result.consumed;
+    } else {
+      // Unable to parse, skip one character and try again
+      pos++;
     }
   }
 
+  return descriptors;
+}
+
+/**
+ * Parse a single complex neume descriptor starting at the given position
+ * Returns the descriptor and the number of characters consumed
+ */
+function parseSingleComplexDescriptor(
+  nabc: string,
+  startPos: number,
+  position?: Position
+): { descriptor: NABCGlyphDescriptor; consumed: number } | null {
+  let pos = startPos;
+
+  // Check for fusion (!) in the upcoming section
+  // Find the extent of this descriptor first
+  const fusionIndex = nabc.indexOf('!', pos);
+  if (fusionIndex > pos && fusionIndex < nabc.length - 1) {
+    // Check if there's a valid basic glyph before the fusion
+    const beforeFusion = nabc.substring(pos, fusionIndex);
+    const left = parseComplexGlyphDescriptor(beforeFusion, 0, position);
+    
+    if (left && left.consumed === beforeFusion.length) {
+      // Parse what comes after the fusion
+      const afterFusionStart = fusionIndex + 1;
+      const right = parseSingleComplexDescriptor(nabc, afterFusionStart, position);
+      
+      if (right) {
+        left.descriptor.fusion = right.descriptor;
+        return {
+          descriptor: left.descriptor,
+          consumed: right.consumed
+        };
+      }
+    }
+  }
+
+  // Parse the complex glyph descriptor
+  const result = parseComplexGlyphDescriptor(nabc, pos, position);
+  if (!result) {
+    return null;
+  }
+
+  return result;
+}
+
+/**
+ * Parse a complex glyph descriptor starting at the given position
+ * Returns the descriptor and the number of characters consumed
+ */
+function parseComplexGlyphDescriptor(
+  nabc: string,
+  startPos: number,
+  position?: Position
+): { descriptor: NABCGlyphDescriptor; consumed: number } | null {
+  let pos = startPos;
+
   // Check for subpunctis/prepunctis first
-  if (trimmed.startsWith('su') || trimmed.startsWith('pp')) {
-    return parseSubpunctisPrepunctis(trimmed, startPos);
+  if (nabc.substring(pos).startsWith('su') || nabc.substring(pos).startsWith('pp')) {
+    const result = parseSubpunctisPrepunctis(nabc.substring(pos), position);
+    if (result) {
+      return {
+        descriptor: result.descriptor,
+        consumed: pos + result.consumed
+      };
+    }
   }
 
   // Parse basic glyph descriptor (2 letters)
-  const basicGlyph = parseBasicGlyph(trimmed.substring(pos, pos + 2));
+  if (pos + 1 >= nabc.length) {
+    return null;
+  }
+
+  const basicGlyph = parseBasicGlyph(nabc.substring(pos, pos + 2));
   if (!basicGlyph) {
     return null;
   }
@@ -57,10 +145,21 @@ export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDe
     basicGlyph
   };
 
-  // Parse modifiers (S, G, M, -, >, ~)
+  // Parse modifiers (S, G, M, -, >, ~) and variant numbers
   const modifiers: NABCGlyphModifier[] = [];
-  while (pos < trimmed.length) {
-    const char = trimmed[pos];
+  while (pos < nabc.length) {
+    const char = nabc[pos];
+    
+    // Check if this might be the start of a new descriptor
+    // (a valid 2-letter basic glyph code)
+    if (pos + 1 < nabc.length) {
+      const potentialGlyph = nabc.substring(pos, pos + 2);
+      if (parseBasicGlyph(potentialGlyph)) {
+        // This looks like the start of a new descriptor, stop here
+        break;
+      }
+    }
+    
     if (char === 'S') {
       modifiers.push(NABCGlyphModifier.MarkModification);
       pos++;
@@ -92,21 +191,30 @@ export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDe
   }
 
   // Parse pitch descriptor (h + pitch letter)
-  if (pos < trimmed.length && trimmed[pos] === 'h') {
+  if (pos < nabc.length && nabc[pos] === 'h') {
     pos++;
-    if (pos < trimmed.length && /[a-np]/.test(trimmed[pos])) {
-      result.pitch = trimmed[pos];
+    if (pos < nabc.length && /[a-np]/.test(nabc[pos])) {
+      result.pitch = nabc[pos];
       pos++;
     }
   }
 
   // Parse significant letters (ls or lt prefix)
   const significantLetters: any[] = [];
-  while (pos < trimmed.length) {
-    if (pos + 1 < trimmed.length && trimmed[pos] === 'l') {
-      const nextChar = trimmed[pos + 1];
+  while (pos < nabc.length) {
+    // Check if this might be the start of a new descriptor
+    if (pos + 1 < nabc.length) {
+      const potentialGlyph = nabc.substring(pos, pos + 2);
+      if (parseBasicGlyph(potentialGlyph)) {
+        // This looks like the start of a new descriptor, stop here
+        break;
+      }
+    }
+    
+    if (pos + 1 < nabc.length && nabc[pos] === 'l') {
+      const nextChar = nabc[pos + 1];
       if (nextChar === 's' || nextChar === 't') {
-        const parsed = parseSignificantLetter(trimmed.substring(pos), startPos);
+        const parsed = parseSignificantLetter(nabc.substring(pos), position);
         if (parsed) {
           significantLetters.push(parsed.letter);
           // Move position forward by the total length consumed
@@ -126,14 +234,17 @@ export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDe
     result.significantLetters = significantLetters;
   }
 
-  if (startPos) {
+  if (position) {
     result.range = {
-      start: startPos,
-      end: { line: startPos.line, character: startPos.character + trimmed.length }
+      start: position,
+      end: { line: position.line, character: position.character + (pos - startPos) }
     };
   }
 
-  return result;
+  return {
+    descriptor: result,
+    consumed: pos
+  };
 }
 
 /**
@@ -181,12 +292,17 @@ function parseBasicGlyph(code: string): NABCBasicGlyph | null {
 /**
  * Parse subpunctis or prepunctis descriptor
  * Format: su/pp + optional modifier (t,u,v,w,x,y) + mandatory count (1-9)
+ * Returns the descriptor and the number of characters consumed
  */
-function parseSubpunctisPrepunctis(nabc: string, startPos?: Position): NABCGlyphDescriptor | null {
+function parseSubpunctisPrepunctis(
+  nabc: string,
+  startPos?: Position
+): { descriptor: NABCGlyphDescriptor; consumed: number } | null {
   const type = nabc.substring(0, 2);
   let pos = 2;
 
   // Parse optional modifier (t, u, v, w, x, y for St. Gall)
+  // Note: Laon uses different modifiers (n, q, z, x) which should be handled separately
   let modifier: 't' | 'u' | 'v' | 'w' | 'x' | 'y' | undefined;
   if (pos < nabc.length && /[tuvwxy]/.test(nabc[pos])) {
     modifier = nabc[pos] as 't' | 'u' | 'v' | 'w' | 'x' | 'y';
@@ -219,11 +335,14 @@ function parseSubpunctisPrepunctis(nabc: string, startPos?: Position): NABCGlyph
   if (startPos) {
     descriptor.range = {
       start: startPos,
-      end: { line: startPos.line, character: startPos.character + nabc.length }
+      end: { line: startPos.line, character: startPos.character + pos }
     };
   }
 
-  return descriptor;
+  return {
+    descriptor,
+    consumed: pos
+  };
 }
 
 /**
@@ -283,17 +402,21 @@ function parseSignificantLetter(nabc: string, startPos?: Position): { letter: NA
 
 /**
  * Parse all NABC snippets from an array
+ * Each snippet can contain multiple complex neume descriptors
  */
 export function parseNABCSnippets(nabcArray: string[], startPos?: Position): NABCGlyphDescriptor[] {
-  return nabcArray
-    .map((nabc, index) => {
-      const pos = startPos ? {
-        line: startPos.line,
-        character: startPos.character + index * 10 // Approximate offset
-      } : undefined;
-      return parseNABCSnippet(nabc, pos);
-    })
-    .filter((d): d is NABCGlyphDescriptor => d !== null);
+  const allDescriptors: NABCGlyphDescriptor[] = [];
+  
+  nabcArray.forEach((nabc, index) => {
+    const pos = startPos ? {
+      line: startPos.line,
+      character: startPos.character + index * 10 // Approximate offset
+    } : undefined;
+    const descriptors = parseNABCSnippet(nabc, pos);
+    allDescriptors.push(...descriptors);
+  });
+  
+  return allDescriptors;
 }
 
 /**
@@ -304,16 +427,19 @@ export function parseNABCSnippetsWithPositions(
   nabcSegments: Array<{type: string, content: string, start: Position}>,
   fallbackStart?: Position
 ): NABCGlyphDescriptor[] {
-  return nabcArray
-    .map((nabc, index) => {
-      // Use real position from segment if available, otherwise fallback
-      const pos = nabcSegments[index]?.start || (fallbackStart ? {
-        line: fallbackStart.line,
-        character: fallbackStart.character + index * 10
-      } : undefined);
-      return parseNABCSnippet(nabc, pos);
-    })
-    .filter((d): d is NABCGlyphDescriptor => d !== null);
+  const allDescriptors: NABCGlyphDescriptor[] = [];
+  
+  nabcArray.forEach((nabc, index) => {
+    // Use real position from segment if available, otherwise fallback
+    const pos = nabcSegments[index]?.start || (fallbackStart ? {
+      line: fallbackStart.line,
+      character: fallbackStart.character + index * 10
+    } : undefined);
+    const descriptors = parseNABCSnippet(nabc, pos);
+    allDescriptors.push(...descriptors);
+  });
+  
+  return allDescriptors;
 }
 
 /**
