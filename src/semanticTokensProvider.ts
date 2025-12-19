@@ -281,10 +281,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   }
   
   private tokenizeNoteGroup(noteGroup: NoteGroup, builder: vscode.SemanticTokensBuilder): void {
-    // Tokenize each note in the group (GABC notes)
-    for (const note of noteGroup.notes) {
-      this.tokenizeNote(note, builder);
-    }
+    // Tokenize the entire note group (gabc) which includes all notes and extra symbols
+    const range = noteGroup.range;
+    const text = this.parser?.['text'] || '';
+    const lines = text.split('\n');
+    const gabcText = lines[range.start.line]?.substring(range.start.character, range.end.character) || '';
+    
+    // Tokenize the gabc string character by character
+    this.tokenizeGabcString(gabcText, range, builder);
     
     // Tokenize NABC if present
     if (noteGroup.nabcParsed && noteGroup.nabcParsed.length > 0) {
@@ -306,16 +310,11 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
   }
   
-  private tokenizeNote(note: Note, builder: vscode.SemanticTokensBuilder): void {
-    const range = note.range;
-    const text = this.parser?.['text'] || '';
-    const lines = text.split('\n');
-    const noteText = lines[range.start.line]?.substring(range.start.character, range.end.character) || '';
-    
+  private tokenizeGabcString(gabcText: string, range: any, builder: vscode.SemanticTokensBuilder): void {
     let pos = 0;
     
     // 0. Check for initio debilis prefix (-)
-    if (pos < noteText.length && noteText[pos] === '-') {
+    if (pos < gabcText.length && gabcText[pos] === '-') {
       builder.push(
         range.start.line,
         range.start.character + pos,
@@ -327,8 +326,8 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
     
     // 1. Tokenize pitch [a-npA-NP] as class (maps to variable.language via semanticTokenScopes)
-    if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
-      const isUpperCase = /[A-NP]/.test(noteText[pos]);
+    if (pos < gabcText.length && /[a-npA-NP]/.test(gabcText[pos])) {
+      const isUpperCase = /[A-NP]/.test(gabcText[pos]);
       builder.push(
         range.start.line,
         range.start.character + pos,
@@ -339,7 +338,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       pos++;
       
       // Check for leaning indicator (0, 1, 2) after uppercase punctum inclinatum
-      if (isUpperCase && pos < noteText.length && /[012]/.test(noteText[pos])) {
+      if (isUpperCase && pos < gabcText.length && /[012]/.test(gabcText[pos])) {
         builder.push(
           range.start.line,
           range.start.character + pos,
@@ -352,11 +351,11 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
     
     // 2. Tokenize modifiers and note shapes
-    while (pos < noteText.length) {
-      const char = noteText[pos];
+    while (pos < gabcText.length) {
+      const char = gabcText[pos];
       
       // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)
-      if (char === 'r' && pos + 1 < noteText.length && /[1-8]/.test(noteText[pos + 1])) {
+      if (char === 'r' && pos + 1 < gabcText.length && /[1-8]/.test(gabcText[pos + 1])) {
         builder.push(
           range.start.line,
           range.start.character + pos,
@@ -368,10 +367,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Note shape specifiers: w (virga), v (virga reversa), o/O (oriscus/oriscus scapus), 
-      // q (quilisma), s (stropha), r (cavum), = (linea), ~ (liquescent), < (augmentive), > (diminutive)
-      // Special: r0 (cavum with bars)
-      // Note: - (initio debilis) is handled as prefix before pitch
+      // Note shape specifiers
       if (/[wvosqr=~<>O]/.test(char)) {
         const isOriscus = char === 'o' || char === 'O';
         const isCavum = char === 'r';
@@ -379,7 +375,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         let shapeLength = 1;
         
         // Check for r0 (cavum with bars)
-        if (isCavum && pos + 1 < noteText.length && noteText[pos + 1] === '0') {
+        if (isCavum && pos + 1 < gabcText.length && gabcText[pos + 1] === '0') {
           shapeLength = 2;
         }
         
@@ -393,7 +389,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         pos += shapeLength;
         
         // Check for oriscus orientation indicator (0, 1) after 'o' or 'O'
-        if (isOriscus && pos < noteText.length && /[01]/.test(noteText[pos])) {
+        if (isOriscus && pos < gabcText.length && /[01]/.test(gabcText[pos])) {
           builder.push(
             range.start.line,
             range.start.character + pos,
@@ -405,21 +401,21 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         }
         continue;
       }
-      // Alterations: x/X (flat/soft flat), y/Y (natural/soft natural), #/## (sharp/soft sharp)
-      // With optional ? for parenthesized versions: x?, y?, #?, X?, Y?, ##?
+      
+      // Alterations
       if (/[xyXY#]/.test(char)) {
         let alterationLength = 1;
         
         // Check for double sharp (##)
-        if (char === '#' && pos + 1 < noteText.length && noteText[pos + 1] === '#') {
+        if (char === '#' && pos + 1 < gabcText.length && gabcText[pos + 1] === '#') {
           alterationLength = 2;
           // Check for ##?
-          if (pos + 2 < noteText.length && noteText[pos + 2] === '?') {
+          if (pos + 2 < gabcText.length && gabcText[pos + 2] === '?') {
             alterationLength = 3;
           }
         } else {
-          // Check for single character alteration with ? (x?, y?, #?, X?, Y?)
-          if (pos + 1 < noteText.length && noteText[pos + 1] === '?') {
+          // Check for single character alteration with ?
+          if (pos + 1 < gabcText.length && gabcText[pos + 1] === '?') {
             alterationLength = 2;
           }
         }
@@ -435,10 +431,10 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Extra symbols: . (punctum mora), ' (ictus/vertical episema), _ (horizontal episema), ` (rare symbols)
+      // Extra symbols: . (punctum mora), ' (ictus), _ (episema), ` (rare)
       if (char === '.' || char === "'" || char === '_' || char === '`') {
         // Check for double punctum mora (..)
-        if (char === '.' && pos + 1 < noteText.length && noteText[pos + 1] === '.') {
+        if (char === '.' && pos + 1 < gabcText.length && gabcText[pos + 1] === '.') {
           builder.push(
             range.start.line,
             range.start.character + pos,
@@ -462,7 +458,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           pos++;
           
           // Check for position digit after ' (ictus: 0, 1)
-          if (currentSymbol === "'" && pos < noteText.length && /[01]/.test(noteText[pos])) {
+          if (currentSymbol === "'" && pos < gabcText.length && /[01]/.test(gabcText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -473,7 +469,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             pos++;
           }
           // Check for position digit after _ (episema: 0-5)
-          if (currentSymbol === '_' && pos < noteText.length && /[0-5]/.test(noteText[pos])) {
+          if (currentSymbol === '_' && pos < gabcText.length && /[0-5]/.test(gabcText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -484,7 +480,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             pos++;
           }
           // Check for position digit after ` (backtick: 0, 1)
-          if (currentSymbol === '`' && pos < noteText.length && /[01]/.test(noteText[pos])) {
+          if (currentSymbol === '`' && pos < gabcText.length && /[01]/.test(gabcText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -498,7 +494,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Other modifiers continue with default handling
+      // Other characters - skip
       pos++;
     }
   }
