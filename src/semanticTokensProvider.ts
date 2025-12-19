@@ -331,8 +331,8 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       const char = noteText[pos];
       
       // Note shape specifiers: w (virga), v (virga reversa), o (oriscus), 
-      // q (quilisma), s (stropha), r (cavum/linea), < (liquescence)
-      if (/[wvosqr<>]/.test(char)) {
+      // q (quilisma), s (stropha), r (cavum/linea), ~ (liquescent), < (augmentive), > (diminutive)
+      if (/[wvosqr~<>]/.test(char)) {
         builder.push(
           range.start.line,
           range.start.character + pos,

@@ -76,7 +76,7 @@
           "operator": ["keyword.operator.gabc", "punctuation.separator.gabc"],
           "parameter": ["variable.other.constant.gabc"],
           "variable": ["variable.other.gabc", "entity.name.note.gabc"],
-          "class": ["storage.type.gabc"],
+          "class": ["variable.language.gabc"],
           "macro": ["string.regexp.gabc"],
           "type": ["entity.name.type.gabc", "support.type.gabc"],
           "function": ["entity.name.function.gabc"],
