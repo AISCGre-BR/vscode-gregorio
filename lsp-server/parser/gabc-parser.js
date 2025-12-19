@@ -15,14 +15,13 @@ class GabcParser {
         this.character = 0;
         this.errors = [];
         this.comments = [];
-        this.headers = new Map();
     }
     parse() {
-        this.headers = this.parseHeaders();
+        const headers = this.parseHeaders();
         this.skipWhitespaceAndComments(); // Skip whitespace after header separator
         const notation = this.parseNotation();
         return {
-            headers: this.headers,
+            headers,
             notation,
             comments: this.comments,
             errors: this.errors
@@ -140,28 +139,14 @@ class GabcParser {
         this.advance(1); // Skip '('
         const noteStart = this.getCurrentPosition();
         // Parse alternating GABC and NABC segments
-        // Pattern depends on nabc-lines header:
-        // - nabc-lines: 1 => (gabc|nabc|gabc|nabc|...)
-        // - nabc-lines: 2 => (gabc|nabc1|nabc2|gabc|nabc1|nabc2|...)
+        // Pattern: (gabc|nabc|gabc|nabc|...)
         // We concatenate all GABC content but track original positions for each character
-        const nabcLines = parseInt(this.headers?.get('nabc-lines') || '1', 10);
         const segments = [];
         let isNabc = false; // Start with GABC
-        let nabcCount = 0; // Count how many NABC segments we've added in current group
         while (this.pos < this.text.length && this.peek() !== ')') {
             if (this.peek() === '|') {
                 this.advance(1); // Skip '|'
-                if (!isNabc) {
-                    // Switching from GABC to first NABC
-                    isNabc = true;
-                    nabcCount = 0;
-                }
-                else if (nabcCount >= nabcLines) {
-                    // We've already added enough NABC segments, switch back to GABC
-                    isNabc = false;
-                    nabcCount = 0;
-                }
-                // else: stay in NABC mode for next segment
+                isNabc = !isNabc; // Toggle between GABC and NABC
                 continue;
             }
             const segmentStart = this.getCurrentPosition();
@@ -171,16 +156,11 @@ class GabcParser {
                 this.advance(1);
             }
             if (content.length > 0) {
-                const segmentType = isNabc ? 'nabc' : 'gabc';
                 segments.push({
-                    type: segmentType,
+                    type: isNabc ? 'nabc' : 'gabc',
                     content,
                     start: segmentStart
                 });
-                // If we just added a NABC segment, increment the counter
-                if (segmentType === 'nabc') {
-                    nabcCount++;
-                }
             }
         }
         if (this.peek() === ')') {
@@ -209,7 +189,7 @@ class GabcParser {
         bar = this.parseBarWithPosition(gabcContent, noteStart);
         // Parse note group with position map
         if (gabcContent.trim().length > 0) {
-            const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap, nabcSegments);
+            const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap);
             if (noteGroup) {
                 notes.push(noteGroup);
             }
@@ -345,6 +325,11 @@ class GabcParser {
                         modifiers.push({ type: types_1.ModifierType.OriscusScapus });
                         noteLength++;
                         i++;
+                        // Check for orientation (0=downwards, 1=upwards)
+                        if (i < gabc.length && /[01]/.test(gabc[i])) {
+                            noteLength++;
+                            i++;
+                        }
                     }
                     else if (mod === 'w') {
                         shape = types_1.NoteShape.Quilisma;
@@ -576,7 +561,7 @@ class GabcParser {
      * This method uses a position map to correctly track character positions when
      * GABC content is concatenated from multiple segments separated by NABC
      */
-    parseNoteGroupWithPositionMap(gabc, nabc, start, positionMap, nabcSegments) {
+    parseNoteGroupWithPositionMap(gabc, nabc, start, positionMap) {
         const notes = [];
         const end = this.getCurrentPosition();
         let custos = undefined;
@@ -659,6 +644,11 @@ class GabcParser {
                         shape = types_1.NoteShape.Oriscus;
                         noteLength++;
                         i++;
+                        // Check for orientation (0=downwards, 1=upwards)
+                        if (i < gabc.length && /[01]/.test(gabc[i])) {
+                            noteLength++;
+                            i++;
+                        }
                     }
                     else if (mod === 'w') {
                         shape = types_1.NoteShape.Quilisma;
@@ -729,70 +719,6 @@ class GabcParser {
                         noteLength++;
                         i++;
                     }
-                    // Alteration modifiers
-                    else if (mod === 'x') {
-                        shape = types_1.NoteShape.Flat;
-                        noteLength++;
-                        i++;
-                        if (i < gabc.length && gabc[i] === '?') {
-                            // Parenthesized flat
-                            noteLength++;
-                            i++;
-                        }
-                    }
-                    else if (mod === 'X') {
-                        // Soft flat
-                        shape = types_1.NoteShape.Flat;
-                        noteLength++;
-                        i++;
-                        if (i < gabc.length && gabc[i] === '?') {
-                            // Parenthesized soft flat
-                            noteLength++;
-                            i++;
-                        }
-                    }
-                    else if (mod === '#') {
-                        shape = types_1.NoteShape.Sharp;
-                        noteLength++;
-                        i++;
-                        if (i < gabc.length && gabc[i] === '#') {
-                            // Double sharp (##)
-                            noteLength++;
-                            i++;
-                            if (i < gabc.length && gabc[i] === '?') {
-                                // Parenthesized double sharp (##?)
-                                noteLength++;
-                                i++;
-                            }
-                        }
-                        else if (i < gabc.length && gabc[i] === '?') {
-                            // Parenthesized sharp (#?)
-                            noteLength++;
-                            i++;
-                        }
-                    }
-                    else if (mod === 'y') {
-                        shape = types_1.NoteShape.Natural;
-                        noteLength++;
-                        i++;
-                        if (i < gabc.length && gabc[i] === '?') {
-                            // Parenthesized natural
-                            noteLength++;
-                            i++;
-                        }
-                    }
-                    else if (mod === 'Y') {
-                        // Soft natural
-                        shape = types_1.NoteShape.Natural;
-                        noteLength++;
-                        i++;
-                        if (i < gabc.length && gabc[i] === '?') {
-                            // Parenthesized soft natural
-                            noteLength++;
-                            i++;
-                        }
-                    }
-                    // Rhythmic and expression modifiers
                     else if (mod === '.') {
                         modifiers.push({ type: types_1.ModifierType.PunctumMora });
                         noteLength++;
@@ -860,12 +786,10 @@ class GabcParser {
                 i++;
             }
         }
-        // Filter only NABC segments from nabcSegments
-        const nabcSegmentsFiltered = nabcSegments ? nabcSegments.filter(s => s.type === 'nabc') : [];
         return {
             gabc,
             nabc: nabc.length > 0 ? nabc : undefined,
-            nabcParsed: nabc.length > 0 ? (0, nabc_parser_1.parseNABCSnippetsWithPositions)(nabc, nabcSegmentsFiltered, start) : undefined,
+            nabcParsed: nabc.length > 0 ? (0, nabc_parser_1.parseNABCSnippets)(nabc, start) : undefined,
             range: { start, end },
             notes,
             custos: custos || undefined,
@@ -898,14 +822,20 @@ class GabcParser {
             name = content.substring(0, colonIndex).trim();
             value = content.substring(colonIndex + 1).trim();
         }
+        // Calculate end position: start + full attribute length (including brackets)
+        const attributeLength = closingBracket + 1; // +1 for the closing bracket
+        const end = {
+            line: start.line,
+            character: start.character + attributeLength
+        };
         const attribute = {
             name,
             value,
-            range: { start, end: start }
+            range: { start, end }
         };
         return {
             attribute,
-            length: closingBracket + 1
+            length: attributeLength
         };
     }
     parseClef(content) {

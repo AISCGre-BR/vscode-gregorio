@@ -1053,15 +1053,22 @@ export class GabcParser {
       value = content.substring(colonIndex + 1).trim();
     }
 
+    // Calculate end position: start + full attribute length (including brackets)
+    const attributeLength = closingBracket + 1; // +1 for the closing bracket
+    const end: Position = {
+      line: start.line,
+      character: start.character + attributeLength
+    };
+
     const attribute = {
       name,
       value,
-      range: { start, end: start }
+      range: { start, end }
     };
 
     return {
       attribute,
-      length: closingBracket + 1
+      length: attributeLength
     };
   }
 

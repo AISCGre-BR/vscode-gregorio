@@ -10,7 +10,6 @@ export declare class GabcParser {
     private character;
     private errors;
     private comments;
-    private headers;
     constructor(text: string);
     parse(): ParsedDocument;
     private parseHeaders;
@@ -41,3 +40,4 @@ export declare class GabcParser {
     private matchRegex;
     addError(message: string, range: Range, severity?: 'error' | 'warning' | 'info'): void;
 }
+//# sourceMappingURL=gabc-parser.d.ts.map

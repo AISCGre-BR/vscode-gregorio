@@ -254,3 +254,4 @@ export declare function isNABCStGallCode(code: string): code is NABCStGallCode;
 export declare function isNABCLaonCode(code: string): code is NABCLaonCode;
 export declare function isNABCTironianCode(code: string): code is NABCTironianCode;
 export declare function isNABCSignificantLetterCode(code: string): code is NABCSignificantLetterCode;
+//# sourceMappingURL=types.d.ts.map

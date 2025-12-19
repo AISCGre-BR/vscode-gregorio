@@ -14,14 +14,6 @@ export declare function parseNABCSnippet(nabc: string, startPos?: Position): NAB
  */
 export declare function parseNABCSnippets(nabcArray: string[], startPos?: Position): NABCGlyphDescriptor[];
 /**
- * Parse all NABC snippets with their real positions from segments
- */
-export declare function parseNABCSnippetsWithPositions(nabcArray: string[], nabcSegments: Array<{
-    type: string;
-    content: string;
-    start: Position;
-}>, fallbackStart?: Position): NABCGlyphDescriptor[];
-/**
  * Validate NABC glyph descriptor
  */
 export declare function validateNABCDescriptor(descriptor: NABCGlyphDescriptor): string[];
@@ -33,3 +25,4 @@ export declare function getAllNABCGlyphCodes(): string[];
  * Check if a string is a valid NABC glyph descriptor
  */
 export declare function isValidNABCGlyph(code: string): boolean;
+//# sourceMappingURL=nabc-parser.d.ts.map

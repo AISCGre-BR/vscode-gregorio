@@ -6,7 +6,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseNABCSnippet = parseNABCSnippet;
 exports.parseNABCSnippets = parseNABCSnippets;
-exports.parseNABCSnippetsWithPositions = parseNABCSnippetsWithPositions;
 exports.validateNABCDescriptor = validateNABCDescriptor;
 exports.getAllNABCGlyphCodes = getAllNABCGlyphCodes;
 exports.isValidNABCGlyph = isValidNABCGlyph;
@@ -361,22 +360,6 @@ function parseNABCSnippets(nabcArray, startPos) {
             line: startPos.line,
             character: startPos.character + index * 10 // Approximate offset
         } : undefined;
-        const descriptors = parseNABCSnippet(nabc, pos);
-        allDescriptors.push(...descriptors);
-    });
-    return allDescriptors;
-}
-/**
- * Parse all NABC snippets with their real positions from segments
- */
-function parseNABCSnippetsWithPositions(nabcArray, nabcSegments, fallbackStart) {
-    const allDescriptors = [];
-    nabcArray.forEach((nabc, index) => {
-        // Use real position from segment if available, otherwise fallback
-        const pos = nabcSegments[index]?.start || (fallbackStart ? {
-            line: fallbackStart.line,
-            character: fallbackStart.character + index * 10
-        } : undefined);
         const descriptors = parseNABCSnippet(nabc, pos);
         allDescriptors.push(...descriptors);
     });
