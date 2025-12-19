@@ -862,10 +862,13 @@ export class GabcParser {
       }
     }
 
+    // Filter only NABC segments from nabcSegments
+    const nabcSegmentsFiltered = nabcSegments ? nabcSegments.filter(s => s.type === 'nabc') : [];
+    
     return {
       gabc,
       nabc: nabc.length > 0 ? nabc : undefined,
-      nabcParsed: nabc.length > 0 ? parseNABCSnippets(nabc, start) : undefined,
+      nabcParsed: nabc.length > 0 ? parseNABCSnippetsWithPositions(nabc, nabcSegmentsFiltered, start) : undefined,
       range: { start, end },
       notes,
       custos: custos || undefined,
