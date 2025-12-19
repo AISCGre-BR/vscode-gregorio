@@ -316,6 +316,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     
     // 1. Tokenize pitch [a-npA-NP] as parameter (maps to variable.name via semanticTokenScopes)
     if (pos < noteText.length && /[a-npA-NP]/.test(noteText[pos])) {
+      const isUpperCase = /[A-NP]/.test(noteText[pos]);
       builder.push(
         range.start.line,
         range.start.character + pos,
@@ -324,6 +325,18 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         0
       );
       pos++;
+      
+      // Check for leaning indicator (0, 1, 2) after uppercase punctum inclinatum
+      if (isUpperCase && pos < noteText.length && /[012]/.test(noteText[pos])) {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('number'),
+          0
+        );
+        pos++;
+      }
     }
     
     // 2. Tokenize note shape specifiers as class (maps to storage.type via semanticTokenScopes)
@@ -369,17 +382,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           0
         );
         pos += alterationLength;
-      }
-      // Punctum inclinatum
-      else if (char === 'G' || char === 'O') {
-        builder.push(
-          range.start.line,
-          range.start.character + pos,
-          1,
-          this.getTokenType('class'),
-          0
-        );
-        pos++;
       }
       // Other modifiers continue with default handling
       else {
