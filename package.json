@@ -68,9 +68,9 @@
       {
         "scopes": {
           "header": ["entity.name.section.gabc"],
-          "property": ["entity.name.tag.gabc", "support.type.property-name.gabc"],
+          "property": ["entity.other.attribute-name.gabc"],
           "keyword": ["keyword.control.gabc"],
-          "string": ["string.quoted.gabc", "meta.header.value.gabc"],
+          "string": ["string.quoted.gabc"],
           "comment": ["comment.line.gabc", "comment.block.gabc"],
           "number": ["constant.numeric.gabc"],
           "operator": ["keyword.operator.gabc", "punctuation.separator.gabc"],
@@ -82,6 +82,7 @@
           "function": ["entity.name.function.gabc"],
           "modifier": ["storage.modifier.gabc"],
           "regexp": ["string.regexp.gabc"],
+          "decorator": ["entity.name.class.gabc"],
           "customLiteral": ["constant.other.gabc"]
         }
       }

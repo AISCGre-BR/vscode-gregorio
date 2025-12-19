@@ -351,24 +351,46 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
     }
     
-    // 2. Tokenize note shape specifiers as class (maps to storage.type via semanticTokenScopes)
+    // 2. Tokenize modifiers and note shapes
     while (pos < noteText.length) {
       const char = noteText[pos];
       
+      // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)
+      if (char === 'r' && pos + 1 < noteText.length && /[1-8]/.test(noteText[pos + 1])) {
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          2,
+          this.getTokenType('variable'),
+          0
+        );
+        pos += 2;
+        continue;
+      }
+      
       // Note shape specifiers: w (virga), v (virga reversa), o/O (oriscus/oriscus scapus), 
       // q (quilisma), s (stropha), r (cavum), = (linea), ~ (liquescent), < (augmentive), > (diminutive)
+      // Special: r0 (cavum with bars)
       // Note: - (initio debilis) is handled as prefix before pitch
       if (/[wvosqr=~<>O]/.test(char)) {
         const isOriscus = char === 'o' || char === 'O';
+        const isCavum = char === 'r';
+        
+        let shapeLength = 1;
+        
+        // Check for r0 (cavum with bars)
+        if (isCavum && pos + 1 < noteText.length && noteText[pos + 1] === '0') {
+          shapeLength = 2;
+        }
         
         builder.push(
           range.start.line,
           range.start.character + pos,
-          1,
+          shapeLength,
           this.getTokenType('class'),
           0
         );
-        pos++;
+        pos += shapeLength;
         
         // Check for oriscus orientation indicator (0, 1) after 'o' or 'O'
         if (isOriscus && pos < noteText.length && /[01]/.test(noteText[pos])) {
@@ -381,10 +403,11 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           );
           pos++;
         }
+        continue;
       }
       // Alterations: x/X (flat/soft flat), y/Y (natural/soft natural), #/## (sharp/soft sharp)
       // With optional ? for parenthesized versions: x?, y?, #?, X?, Y?, ##?
-      else if (/[xyXY#]/.test(char)) {
+      if (/[xyXY#]/.test(char)) {
         let alterationLength = 1;
         
         // Check for double sharp (##)
@@ -409,11 +432,43 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           0
         );
         pos += alterationLength;
+        continue;
       }
+      
+      // Extra symbols: . (punctum mora), ' (ictus/vertical episema), _ (horizontal episema), ` (rare symbols)
+      if (char === '.' || char === "'" || char === '_' || char === '`') {
+        let symbolLength = 1;
+        
+        // Check for double punctum mora (..)
+        if (char === '.' && pos + 1 < noteText.length && noteText[pos + 1] === '.') {
+          symbolLength = 2;
+        }
+        // Check for ictus with position ('0, '1)
+        else if (char === "'" && pos + 1 < noteText.length && /[01]/.test(noteText[pos + 1])) {
+          symbolLength = 2;
+        }
+        // Check for horizontal episema with position (_0 to _5)
+        else if (char === '_' && pos + 1 < noteText.length && /[0-5]/.test(noteText[pos + 1])) {
+          symbolLength = 2;
+        }
+        // Check for backtick combinations like `0
+        else if (char === '`' && pos + 1 < noteText.length && /[01]/.test(noteText[pos + 1])) {
+          symbolLength = 2;
+        }
+        
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          symbolLength,
+          this.getTokenType('variable'),
+          0
+        );
+        pos += symbolLength;
+        continue;
+      }
+      
       // Other modifiers continue with default handling
-      else {
-        pos++;
-      }
+      pos++;
     }
   }
   
