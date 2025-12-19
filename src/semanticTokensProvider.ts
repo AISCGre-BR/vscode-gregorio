@@ -343,9 +343,11 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     while (pos < noteText.length) {
       const char = noteText[pos];
       
-      // Note shape specifiers: w (virga), v (virga reversa), o (oriscus), 
+      // Note shape specifiers: w (virga), v (virga reversa), o/O (oriscus/oriscus scapus), 
       // q (quilisma), s (stropha), r (cavum), = (linea), ~ (liquescent), < (augmentive), > (diminutive)
-      if (/[wvosqr=~<>]/.test(char)) {
+      if (/[wvosqr=~<>O]/.test(char)) {
+        const isOriscus = char === 'o' || char === 'O';
+        
         builder.push(
           range.start.line,
           range.start.character + pos,
@@ -354,6 +356,18 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           0
         );
         pos++;
+        
+        // Check for oriscus orientation indicator (0, 1) after 'o' or 'O'
+        if (isOriscus && pos < noteText.length && /[01]/.test(noteText[pos])) {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('number'),
+            0
+          );
+          pos++;
+        }
       }
       // Alterations: x/X (flat/soft flat), y/Y (natural/soft natural), #/## (sharp/soft sharp)
       // With optional ? for parenthesized versions: x?, y?, #?, X?, Y?, ##?
