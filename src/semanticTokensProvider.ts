@@ -271,12 +271,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   
   private tokenizeBar(bar: Bar, builder: vscode.SemanticTokensBuilder): void {
     const range = bar.range;
-    // Highlight bar as an operator
+    // Highlight bar as a keyword (separation bars are structural elements)
     builder.push(
       range.start.line,
       range.start.character,
       range.end.character - range.start.character,
-      this.getTokenType('operator'),
+      this.getTokenType('keyword'),
       0
     );
   }
@@ -362,6 +362,65 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           pos = closingBracket + 1;
           continue;
         }
+      }
+      
+      // Separation bars (virgula, divisio minimus/minima/minor/maior/finalis)
+      // Detect: `, ^, ,, ;, :, :: and their variants with ledger lines or numbers
+      if (char === '`' || char === '^' || char === ',' || char === ';' || char === ':') {
+        let barLength = 1;
+        let nextPos = pos + 1;
+        
+        // Check for double colon (::)
+        if (char === ':' && nextPos < gabcText.length && gabcText[nextPos] === ':') {
+          barLength = 2;
+          nextPos++;
+        }
+        
+        // Check for ledger line indicator (0) immediately after `, ^, or ,
+        // These should be treated as a single token: `0, ^0, ,0
+        if ((char === '`' || char === '^' || char === ',') && nextPos < gabcText.length && gabcText[nextPos] === '0') {
+          barLength++;
+          nextPos++;
+        }
+        
+        // Tokenize the bar symbol(s) including ledger line if present
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          barLength,
+          this.getTokenType('keyword'),
+          0
+        );
+        pos = nextPos;
+        
+        // Check for additional modifiers only for ; and : (not for `, ^, , which already consumed 0)
+        if (char === ';' || char === ':') {
+          // Check for ledger line indicator (0) or number (1-8) after bar
+          if (pos < gabcText.length && /[0-8]/.test(gabcText[pos])) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('number'),
+              0
+            );
+            pos++;
+          }
+        }
+        
+        // Check for question mark (?) after colon
+        if (char === ':' && pos < gabcText.length && gabcText[pos] === '?') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('keyword'),
+            0
+          );
+          pos++;
+        }
+        
+        continue;
       }
       
       // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)

@@ -1,0 +1,126 @@
+name: Teste de Separation Bars (Barras de Divisão);
+%%
+
+% =============================================================================
+% GRUPO 1: Barras básicas - DEVEM ter highlight de keyword
+% =============================================================================
+
+% Virgula (`)
+(c4) Vir(g)gu(h)la(`) test(i) (::)
+
+% Virgula com ledger line (`0)
+(c4) Led(i)ger(`0) virgula(j) (::)
+
+% Divisio minimus (^)
+(c4) Di(g)vi(h)sio(i) mi(j)ni(k)mis(^) test(l) (::)
+
+% Divisio minimus com ledger line (^0)
+(c4) Led(l)ger(^0) minimus(m) (::)
+
+% Divisio minima (,)
+(c4) Di(g)vi(h)sio(i) mi(j)ni(k)ma(,) test(l) (::)
+
+% Divisio minima com ledger line (,0)
+(c4) Led(l)ger(,0) minima(m) (::)
+
+% Divisio minor (;)
+(c4) Di(g)vi(h)sio(i) mi(j)nor(;) test(k) (::)
+
+% Divisio minor com ledger line (;0)
+(c4) Led(k)ger(;0) minor(l) (::)
+
+% Divisio maior (:)
+(c4) Di(g)vi(h)sio(i) ma(j)jor(:) test(k) (::)
+
+% Divisio maior com ledger line (:0)
+(c4) Led(k)ger(:0) maior(l) (::)
+
+% Divisio finalis (::)
+(c4) Di(g)vi(h)sio(i) fi(j)na(k)lis(::) (::)
+
+% =============================================================================
+% GRUPO 2: Múltiplas barras em sequência
+% =============================================================================
+
+(c4) Mul(g)ti(h)ple(`) bars(i) (,) se(j)quence(;) test(:) end(::) (::)
+
+(c4) All(g)bars(`)to(^)ge(,)ther(;)test(:)final(::) (::)
+
+% =============================================================================
+% GRUPO 3: Barras com ledger lines (todas)
+% =============================================================================
+
+(c4) Led(g)ger(`0) vi(h)rgu(^0)la(i) mi(,0)ni(j)ma(;0) test(:0) (::)
+
+% =============================================================================
+% GRUPO 4: Barras em diferentes posições
+% =============================================================================
+
+% No início (após clef)
+(c4) (,) Start(g) with(h) bar(i) (::)
+
+% No meio
+(c4) Mid(g) (;) dle(h) bar(i) (::)
+
+% No fim
+(c4) End(g) with(h) bar(i) (:) (::)
+
+% Entre sílabas sem espaço
+(c4) No(g);spa(h)ce(i) bars(j) (::)
+
+% =============================================================================
+% GRUPO 5: Casos reais de uso
+% =============================================================================
+
+% Kyrie com divisões
+(c4) Ky(g)ri(h)e(`) e(i)le(j)i(,)son(k) (::)
+
+(c4) Chri(g)ste(h) e(i)le(,)i(j)son(;) (::)
+
+(c4) Ky(g)ri(h)e(`) e(i)le(,)i(j)son(;) ter(k)ti(l)a(:) (::)
+
+% Gloria com múltiplas divisões
+(c4) Glo(g)ri(h)a(`) in(i) ex(j)cel(,)sis(k) De(l)o(;) (::)
+
+(c4) Et(g) in(h) ter(i)ra(`) pax(j) ho(k)mi(,)ni(l)bus(;) (::)
+
+% Antífona completa
+(c4) Be(g)ne(h)di(i)cá(`)mus(j) Dó(k)mi(,)num(l) (,) 
+De(m)o(`) grá(n)ti(o)as(;) (:) (::)
+
+% =============================================================================
+% GRUPO 6: Barras com outros elementos
+% =============================================================================
+
+% Barras com clef changes
+(c4) Text(g) with(h) bar(;) (c3) and(d) clef(e) (::)
+
+% Barras com attributes
+(c4) Bar(g) (;) with(h[ll:0]) attr(i) (::)
+
+% Barras com NABC
+(c4) Bar(g|vi) (`) with(h|pu) NABC(i|ta) (::)
+
+% =============================================================================
+% GRUPO 7: Validação visual
+% =============================================================================
+
+% ESPERADO:
+% - Barras `, ^, ,, ;, :, :: em COR DE KEYWORD (mesma cor que clefs)
+% - Dígitos 0 após barras em COR DE NÚMERO
+% - Notas em cores normais
+
+(c4) Vi(g)su(h)al(`) te(i)st(,) wi(j)th(;) ba(k)rs(:) end(::) (::)
+
+% =============================================================================
+% GRUPO 8: Diferença entre vírgula-bar e vírgula-delimitador
+% =============================================================================
+
+% Vírgula como separation bar (entre parênteses) - keyword
+(c4) Sep(g) bar(h) (,) test(i) (::)
+
+% Vírgula como delimitador em atributo (dentro de colchetes) - operator
+(c4) Del(g[oslur:0;4mm,2mm]) im(h) test(i) (::)
+
+% Ambos no mesmo contexto
+(c4) Both(g) (,) and(h[oslur:1;2mm,3mm]) test(i) (::)

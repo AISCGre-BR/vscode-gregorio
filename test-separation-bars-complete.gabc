@@ -1,0 +1,213 @@
+name: Teste Completo de Separation Bars;
+%%
+
+% =============================================================================
+% TESTE FORNECIDO PELO USUÁRIO: Barras isoladas e com pitch
+% =============================================================================
+
+% Barras isoladas (sem pitch precedente)
+(c4) (`) (`0) (^) (^0) (,) (,0) (;) (:) (:?) (::) (;1) (;2) (;3) (;4) (;5) (;6) (;7) (;8) (::)
+
+% Barras precedidas de pitch (caso problemático - AGORA RESOLVIDO)
+(c4) (g`) (g`0) (g^) (g^0) (g,) (g,0) (g;) (g:) (g:?) (g::) (g;1) (g;2) (g;3) (g;4) (g;5) (g;6) (g;7) (g;8) (::)
+
+% =============================================================================
+% GRUPO 0: CASOS ESPECIAIS - Token único para `0, ^0, ,0
+% =============================================================================
+
+% IMPORTANTE: `0, ^0 e ,0 devem ser tratados como UM ÚNICO TOKEN com highlight de keyword
+
+% Virgula com ledger line (token único: `0)
+(c4) Test(g) (`0) test(h) (::)
+(c4) Test(g`0) test(h) (::)
+
+% Divisio minimus com ledger line (token único: ^0)
+(c4) Test(g) (^0) test(h) (::)
+(c4) Test(g^0) test(h) (::)
+
+% Divisio minima com ledger line (token único: ,0)
+(c4) Test(g) (,0) test(h) (::)
+(c4) Test(g,0) test(h) (::)
+
+% DIFERENÇA COM ; e :
+% Para ;0 e :0, o 0 é um token separado (número), NÃO parte da barra
+(c4) Test(g) (;0) test(h) (::)
+(c4) Test(g;0) test(h) (::)
+(c4) Test(g) (:0) test(h) (::)
+(c4) Test(g:0) test(h) (::)
+
+% Números 1-8 são sempre tokens separados (número)
+(c4) (;1) (;2) (;3) (;4) (;5) (;6) (;7) (;8) (::)
+
+% =============================================================================
+% GRUPO 1: Virgula (`) - todas as variantes
+% =============================================================================
+
+% Virgula simples
+(c4) Test(g) (`) test(h) (::)
+
+% Virgula com pitch
+(c4) Test(g`) test(h) (::)
+
+% Virgula com ledger line
+(c4) Test(g) (`0) test(h) (::)
+
+% Virgula com pitch e ledger line
+(c4) Test(g`0) test(h) (::)
+
+% =============================================================================
+% GRUPO 2: Divisio minimus (^) - todas as variantes
+% =============================================================================
+
+% Minimus simples
+(c4) Test(g) (^) test(h) (::)
+
+% Minimus com pitch
+(c4) Test(g^) test(h) (::)
+
+% Minimus com ledger line
+(c4) Test(g) (^0) test(h) (::)
+
+% Minimus com pitch e ledger line
+(c4) Test(g^0) test(h) (::)
+
+% =============================================================================
+% GRUPO 3: Divisio minima (,) - todas as variantes
+% =============================================================================
+
+% Minima simples
+(c4) Test(g) (,) test(h) (::)
+
+% Minima com pitch
+(c4) Test(g,) test(h) (::)
+
+% Minima com ledger line
+(c4) Test(g) (,0) test(h) (::)
+
+% Minima com pitch e ledger line
+(c4) Test(g,0) test(h) (::)
+
+% =============================================================================
+% GRUPO 4: Divisio minor (;) - todas as variantes
+% =============================================================================
+
+% Minor simples
+(c4) Test(g) (;) test(h) (::)
+
+% Minor com pitch
+(c4) Test(g;) test(h) (::)
+
+% Minor com ledger line
+(c4) Test(g) (;0) test(h) (::)
+
+% Minor com pitch e ledger line
+(c4) Test(g;0) test(h) (::)
+
+% Minor com números 1-8
+(c4) (;1) (;2) (;3) (;4) (;5) (;6) (;7) (;8) (::)
+
+% Minor com pitch e números 1-8
+(c4) (g;1) (g;2) (g;3) (g;4) (g;5) (g;6) (g;7) (g;8) (::)
+
+% =============================================================================
+% GRUPO 5: Divisio maior (:) - todas as variantes
+% =============================================================================
+
+% Maior simples
+(c4) Test(g) (:) test(h) (::)
+
+% Maior com pitch
+(c4) Test(g:) test(h) (::)
+
+% Maior com ledger line
+(c4) Test(g) (:0) test(h) (::)
+
+% Maior com pitch e ledger line
+(c4) Test(g:0) test(h) (::)
+
+% Maior com question mark
+(c4) Test(g) (:?) test(h) (::)
+
+% Maior com pitch e question mark
+(c4) Test(g:?) test(h) (::)
+
+% =============================================================================
+% GRUPO 6: Divisio finalis (::) - todas as variantes
+% =============================================================================
+
+% Finalis simples
+(c4) Test(g) (::) test(h) (::)
+
+% Finalis com pitch
+(c4) Test(g::) test(h) (::)
+
+% Finalis com question mark (caso especial, se existir)
+(c4) Test(g) (::?) test(h) (::)
+
+% Finalis com pitch e question mark
+(c4) Test(g::?) test(h) (::)
+
+% =============================================================================
+% GRUPO 7: Múltiplas barras em sequência
+% =============================================================================
+
+% Sequência sem pitch
+(c4) (`) (^) (,) (;) (:) (::) (::)
+
+% Sequência com pitch
+(c4) (g`) (h^) (i,) (j;) (k:) (l::) (::)
+
+% Misto
+(c4) (`) (g^) (,) (h;) (:) (i::) (::)
+
+% =============================================================================
+% GRUPO 8: Barras em contextos reais
+% =============================================================================
+
+% Kyrie
+(c4) Ky(g)ri(h)e(`) e(i)le(j)i(,)son(k) (::)
+
+% Gloria
+(c4) Glo(g)ri(h)a(`) in(i) ex(j)cel(,)sis(k) De(l)o(;) (:) (::)
+
+% Sanctus
+(c4) San(g)ctus(h`) San(i)ctus(j^) San(k,)ctus(l;) Do(m:)mi(n)nus(::) (::)
+
+% =============================================================================
+% GRUPO 9: Casos extremos
+% =============================================================================
+
+% Barra logo após clef
+(c4) (`) Test(g) (::)
+
+% Múltiplas barras juntas
+(c4) Test(g`,;:) test(h) (::)
+
+% Barra no final
+(c4) Test(g) end(h`) (::)
+
+% Todos os tipos misturados
+(c4) All(g`)types(h^0)to(i,0)ge(j;1)ther(k:?)now(l::) (::)
+
+% =============================================================================
+% VALIDAÇÃO VISUAL ESPERADA
+% =============================================================================
+
+% ESPERADO:
+% - Símbolos `, ^, ,, ;, :, :: em COR DE KEYWORD
+% - Para `0, ^0, ,0: AMBOS os caracteres em COR DE KEYWORD (token único)
+% - Para ;0, ;1-8, :0: barra em KEYWORD, número em COR DE NÚMERO (tokens separados)
+% - Interrogação ? em COR DE KEYWORD
+% - Pitches (g, h, i, etc.) em COR NORMAL de pitch
+
+% Demonstração clara da diferença:
+% `0 = token único keyword (`0)
+% ^0 = token único keyword (^0)
+% ,0 = token único keyword (,0)
+% ;0 = dois tokens: ; (keyword) + 0 (number)
+% ;1 = dois tokens: ; (keyword) + 1 (number)
+% :0 = dois tokens: : (keyword) + 0 (number)
+
+(c4) To(g`0)ken(h^0)úni(i,0)co(j;0)se(k;1)pa(l:0)ra(m)do(n::) (::)
+
+(c4) Final(g`) vali(h^0) da(i,0) tion(j;3) test(k:?) end(l::) (::)
