@@ -1,0 +1,84 @@
+name: Teste de Highlight Numérico em Atributos GABC;
+%%
+
+% =============================================================================
+% TESTE 1: Números em atributos com chaves (DEVEM ser destacados)
+% =============================================================================
+
+% Valores numéricos simples
+(c4) Round(d[ob:0]e) brace(f[ub:1]g) index(h) (::)
+(c4) Cur(d[ocb:2]e)ly(f[ocba:3]g) brace(h) (::)
+
+% Números com chaves abertas/fechadas
+(c4) Open(d[ob:0{]e) close(f[ub:1}]g) braces(h) (::)
+(c4) Mix(d[oslur:0{]e[oslur:0}]f) slur(g) (::)
+
+% Números com dimensões (mantém número destacado)
+(c4) Dimen(d[ob:0;2mm]e) sion(f[oll:1;3mm]g) test(h) (::)
+(c4) Ledg(p[oll:1;2mm]q)er(r) lines(s) (::)
+
+% Números decimais
+(c4) Deci(d[oh:l+0.5mm]e) mal(f[uh:h-0.3mm]g) test(h) (::)
+
+% Múltiplos números no mesmo atributo
+(c4) Slur(d[oslur:0;4mm,2mm]e) multi(f[uslur:1;5mm,3mm]g) param(h) (::)
+
+% =============================================================================
+% TESTE 2: Números em atributos genéricos (DEVEM ser destacados)
+% =============================================================================
+
+% Atributo ll (stem length) - aceita 0 ou 1
+(c4) Short(d[ll:0]e) long(f[ll:1]g) stem(h) (::)
+
+% Atributo shape com stroke (não tem números - OK)
+(c4) Shape(d[shape:stroke]e) test(f) (::)
+
+% Atributo nocustos (sem valor - OK)
+(c4) No(d) custos(e) test(f) [nocustos] (::)
+
+% =============================================================================
+% TESTE 3: Números em atributos LaTeX (NÃO devem ter highlight especial)
+% =============================================================================
+
+% Os números em macros LaTeX devem seguir o highlight do LaTeX, não GABC
+(c4) Note(d[nv:\textbf{12}]e) test(f) (::)
+(c4) Glyph(de[gv:\hspace{5mm}]f) test(g) (::)
+(c4) Elem(def[ev:\vspace{3mm}]g) test(h) (::)
+(c4) Above(d[alt:\textit{item 42}]e) test(f) (::)
+
+% =============================================================================
+% TESTE 4: Atributo cn com NABC (não tem números no formato padrão)
+% =============================================================================
+
+(c4) NABC(f[cn:bv-k])test(g) code(h[cn:pq-dso-nqo])ing(i) (::)
+
+% =============================================================================
+% TESTE 5: Casos extremos e combinações
+% =============================================================================
+
+% Número zero
+(c4) Zero(d[ob:0]e) test(f[ub:0]g) (::)
+
+% Números grandes
+(c4) Big(d[oll:999]e) num(f[ull:1234]g)ber(h) (::)
+
+% Números negativos (se suportados)
+(c4) Nega(d[oh:h-0.3mm]e)tive(f) offset(g) (::)
+
+% Números em sequência
+(c4) Se(d[ob:0;1;2]e)quence(f) test(g) (::)
+
+% Combinação de tudo
+(c4) Com(d[ob:0;2mm]e[ub:1{]f[ub:1}]g) plex(h[ll:1]i) test(j) (::)
+
+% =============================================================================
+% TESTE 6: Validação visual
+% =============================================================================
+
+% Este bloco deve mostrar:
+% - Números 0, 1, 2, 3 destacados em cor numérica (geralmente verde/azul)
+% - Dimensões mm também com números destacados
+% - Chaves {, } e outros caracteres em cor de string
+% - Atributo nv/gv/ev/alt com números em cor LaTeX (não GABC)
+
+(c4) Vi(d[ob:0;2mm]e[ub:1{]f[ub:1}]g) su(h[ll:1]i) al(j[nv:\textbf{123}]k) test(l) (::)

@@ -580,16 +580,103 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           // Do NOT add semantic tokens here - let TextMate grammar handle LaTeX injection
           // Semantic tokens have higher precedence and would override the LaTeX syntax
         } else {
-          // Default: Highlight attribute value as string (string.quoted style)
-          builder.push(
-            range.start.line,
-            range.start.character + valueStart,
-            valueLength,
-            this.getTokenType('string'),
-            0
-          );
+          // Tokenize attribute value with number detection
+          this.tokenizeAttributeValue(attributeValue, range.start.line, range.start.character + valueStart, builder);
         }
       }
+    }
+  }
+
+  private tokenizeAttributeValue(value: string, line: number, startChar: number, builder: vscode.SemanticTokensBuilder): void {
+    // Regex patterns
+    const numberWithUnitRegex = /(\d+(?:\.\d+)?)(mm|cm|ex|em|pt)/g;
+    const numberOnlyRegex = /\d+(?:\.\d+)?/g;
+    const delimiterRegex = /[;,]/g;
+    
+    let position = 0;
+    const tokens: Array<{start: number, length: number, type: string}> = [];
+
+    // First pass: identify all tokens (numbers with units, standalone numbers, delimiters)
+    let match: RegExpExecArray | null;
+    
+    // Find numbers with units
+    numberWithUnitRegex.lastIndex = 0;
+    while ((match = numberWithUnitRegex.exec(value)) !== null) {
+      tokens.push({
+        start: match.index,
+        length: match[1].length,
+        type: 'number'
+      });
+      tokens.push({
+        start: match.index + match[1].length,
+        length: match[2].length,
+        type: 'type'  // unit of measure
+      });
+    }
+
+    // Find standalone numbers (not followed by units)
+    numberOnlyRegex.lastIndex = 0;
+    while ((match = numberOnlyRegex.exec(value)) !== null) {
+      // Check if this position is already covered by a number-with-unit
+      const alreadyCovered = tokens.some(t => 
+        match!.index >= t.start && match!.index < t.start + t.length
+      );
+      if (!alreadyCovered) {
+        tokens.push({
+          start: match.index,
+          length: match[0].length,
+          type: 'number'
+        });
+      }
+    }
+
+    // Find delimiters (semicolons and commas)
+    delimiterRegex.lastIndex = 0;
+    while ((match = delimiterRegex.exec(value)) !== null) {
+      tokens.push({
+        start: match.index,
+        length: 1,
+        type: 'operator'  // delimiter
+      });
+    }
+
+    // Sort tokens by position
+    tokens.sort((a, b) => a.start - b.start);
+
+    // Second pass: emit tokens with string tokens for gaps
+    for (const token of tokens) {
+      // Add string token for gap before this token (if any)
+      if (token.start > position) {
+        builder.push(
+          line,
+          startChar + position,
+          token.start - position,
+          this.getTokenType('string'),
+          0
+        );
+      }
+
+      // Add the identified token
+      builder.push(
+        line,
+        startChar + token.start,
+        token.length,
+        this.getTokenType(token.type),
+        0
+      );
+
+      position = token.start + token.length;
+    }
+
+    // Add string token for remaining text after last token (if any)
+    if (position < value.length) {
+      builder.push(
+        line,
+        startChar + position,
+        value.length - position,
+        this.getTokenType('string'),
+        0
+      );
     }
   }
   

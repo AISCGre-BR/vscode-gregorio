@@ -246,36 +246,51 @@
             "1": { "name": "entity.other.attribute-name.gabc" }
           },
           "contentName": "string.unquoted.attribute-value.gabc",
-          "patterns": []
+          "patterns": [
+            {
+              "comment": "Numbers in attribute values",
+              "match": "\\d+(\\.\\d+)?",
+              "name": "constant.numeric.gabc"
+            },
+            {
+              "comment": "Semicolon separator",
+              "match": ";",
+              "name": "punctuation.separator.parameter.gabc"
+            }
+          ]
         },
         {
           "comment": "Generic attributes",
           "name": "meta.attribute.gabc",
-          "begin": "\\[",
+          "begin": "\\[([a-z]+):",
           "end": "\\]",
-          "beginCaptures": { "0": { "name": "punctuation.definition.attribute.begin.gabc" } },
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.attribute.begin.gabc" },
+            "1": { "name": "entity.other.attribute-name.gabc" }
+          },
           "endCaptures": { "0": { "name": "punctuation.definition.attribute.end.gabc" } },
+          "contentName": "string.unquoted.attribute-value.gabc",
           "patterns": [
             {
-              "comment": "Attribute name and value pattern: name:value",
-              "match": "([a-z]+)(:)([^\\]]+)",
-              "captures": {
-                "1": { "name": "entity.other.attribute-name.gabc" },
-                "2": { "name": "punctuation.separator.gabc" },
-                "3": { "name": "string.unquoted.gabc" }
-              }
+              "comment": "Numbers in attribute values",
+              "match": "\\d+(\\.\\d+)?",
+              "name": "constant.numeric.gabc"
             },
             {
-              "comment": "Attribute name only (no value): name",
-              "match": "[a-z]+",
-              "name": "entity.other.attribute-name.gabc"
-            },
-            {
-              "name": "string.quoted.single.gabc",
-              "begin": "'",
-              "end": "'"
+              "comment": "Semicolon separator",
+              "match": ";",
+              "name": "punctuation.separator.parameter.gabc"
             }
           ]
+        },
+        {
+          "comment": "Attributes without values (e.g., nocustos)",
+          "name": "meta.attribute.gabc",
+          "match": "\\[([a-z]+)\\]",
+          "captures": {
+            "0": { "name": "punctuation.definition.attribute.gabc" },
+            "1": { "name": "entity.other.attribute-name.gabc" }
+          }
         }
       ]
     },

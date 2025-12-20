@@ -1,0 +1,148 @@
+name: Teste de Unidades de Medida e Delimitadores;
+%%
+
+% =============================================================================
+% GRUPO 1: Números com unidades de medida - mm (milímetros)
+% =============================================================================
+
+% Números inteiros + mm
+(c4) Dim(a[ob:0;2mm]b[ub:1;3mm]c[oll:2;4mm]) mm(d) test(e) (::)
+
+% Números decimais + mm
+(c4) Dec(a[oh:0.5mm]b[uh:1.25mm]c[oh:2.75mm]) mm(d) test(e) (::)
+
+% =============================================================================
+% GRUPO 2: Outras unidades de medida
+% =============================================================================
+
+% Centímetros (cm)
+(c4) Centi(a[ob:1cm]b[ub:2cm]c[oll:3cm]) meter(d) test(e) (::)
+(c4) Dec(a[oh:0.5cm]b[uh:1.25cm]) cm(c) test(d) (::)
+
+% ex (altura do x)
+(c4) Ex(a[ob:1ex]b[ub:2ex]c[oll:3ex]) unit(d) test(e) (::)
+(c4) Dec(a[oh:0.5ex]b[uh:1.25ex]) ex(c) test(d) (::)
+
+% em (largura do M)
+(c4) Em(a[ob:1em]b[ub:2em]c[oll:3em]) unit(d) test(e) (::)
+(c4) Dec(a[oh:0.7em]b[uh:1.5em]) em(c) test(d) (::)
+
+% pt (pontos)
+(c4) Point(a[ob:10pt]b[ub:12pt]c[oll:14pt]) unit(d) test(e) (::)
+(c4) Dec(a[oh:10.5pt]b[uh:12.25pt]) pt(c) test(d) (::)
+
+% =============================================================================
+% GRUPO 3: Múltiplos parâmetros separados por ponto-e-vírgula
+% =============================================================================
+
+% Formato: valor1;valor2 (ambos os ; devem ter highlight de delimitador)
+(c4) Multi(a[ob:0;2mm]b[ub:1;3mm]) param(c) (::)
+
+% Múltiplos valores numéricos com vírgula
+(c4) Slur(a[oslur:0;4mm,2mm]b[uslur:1;5mm,3mm]) test(c) (::)
+
+% Três ou mais parâmetros com ; e ,
+(c4) Complex(a[ob:0;1;2]b[ub:1;2,3,4]) multi(c) param(d) (::)
+
+% Combinação de ; e , no mesmo atributo
+(c4) Mixed(a[oslur:0;4mm,2mm,1mm]b[uslur:1;5mm,3mm,2mm]) delim(c) (::)
+
+% =============================================================================
+% GRUPO 4: Valores com offset (+ e -)
+% =============================================================================
+
+% Formato: posição+offset ou posição-offset
+(c4) Offset(a[oh:l+0.5mm]b[uh:h-0.3mm]c[oh:m+1.2mm]) test(d) (::)
+
+% Com diferentes unidades
+(c4) Off(a[oh:l+1cm]b[uh:h-2ex]c[oh:m+3em]) set(d) test(e) (::)
+
+% =============================================================================
+% GRUPO 5: Valores mistos (números com e sem unidades)
+% =============================================================================
+
+% Índice numérico seguido de dimensão
+(c4) Mixed(a[ob:0;2mm]b[ob:1;3cm]c[ob:2;4ex]) test(d) (::)
+
+% Ledger lines com número e dimensão
+(c4) Ledger(p[oll:1;2mm]q[ull:2;3cm]r[oll:3;4ex]) test(s) (::)
+
+% =============================================================================
+% GRUPO 6: Valores com chaves (sem unidades)
+% =============================================================================
+
+% Chaves não devem afetar detecção de números e unidades
+(c4) Brace(a[ob:0{]b[ub:1}]c[ocb:2{]d[ocb:2}]) test(e) (::)
+
+% Com dimensões também
+(c4) Mix(a[ob:0;2mm{]b[ub:1;3cm}]) brace(c) test(d) (::)
+
+% =============================================================================
+% GRUPO 7: Valores sem números (controle negativo)
+% =============================================================================
+
+% Strings sem números - tudo deve ser string
+(c4) String(a[shape:stroke]) only(b) (::)
+(c4) Text(a[cs:sign]b[cs:text]) value(c) (::)
+
+% =============================================================================
+% GRUPO 8: Números decimais sem parte inteira
+% =============================================================================
+
+% Formato .5mm, .75cm, etc. (se suportado)
+(c4) Dot(a[oh:.5mm]b[uh:.75cm]) decimal(c) (::)
+
+% =============================================================================
+% GRUPO 9: Valores complexos reais
+% =============================================================================
+
+% Episema com posição e offset
+(c4) Epi(a[oh:l+0.5mm]b[uh:h-0.3mm]c[oh:m]) sema(d) (::)
+
+% Slurs com múltiplos parâmetros
+(c4) Slur(a[oslur:0;4mm,2mm]b[uslur:1;5mm,3mm]) complex(c) (::)
+
+% Braces com dimensões
+(c4) Round(d[ob:0;2mm]e[ub:1{]f[ub:1}]) braces(g) (::)
+
+% Ledger lines
+(c4) Le(p[oll:1;2mm]q)dger(r) li(a[ull:1;2mm]b)nes(c) (::)
+
+% =============================================================================
+% REFERÊNCIA VISUAL: O que esperar
+% =============================================================================
+
+% No exemplo abaixo, espera-se ver:
+% - Números 0, 1, 2, 4, 5 em COR NUMÉRICA (verde/azul)
+% - Unidades mm, cm em COR DE TIPO/CLASSE (azul claro/ciano)
+% - Ponto-e-vírgula ; e vírgula , em COR DE OPERADOR (branco/cinza claro)
+% - Chaves, sinais +/- em COR DE STRING (branca/cinza)
+% - Letras l, h, m (posições) em COR DE STRING
+
+(c4) Test(a[ob:0;2mm]b[ub:1;3cm]) multi(c[oslur:2;4mm,5mm]) param(d) (::)
+(c4) Off(e[oh:l+0.5mm]f[uh:h-1cm]) set(g) test(h) (::)
+
+% =============================================================================
+% GRUPO 10: Casos extremos
+% =============================================================================
+
+% Unidade sozinha sem número (não deve destacar unidade)
+(c4) No(a[ob:mm]) number(b) (::)
+
+% Múltiplas unidades diferentes
+(c4) Multi(a[ob:1mm;2cm;3ex;4em;5pt]) units(b) (::)
+
+% Números grandes com unidades
+(c4) Big(a[oll:100mm]b[ull:999cm]) numbers(c) (::)
+
+% Zero com unidades
+(c4) Zero(a[ob:0mm]b[ub:0cm]c[oll:0ex]) test(d) (::)
+
+% Apenas vírgulas como delimitadores
+(c4) Comma(a[oslur:1,2,3,4]) only(b) (::)
+
+% Apenas ponto-e-vírgulas como delimitadores
+(c4) Semi(a[ob:1;2;3;4]) colon(b) (::)
+
+% Mistura de ; e , no mesmo valor
+(c4) Both(a[oslur:0;4mm,2mm;1cm,3cm]) delim(b) (::)

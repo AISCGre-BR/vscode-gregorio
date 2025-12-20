@@ -1,0 +1,132 @@
+name: Teste de Highlight Numérico - Validação Detalhada;
+%%
+
+% =============================================================================
+% GRUPO 1: Atributo ll (stem length) - CRÍTICO
+% =============================================================================
+
+% Casos mais simples - dígitos 0 e 1 DEVEM ter highlight numérico
+(c4) Stem(d[ll:0]e) length(f[ll:1]g) test(h) (::)
+
+% Múltiplos casos em sequência
+(c4) Zero(a[ll:0]) one(b[ll:1]) zero(c[ll:0]) one(d[ll:1]) (::)
+
+% =============================================================================
+% GRUPO 2: Atributos com chaves - números DEVEM ter highlight numérico
+% =============================================================================
+
+% ob (overbrace) - números 0, 1, 2
+(c4) Ob(a[ob:0]b[ob:1]c[ob:2]) test(d) (::)
+
+% ub (underbrace) - números com chaves
+(c4) Ub(a[ub:0{]b[ub:1}]c[ub:2{]) test(d) (::)
+
+% ocb (overcurly brace)
+(c4) Ocb(a[ocb:0]b[ocb:1{]c[ocb:1}]) test(d) (::)
+
+% ocba (overcurly brace above)
+(c4) Ocba(a[ocba:0]b[ocba:1]c[ocba:2]) test(d) (::)
+
+% =============================================================================
+% GRUPO 3: Atributos com dimensões - números DEVEM ter highlight numérico
+% =============================================================================
+
+% Formato: número;dimensão
+(c4) Dim(a[ob:0;2mm]b[ub:1;3mm]c[oll:2;4mm]) test(d) (::)
+
+% Números decimais
+(c4) Dec(a[oh:0.5mm]b[uh:1.25mm]c[oh:2.75mm]) test(d) (::)
+
+% Múltiplos parâmetros separados por vírgula
+(c4) Multi(a[oslur:0;4mm,2mm]b[uslur:1;5mm,3mm]) param(c) (::)
+
+% =============================================================================
+% GRUPO 4: Ledger lines - números DEVEM ter highlight numérico
+% =============================================================================
+
+(c4) Ledger(p[oll:0]q[oll:1]r[oll:2]) lines(s) (::)
+
+(c4) Under(a[ull:0;1mm]b[ull:1;2mm]c[ull:2;3mm]) ledger(d) (::)
+
+% =============================================================================
+% GRUPO 5: Slurs - números DEVEM ter highlight numérico
+% =============================================================================
+
+(c4) Over(a[oslur:0]b[oslur:1{]c[oslur:1}]) slur(d) (::)
+
+(c4) Under(a[uslur:0;5mm,2mm]b[uslur:1;4mm,3mm]) slur(c) (::)
+
+% =============================================================================
+% GRUPO 6: Episema - números DEVEM ter highlight numérico (com offset)
+% =============================================================================
+
+% Formato: posição+offset ou posição-offset
+(c4) Epi(a[oh:l+0.5mm]b[uh:h-0.3mm]c[oh:m+1.2mm]) sema(d) (::)
+
+% Com chaves
+(c4) Block(a[oh:0{]b[oh:0}]c[uh:1{]d[uh:1}]) episema(e) (::)
+
+% =============================================================================
+% GRUPO 7: Números em diferentes contextos
+% =============================================================================
+
+% Número zero isolado
+(c4) Zero(a[ll:0]) only(b) (::)
+
+% Número um isolado  
+(c4) One(a[ll:1]) only(b) (::)
+
+% Números maiores
+(c4) Big(a[oll:10]b[ull:99]c[ob:100]) numbers(d) (::)
+
+% Números decimais com várias casas
+(c4) Precise(a[oh:0.123mm]b[uh:1.456mm]) decimals(c) (::)
+
+% =============================================================================
+% GRUPO 8: Atributos SEM números (controle negativo)
+% =============================================================================
+
+% shape - string 'stroke' NÃO deve ter highlight numérico
+(c4) Shape(a[shape:stroke]) test(b) (::)
+
+% cs (choral sign) - string NÃO deve ter highlight numérico
+(c4) Choral(a[cs:sign]b[cs:text]) sign(c) (::)
+
+% nocustos - sem valor
+(c4) No(a) custos(b) [nocustos] test(c) (::)
+
+% =============================================================================
+% GRUPO 9: Atributos LaTeX - números devem ter highlight LaTeX, NÃO GABC
+% =============================================================================
+
+% nv - números dentro de macros LaTeX
+(c4) Note(a[nv:\textbf{12}]b[nv:\hspace{5mm}]) verbatim(c) (::)
+
+% gv - números em macros
+(c4) Glyph(ab[gv:\vspace{3mm}]c[gv:\textit{item 42}]) test(d) (::)
+
+% ev - números em macros
+(c4) Element(abc[ev:\hspace{10mm}]) test(d) (::)
+
+% alt - números em texto
+(c4) Above(a[alt:\textit{123}]) text(b) (::)
+
+% =============================================================================
+% GRUPO 10: Atributo cn com NABC - NÃO tem números no formato tradicional
+% =============================================================================
+
+(c4) NABC(a[cn:bv-k]b[cn:pq-dso]c[cn:nqo]) code(d) (::)
+
+% =============================================================================
+% REFERÊNCIA VISUAL: O que esperar
+% =============================================================================
+
+% No exemplo abaixo:
+% - Os números 0, 1, 2, 3, 5, 4 devem estar em COR NUMÉRICA (verde/azul)
+% - As strings 'mm', '{', '}' devem estar em COR DE STRING (branca/cinza)
+% - O ponto-e-vírgula ';' deve estar em COR DE SEPARADOR
+% - Os números 123 em \textbf{123} devem estar em COR LATEX (não GABC)
+% - A string 'stroke' deve estar em COR DE STRING (não numérica)
+
+(c4) Test(a[ll:0]) mix(b[ob:1;2mm]) brace(c[ub:3{]) dim(d[oslur:5;4mm,2mm]) (::)
+(c4) La(e[nv:\textbf{123}]) tex(f[shape:stroke]) test(g) (::)

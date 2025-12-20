@@ -1,0 +1,56 @@
+name: Teste de Atributo nocustos;
+%%
+
+% =============================================================================
+% TESTE 1: Atributo nocustos (sem valor) - DEVE ter highlight de property
+% =============================================================================
+
+% nocustos básico
+(c4) No(d) cus(e)tos(f) [nocustos] here(g) (::)
+
+% nocustos em diferentes posições
+[nocustos] (c4) Start(d) of(e) line(f) (::)
+
+(c4) Mid(d)[nocustos]dle(e) of(f) line(g) (::)
+
+(c4) End(d) of(e) line(f) [nocustos] (::)
+
+% Múltiplos nocustos
+(c4) First(d)[nocustos] second(e)[nocustos] third(f) (::)
+
+% =============================================================================
+% TESTE 2: Comparação com outros atributos
+% =============================================================================
+
+% Atributos com valores (name:value)
+(c4) With(d[ll:0]e) value(f[shape:stroke]g) test(h) (::)
+
+% Atributos sem valores (apenas name)
+(c4) No(d) custos(e) [nocustos] test(f) (::)
+
+% Mistura de ambos
+(c4) Mix(d[nocustos]e[ll:1]f) test(g) (::)
+
+% =============================================================================
+% TESTE 3: Validação visual
+% =============================================================================
+
+% ESPERADO:
+% - "nocustos" em COR DE PROPERTY (mesmo que "ll", "shape", "ob", etc.)
+% - "[" e "]" não devem ter highlight especial (ou punctuation)
+% - Não deve haver highlight de valor pois nocustos não tem valor
+
+(c4) Val(d[nocustos]) i(e) da(f) tion(g) (::)
+
+% =============================================================================
+% TESTE 4: Casos extremos
+% =============================================================================
+
+% nocustos com espaços ao redor (se permitido)
+(c4) Space(d) [ nocustos ] test(e) (::)
+
+% nocustos maiúsculo (se permitido)
+(c4) Upper(d) [NOCUSTOS] case(e) (::)
+
+% nocustos com caracteres especiais ao redor
+(c4) Special(d)[nocustos](e) chars(f) (::)
