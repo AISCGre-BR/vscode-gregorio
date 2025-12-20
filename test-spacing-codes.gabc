@@ -1,0 +1,127 @@
+name: Teste de Códigos de Espaçamento (Spacing Codes);
+%%
+
+% =============================================================================
+% GRUPO 1: Códigos de espaçamento GABC - DEVEM ter highlight de class
+% =============================================================================
+
+% ! (small space)
+(c4) Small(g)space(!)test(h) (::)
+
+% !! (centered text)
+(c4) Text(!!)cen(g)tered(h) word(i) (::)
+
+% @ (no space)
+(c4) No(g@)space(h)text(i) (::)
+
+% // (large space)
+(c4) Large(//)space(g) test(h) (::)
+
+% /[number] (custom spacing - neume spacing)
+(c4) Neu(/[0.5])me(g) spa(/[1.5])cing(h) test(i) (::)
+
+% Variações de custom spacing
+(c4) Cus(/[0])tom(g) sp(/[1])a(/[2])cing(h) (::)
+(c4) De(/[0.25])ci(/[0.75])mal(g) spa(/[1.25])cing(h) (::)
+
+% =============================================================================
+% GRUPO 2: Múltiplos códigos de espaçamento juntos
+% =============================================================================
+
+% Sequência de small spaces
+(c4) Mul(g)ti(!)ple(!)sma(!)ll(h) (::)
+
+% Sequência mista
+(c4) Mix(g)ed(!)spa(@)cing(//)test(/[0.5])here(h) (::)
+
+% Centered text com spacing
+(c4) Both(!!)cen(g)tered(!)and(!)spaced(h) (::)
+
+% =============================================================================
+% GRUPO 3: Códigos de espaçamento em contextos reais
+% =============================================================================
+
+% Kyrie com spacing
+(c4) Ky(g)ri(!)e(h) e(!)le(!)i(i)son(j) (::)
+
+% Gloria com multiple spacing types
+(c4) Glo(g)ri(!)a(//)in(h) ex(!)cel(i)sis(j) De(k)o(l) (::)
+
+% Antífona com centered text
+(c4) Be(g)ne(!!)DI(h)CA(i)MUS(!!)Do(j)mi(k)num(l) (::)
+
+% =============================================================================
+% GRUPO 4: Códigos de espaçamento NABC - DEVEM ter highlight de class
+% =============================================================================
+
+% / (small space in NABC)
+(c4) NABC(g|vi/) space(h|pu) test(i|ta) (::)
+
+% // (large space in NABC)
+(c4) NABC(g|vi//) large(h|pu) space(i|ta) (::)
+
+% ` (horizontal adjustment in NABC)
+(c4) NABC(g|vi`) adjust(h|pu) test(i|ta) (::)
+
+% `` (double horizontal adjustment in NABC)
+(c4) NABC(g|vi``) adjust(h|pu) test(i|ta) (::)
+
+% Múltiplos spacing codes em NABC
+(c4) Multi(g|vi/pu//ta) ple(h|cl/pe) codes(i|to`pr) (::)
+
+% =============================================================================
+% GRUPO 5: Combinação GABC + NABC spacing
+% =============================================================================
+
+% GABC spacing entre sílabas, NABC spacing dentro de NABC
+(c4) Glo(g|vi/)ri(!)a(h|pu//) in(i|ta`) ex(j|cl``)cel(k)sis(l) (::)
+
+% Custom spacing GABC com NABC spacing
+(c4) Cus(/[0.5])tom(g|vi//pu)spa(!)cing(h|ta`cl) (::)
+
+% =============================================================================
+% GRUPO 6: Casos extremos
+% =============================================================================
+
+% Spacing logo após clef
+(c4) (!)Start(g) with(h) space(i) (::)
+
+% Spacing antes de bar
+(c4) Spa(g)ce(!)before(h) (;) bar(i) (::)
+
+% Spacing após bar
+(c4) Bar(g) (;) (!)after(h) space(i) (::)
+
+% Todos os tipos juntos
+(c4) All(!)(!!)(g@)ty(//)pes(/[0.5])here(h) (::)
+
+% NABC com todos os spacing types
+(c4) All(g|vi/pu//ta`cl``pe) NABC(h) (::)
+
+% =============================================================================
+% GRUPO 7: Spacing com attributes
+% =============================================================================
+
+% Spacing com stem length
+(c4) Spa(g!)ce(h[ll:0]) test(i) (::)
+
+% Spacing com NABC cn attribute
+(c4) Spa(g!)ce(h[cn:vi/pu]) test(i) (::)
+
+% =============================================================================
+% VALIDAÇÃO VISUAL ESPERADA
+% =============================================================================
+
+% ESPERADO:
+% - ! e !! em COR DE CLASS (entity.class.name)
+% - @ em COR DE CLASS
+% - // em COR DE CLASS
+% - /[número] completo em COR DE CLASS
+% - / e // dentro de NABC em COR DE CLASS
+% - ` e `` dentro de NABC em COR DE CLASS
+% - Números dentro de /[...] podem ter cor diferente (se parsing interno)
+
+% Demonstração visual completa:
+(c4) Vi(g!)su(h!!)al(@)te(//)st(/[0.5])GABC(i) (::)
+(c4) Vi(g|vi/pu//ta`cl``)su(h)al(i) NABC(j) (::)
+(c4) Bo(g!|vi/)th(h!!|pu//)ty(/[1]|ta`)pes(i) (::)

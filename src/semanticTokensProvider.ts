@@ -423,6 +423,63 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
+      // Spacing codes: !, !!, @, //, /[number]
+      if (char === '!' || char === '@' || char === '/') {
+        // Check for !! (centered text)
+        if (char === '!' && pos + 1 < gabcText.length && gabcText[pos + 1] === '!') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2,
+            this.getTokenType('class'),
+            0
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Check for // (large space)
+        if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '/') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2,
+            this.getTokenType('class'),
+            0
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Check for /[number] (custom spacing)
+        if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '[') {
+          const closingBracket = gabcText.indexOf(']', pos + 2);
+          if (closingBracket !== -1) {
+            const spacingLength = closingBracket - pos + 1;
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              spacingLength,
+              this.getTokenType('class'),
+              0
+            );
+            pos = closingBracket + 1;
+            continue;
+          }
+        }
+        
+        // Single ! or @ (small space or no space)
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('class'),
+          0
+        );
+        pos++;
+        continue;
+      }
+      
       // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)
       if (char === 'r' && pos + 1 < gabcText.length && /[1-8]/.test(gabcText[pos + 1])) {
         builder.push(
@@ -820,9 +877,36 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         pos += 2;
       }
       
-      // 3. Tokenize modifiers (S, G, M, -, >, ~, variant numbers)
+      // 3. Tokenize modifiers (S, G, M, -, >, ~, variant numbers) and spacing
       while (pos < glyphText.length) {
         const char = glyphText[pos];
+        
+        // Spacing codes: /, //, `, ``
+        if (char === '/' || char === '`') {
+          // Check for double characters (//, ``)
+          if (pos + 1 < glyphText.length && glyphText[pos + 1] === char) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              2,
+              this.getTokenType('class'),
+              0
+            );
+            pos += 2;
+            continue;
+          }
+          
+          // Single character (/, `)
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('class'),
+            0
+          );
+          pos++;
+          continue;
+        }
         
         if (/[SGM\->~]/.test(char)) {
           // Modifier character - highlight as operator
