@@ -1,0 +1,52 @@
+name: Test Unbalanced Braces in Attributes;
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BRACES IN ATTRIBUTE VALUES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Braces with bracket notation (should work without balancing)
+(c4) Start(d[ub:1{]e)mid(f[ub:1}]g)end(h) (::)
+
+(c4) Open(d[ob:0;2mm]e)brace(f[ub:1{]g)close(h[ub:1}]i)test(j) (::)
+
+(c4) Cur(d[ocb:1{]e[ocb:1}])ly(f) brace(g) (::)
+
+(c4) Ac(d[ocba:1{]e[ocba:1}])cent(f) brace(g) (::)
+
+% Ledger lines with braces
+(c4) Led(p[oll:1{]q[oll:]}r) ger(g) (::)
+
+(c4) Un(a[ull:0{]b[ull:}]c)der(d) ledger(e) (::)
+
+% Slurs with braces
+(c4) Slur(d[oslur:0{]ef[oslur:0}]g) bra(h)ces(i) (::)
+
+(c4) Un(d[uslur:1{]ef[uslur:1}]g)der(h) slur(i) (::)
+
+% Horizontal episema with braces
+(c4) Block(d[oh:{]e f[oh:}]g) e(h)pi(i)se(j)ma(k) (::)
+
+(c4) Un(d[uh:{]e f[uh:}]g)der(h) block(i) (::)
+
+% Mixed: some attributes with braces, some without
+(c4) Mix(d[ob:1;3mm]e[ub:1{]f[shape:stroke]g[ub:1}]h)ed(i) (::)
+
+% Multiple brace pairs
+(c4) Mul(d[ub:1{]e[ub:1}]f[ob:0{]g[ob:0}]h)ti(i)ple(j) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EDGE CASES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Single opening brace (unbalanced by design)
+(c4) On(d[ub:1{]e)ly(f) o(g)pen(h) (::)
+
+% Single closing brace (unbalanced by design)
+(c4) On(d[ub:1}]e)ly(f) close(g) (::)
+
+% Brace in middle of value
+(c4) Mid(d[ub:1{test]e)dle(f) (::)
+
+% Multiple parameters with braces
+(c4) Pa(d[oll:1{;2mm]e[oll:};3mm]f)rams(g) (::)

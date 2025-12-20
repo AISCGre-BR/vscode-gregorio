@@ -1,0 +1,65 @@
+name: Teste de Validação de Chaves em Atributos GABC;
+%%
+
+% =============================================================================
+% TESTE 1: Atributos com chaves não balanceadas (DEVEM SER ACEITOS)
+% =============================================================================
+
+% Braces redondos: ob (overbrace), ub (underbrace)
+(c4) Te(f)[ob:0;6mm] De(g)[ob:1{]um(h) lau(i)[ub:1}]da(j)[ub:1{]mus(k)[ub:1}](l) (::)
+
+% Chaves curly: ocb (overcurly brace), ocba (overcurly brace above)
+(c4) Glo(f)[ocb:1{]ri(g)[ocb:1}]a(h) in(i) ex(j)[ocba:1{]cel(k)[ocba:1}]sis(l) (::)
+
+% Ledger lines: oll (overledger lines), ull (underledger lines)
+(c4) San(f)[oll:0;1mm]ctus(g) Do(h)[ull:0;1mm]minus(i) (::)
+
+% Slurs: oslur (overslur), uslur (underslur)
+(c4) Be(f)[oslur:0{]ne(g)di(h)[oslur:0}]ctus(i) (::)
+(c4) A(f)[uslur:0{]gnus(g) De(h)[uslur:0}]i(i) (::)
+
+% Episema: oh (overhoriz episema), uh (underhoriz episema)
+(c4) Ky(f)[oh:0{]ri(g)[oh:0}]e(h) e(i)[uh:0{]le(j)[uh:0}]i(k)son(l) (::)
+
+% =============================================================================
+% TESTE 2: Atributos LaTeX (DEVEM REQUERER BALANCEAMENTO)
+% =============================================================================
+
+% Note verbatim (nv) - chaves devem ser balanceadas
+(c4) Te(f[nv:\textit{Texto}])xt(g) (::)
+(c4) Ma(f[nv:\textbf{Negrito {aninhado}}])gno(g) (::)
+
+% Glyph verbatim (gv) - chaves devem ser balanceadas
+(c4) Do(fg[gv:\textcolor{red}{Vermelho}])mi(g)ne(h) (::)
+
+% Element verbatim (ev) - chaves devem ser balanceadas
+(c4) Sanc(fgh[ev:\small{Pequeno}])tus(i) (::)
+
+% Above lines text (alt) - chaves devem ser balanceadas
+(c4) Glo(f)ri(g)a(h[alt:\textit{Glória}]) (::)
+
+% =============================================================================
+% TESTE 3: Outros atributos (não usam chaves especiais)
+% =============================================================================
+
+(c4) Ky(f[cs:a])ri(g[shape:stroke])e(h) e(i[ll:1])le(j)i(k)son(l) (::)
+
+% =============================================================================
+% TESTE 4: Atributo cn com código NABC (sem chaves)
+% =============================================================================
+
+(c4) Pa(f[cn:bv-k])ter(g) nos(h)[cn:pq-dso-nqo]ter(i) (::)
+
+% =============================================================================
+% TESTE 5: Casos extremos com chaves
+% =============================================================================
+
+% Múltiplas chaves abertas/fechadas no mesmo atributo (GABC braces)
+(c4) Te(f)[ob:0{]st(g)[ob:0}]um(h)[ub:1{]val(i)[ub:1}]or(j) (::)
+
+% Chave solitária
+(c4) A(f)[ob:0{]men(g) (::)
+(c4) De(h)[ub:1}]o(i) (::)
+
+% LaTeX com chaves aninhadas (DEVEM ser balanceadas)
+(c4) Test(f[nv:\textbf{Bold \textit{italic}}])e(g) (::)

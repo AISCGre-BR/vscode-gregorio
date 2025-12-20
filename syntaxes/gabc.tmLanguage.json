@@ -238,6 +238,17 @@
           ]
         },
         {
+          "comment": "Attributes with unbalanced braces: ob, ub, ocb, ocba, oll, ull, oslur, uslur, oh, uh",
+          "name": "meta.attribute.braces.gabc",
+          "begin": "\\[(ob|ub|ocb|ocba|oll|ull|oslur|uslur|oh|uh):",
+          "end": "\\]",
+          "beginCaptures": {
+            "1": { "name": "entity.other.attribute-name.gabc" }
+          },
+          "contentName": "string.unquoted.attribute-value.gabc",
+          "patterns": []
+        },
+        {
           "comment": "Generic attributes",
           "name": "meta.attribute.gabc",
           "begin": "\\[",
