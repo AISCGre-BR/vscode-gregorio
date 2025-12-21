@@ -127,13 +127,17 @@
     },
     "gabc-content": {
       "patterns": [
-        { "include": "#alteration" },
-        { "include": "#pitch" },
-        { "include": "#modifier" },
+        { "include": "#clef-linking" },
+        { "include": "#custos" },
+        { "include": "#line-break" },
+        { "include": "#fusion-bracket" },
+        { "include": "#initio-debilis" },
+        { "include": "#pitch-with-modifiers" },
         { "include": "#bar" },
         { "include": "#spacing" },
-        { "include": "#attribute" },
-        { "include": "#line-break" }
+        { "include": "#rhythmic-sign" },
+        { "include": "#extra-symbols" },
+        { "include": "#attribute" }
       ]
     },
     "nabc-section": {
@@ -141,13 +145,197 @@
       "begin": "\\|",
       "end": "(?=\\||\\))",
       "beginCaptures": { "0": { "name": "keyword.operator.nabc-separator.gabc" } },
-      "contentName": "meta.nabc-content.gabc"
+      "patterns": [
+        { "include": "#nabc-content" }
+      ]
+    },
+    "nabc-content": {
+      "patterns": [
+        { "include": "#nabc-spacing" },
+        { "include": "#nabc-fusion" },
+        { "include": "#nabc-subpunctis-prepunctis" },
+        { "include": "#nabc-basic-glyphs" },
+        { "include": "#nabc-modifiers" }
+      ]
+    },
+    "nabc-spacing": {
+      "patterns": [
+        {
+          "comment": "NABC spacing codes: /, //, `, ``",
+          "name": "keyword.other.unit.gabc",
+          "match": "//|``|/|`"
+        }
+      ]
+    },
+    "nabc-fusion": {
+      "patterns": [
+        {
+          "comment": "NABC glyph fusion with ! operator",
+          "match": "(vi|pu|ta|gr|cl|pe|to|pr|sc|cm|un|sa|ob|tr|qu|vr)(!)",
+          "captures": {
+            "1": { "name": "keyword.control.gabc" },
+            "2": { "name": "keyword.operator.gabc" }
+          }
+        }
+      ]
+    },
+    "nabc-basic-glyphs": {
+      "patterns": [
+        {
+          "comment": "NABC basic 2-letter glyphs",
+          "name": "keyword.control.gabc",
+          "match": "\\b(vi|pu|ta|gr|cl|pe|to|pr|sc|cm|un|sa|ob|tr|qu|vr)\\b"
+        }
+      ]
+    },
+    "nabc-subpunctis-prepunctis": {
+      "patterns": [
+        {
+          "comment": "Subpunctis and prepunctis with numbers",
+          "match": "(pp|su)(\\d+)",
+          "captures": {
+            "1": { "name": "variable.language.gabc" },
+            "2": { "name": "constant.numeric.gabc" }
+          }
+        }
+      ]
+    },
+    "nabc-modifiers": {
+      "patterns": [
+        {
+          "comment": "NABC modifiers with optional variant numbers",
+          "match": "([SGM\\->~])(\\d*)",
+          "captures": {
+            "1": { "name": "variable.other.gabc" },
+            "2": { "name": "constant.numeric.gabc" }
+          }
+        }
+      ]
     },
     "clef": {
       "patterns": [
         {
-          "name": "keyword.control.clef.gabc",
-          "match": "c[b1-4]|f[1-4]|cb[b1-4]"
+          "comment": "Simple clef without linking",
+          "name": "keyword.control.gabc",
+          "match": "\\b([cf])(b)?([1-4])\\b"
+        }
+      ]
+    },
+    "clef-linking": {
+      "patterns": [
+        {
+          "comment": "Clef linking with @ operator (c2@c4)",
+          "match": "\\b([cf])(b)?([1-4])(@)([cf])(b)?([1-4])\\b",
+          "captures": {
+            "1": { "name": "keyword.control.gabc" },
+            "2": { "name": "keyword.control.gabc" },
+            "3": { "name": "keyword.control.gabc" },
+            "4": { "name": "keyword.operator.gabc" },
+            "5": { "name": "keyword.control.gabc" },
+            "6": { "name": "keyword.control.gabc" },
+            "7": { "name": "keyword.control.gabc" }
+          }
+        }
+      ]
+    },
+    "custos": {
+      "patterns": [
+        {
+          "comment": "Custos: z0, Z0, or pitch followed by +",
+          "name": "variable.other.gabc",
+          "match": "[zZ]0|[a-npA-NP]\\+"
+        }
+      ]
+    },
+    "line-break": {
+      "patterns": [
+        {
+          "comment": "Line break with modifier (z+, z-, Z+, Z-)",
+          "match": "([zZ])([+-])",
+          "captures": {
+            "1": { "name": "constant.character.escape.gabc" },
+            "2": { "name": "keyword.operator.gabc" }
+          }
+        },
+        {
+          "comment": "Simple line break (z, Z) - not followed by 0 or +/-",
+          "name": "constant.character.escape.gabc",
+          "match": "[zZ](?![0+-])"
+        }
+      ]
+    },
+    "fusion-bracket": {
+      "patterns": [
+        {
+          "comment": "Fusion with bracket notation @[...]",
+          "begin": "(@)(\\[)",
+          "end": "\\]",
+          "beginCaptures": {
+            "1": { "name": "entity.name.function.gabc" },
+            "2": { "name": "punctuation.definition.bracket.begin.gabc" }
+          },
+          "endCaptures": { "0": { "name": "punctuation.definition.bracket.end.gabc" } },
+          "patterns": [
+            { "include": "#pitch-with-modifiers" }
+          ]
+        }
+      ]
+    },
+    "initio-debilis": {
+      "patterns": [
+        {
+          "comment": "Initio debilis: -[pitch][leaning][alterations][shapes]",
+          "name": "variable.other.constant.gabc",
+          "match": "-([a-npA-NP])([012])?([xyXY#?]+)?([wvosqr=~<>O]+)?([01])?"
+        }
+      ]
+    },
+    "pitch-with-modifiers": {
+      "patterns": [
+        {
+          "comment": "Pitch with alteration and/or shape, followed by @ fusion",
+          "match": "([a-npA-NP])([012])?([xyXY#?]+)?([wvosqr=~<>O]+)?([01])?(@)",
+          "captures": {
+            "1": { "name": "variable.language.gabc" },
+            "2": { "name": "variable.language.gabc" },
+            "3": { "name": "string.regexp.gabc" },
+            "4": { "name": "variable.other.constant.gabc" },
+            "5": { "name": "variable.other.constant.gabc" },
+            "6": { "name": "keyword.operator.gabc" }
+          }
+        },
+        {
+          "comment": "Pitch with alteration (priority over shape)",
+          "name": "string.regexp.gabc",
+          "match": "([a-npA-NP])([012])?([xyXY#?]+)([wvosqr=~<>O]+)?([01])?"
+        },
+        {
+          "comment": "Pitch with shape only (no alteration)",
+          "name": "variable.other.constant.gabc",
+          "match": "([a-npA-NP])([012])?([wvosqr=~<>O]+)([01])?"
+        },
+        {
+          "comment": "Plain pitch (no alteration or shape)",
+          "name": "variable.language.gabc",
+          "match": "[a-npA-NP]([012])?"
+        }
+      ]
+    },
+    "rhythmic-sign": {
+      "patterns": [
+        {
+          "comment": "Rhythmic signs r1-r8",
+          "name": "variable.other.gabc",
+          "match": "r[1-8]"
+        }
+      ]
+    },
+    "extra-symbols": {
+      "patterns": [
+        {
+          "comment": "Punctum mora, ictus, episema",
+          "name": "variable.other.gabc",
+          "match": "\\.|'|_|-"
         }
       ]
     },
@@ -159,35 +347,63 @@
         }
       ]
     },
-    "pitch": {
-      "patterns": [
-        {
-          "name": "constant.character.pitch.gabc",
-          "match": "[a-mA-M]"
-        }
-      ]
-    },
-    "modifier": {
-      "patterns": [
-        {
-          "name": "storage.type.modifier.gabc",
-          "match": "[owOqWvVs~<>_]"
-        }
-      ]
-    },
+
     "bar": {
       "patterns": [
         {
-          "name": "punctuation.separator.bar.gabc",
-          "match": "[`,;:`:|::|\\[\\]]|r0|r[1-9]"
+          "comment": "Double colon with question mark",
+          "name": "keyword.control.gabc",
+          "match": "::?"
+        },
+        {
+          "comment": "Bars with ledger line indicator",
+          "match": "([`,;:])([0-8])",
+          "captures": {
+            "1": { "name": "keyword.control.gabc" },
+            "2": { "name": "constant.numeric.gabc" }
+          }
+        },
+        {
+          "comment": "Bars with question mark",
+          "match": "(:)(\\?)",
+          "captures": {
+            "1": { "name": "keyword.control.gabc" },
+            "2": { "name": "keyword.control.gabc" }
+          }
+        },
+        {
+          "comment": "Simple bars",
+          "name": "keyword.control.gabc",
+          "match": "[`,;:\\^]0?"
         }
       ]
     },
     "spacing": {
       "patterns": [
         {
-          "name": "keyword.operator.spacing.gabc",
-          "match": "!|@|/[0-9]*|//[0-9]*"
+          "comment": "Spacing with bracket [number]",
+          "name": "keyword.other.unit.gabc",
+          "match": "/\\[[^\\]]+\\]"
+        },
+        {
+          "comment": "Double spacing codes",
+          "name": "keyword.other.unit.gabc",
+          "match": "//|!!"
+        },
+        {
+          "comment": "Special spacing codes",
+          "name": "keyword.other.unit.gabc",
+          "match": "/[0!]"
+        },
+        {
+          "comment": "Single spacing codes (but not @ which is handled by fusion)",
+          "name": "keyword.other.unit.gabc",
+          "match": "[!/](?!@)"
+        },
+        {
+          "comment": "Standalone @ spacing code (not followed by [)",
+          "name": "keyword.other.unit.gabc",
+          "match": "@(?!\\[)"
         }
       ]
     },
