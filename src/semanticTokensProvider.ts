@@ -327,6 +327,110 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
+      // Check for @[...] fusion before checking for attributes
+      // This needs to be before the attribute check to prevent skipping the content
+      if (char === '@' && pos + 1 < gabcText.length && gabcText[pos + 1] === '[') {
+        // Tokenize only the @ as function
+        builder.push(
+          range.start.line,
+          range.start.character + pos,
+          1,
+          this.getTokenType('function'),
+          0
+        );
+        pos++; // Move past @, now at [
+        
+        // Find closing bracket
+        const closingBracket = gabcText.indexOf(']', pos);
+        if (closingBracket !== -1) {
+          pos++; // Move past [
+          
+          // Tokenize pitches inside [...] normally
+          while (pos < closingBracket) {
+            const innerChar = gabcText[pos];
+            
+            // Skip whitespace
+            if (/\s/.test(innerChar)) {
+              pos++;
+              continue;
+            }
+            
+            // Process pitch with alterations and shapes
+            if (/[a-npA-NP]/.test(innerChar)) {
+              const isUpperCase = /[A-NP]/.test(innerChar);
+              let tokenLength = 1;
+              let hasAlteration = false;
+              let hasShape = false;
+              const pitchStart = pos;
+              pos++;
+              
+              // Include leaning indicator after uppercase pitch
+              if (isUpperCase && pos < closingBracket && /[012]/.test(gabcText[pos])) {
+                tokenLength++;
+                pos++;
+              }
+              
+              // Include alterations
+              const alterationStart = pos;
+              while (pos < closingBracket && /[xyXY#?]/.test(gabcText[pos])) {
+                tokenLength++;
+                pos++;
+              }
+              if (pos > alterationStart) {
+                hasAlteration = true;
+              }
+              
+              // Include note shapes
+              const shapeStart = pos;
+              while (pos < closingBracket && /[wvosqr=~<>O]/.test(gabcText[pos])) {
+                tokenLength++;
+                pos++;
+                
+                // Include oriscus orientation or r0
+                if (pos < closingBracket && /[01]/.test(gabcText[pos])) {
+                  const prevChar = gabcText[pos - 1];
+                  if (prevChar === 'o' || prevChar === 'O' || prevChar === 'r') {
+                    tokenLength++;
+                    pos++;
+                  }
+                }
+              }
+              if (pos > shapeStart) {
+                hasShape = true;
+              }
+              
+              // Determine token type based on content
+              let tokenType: string;
+              if (hasAlteration) {
+                tokenType = 'macro';
+              } else if (hasShape) {
+                tokenType = 'parameter';
+              } else {
+                tokenType = 'class';
+              }
+              
+              builder.push(
+                range.start.line,
+                range.start.character + pitchStart,
+                tokenLength,
+                this.getTokenType(tokenType),
+                0
+              );
+            } else {
+              // Skip any other character
+              pos++;
+            }
+          }
+          
+          // Move past ]
+          pos = closingBracket + 1;
+        } else {
+          // No closing bracket found, just move past @
+          pos++;
+        }
+        continue;
+      }
+      
       // Skip attributes
       if (char === '[') {
         const closingBracket = gabcText.indexOf(']', pos);
@@ -447,6 +551,19 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           this.getTokenType(tokenType),
           0
         );
+        
+        // Check for @ fusion operator after pitch (f@h@i)
+        if (pos < gabcText.length && gabcText[pos] === '@') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('operator'),
+            0
+          );
+          pos++;
+        }
+        
         continue;
       }
       
@@ -510,6 +627,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
       
       // Spacing codes: !, !!, @, /, //, /0, /!, /[number]
+      // Note: @[...] is handled earlier in the loop
       if (char === '!' || char === '@' || char === '/') {
         // Check for !! (centered text)
         if (char === '!' && pos + 1 < gabcText.length && gabcText[pos + 1] === '!') {
@@ -581,6 +699,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         }
         
         // Single !, @, or / (small space, no space, or neumatic cut)
+        // Note: standalone @ is spacing code, not fusion operator
         builder.push(
           range.start.line,
           range.start.character + pos,
@@ -900,6 +1019,19 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             this.getModifier('readonly')
           );
           pos += 2;
+          
+          // Check for ! fusion operator after glyph (to!vi)
+          if (pos < nabcText.length && nabcText[pos] === '!') {
+            builder.push(
+              line,
+              startChar + pos,
+              1,
+              this.getTokenType('operator'),
+              0
+            );
+            pos++;
+          }
+          
           continue;
         }
         

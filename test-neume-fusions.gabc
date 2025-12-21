@@ -1,0 +1,139 @@
+name: Test - Neume Fusions;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 1: GABC Fusion com @ entre pitches (operator)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: 
+% - f, h, i → pitch color (verde-água ou cor apropriada)
+% - @ (entre pitches) → operator color (magenta/rosa)
+(c4) Fu(f@h@i)sion(g@h) test(e@f@g@h) (::)
+
+% Fusion com alterations
+% ESPERADO:
+% - fx, hx, ix → alteration color (azul - macro)
+% - @ → operator color (magenta/rosa)
+(c4) Flat(fx@hx@ix) fu(gx@hx)sion(ex@fx) (::)
+
+% Fusion com shapes
+% ESPERADO:
+% - fv, hv, iv → shape color (azul claro - parameter)
+% - @ → operator color (magenta/rosa)
+(c4) Vir(fv@hv@iv)ga(gv@hv) fu(ev@fv)sion(fv@gv) (::)
+
+% Fusion com alterations e shapes
+% ESPERADO:
+% - fxv, hxv, ixv → alteration color (azul - prioridade)
+% - @ → operator color (magenta/rosa)
+(c4) Com(fxv@hxv@ixv)plex(gxv@hxv) test(exv@fxv) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 2: GABC Fusion com @[...] (function - apenas @)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: 
+% - @ → function color (amarelo)
+% - [fhi] → pitches com cores normais (f, h, i com cor de pitch)
+(c4) Brack(@[fhi])et(@[gh]) fu(@[efg])sion(@[fghi]) (::)
+
+% Com alterations
+% ESPERADO:
+% - @ → function color (amarelo)
+% - [fxhxix] → pitches com alteration color (azul - macro)
+(c4) Alt(@[fxhxix]) brack(@[gxhx])et(@[exfx]) (::)
+
+% Com shapes
+% ESPERADO:
+% - @ → function color (amarelo)
+% - [fvhviv] → pitches com shape color (azul claro - parameter)
+(c4) Shape(@[fvhviv]) brack(@[gvhv])et(@[evfv]) (::)
+
+% Complexo
+% ESPERADO:
+% - @ → function color (amarelo)
+% - [fxvhxvixv] → pitches com alteration color (azul - prioridade)
+(c4) Com(@[fxvhxvixv])plex(@[gxvhxv]) test(@[exvfxv]) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: @ standalone (spacing code - type color)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: @ standalone → type color (azul - keyword.other.unit)
+% NÃO é fusion operator quando não está entre pitches
+(c4) Spa(@)cing(@) code(@) test(@) (::)
+
+% @ depois de bar não é fusion
+(c4) Bar(f) @ test(g) @ here(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 4: NABC Fusion com ! entre glyphs (operator)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% - to, vi → glyph color (roxo - keyword)
+% - ! (entre glyphs) → operator color (magenta/rosa)
+(c4) Te(gh|to!vi)st(ij|pu!ta) fu(gh|to!vi!pu)sion(fh|cl!pe) (::)
+
+% Múltiplas fusões
+(c4) Com(gh|vi!pu!ta!to)plex(ij|to!vi!pu) test(fh|pu!ta) (::)
+
+% Com modifiers
+(c4) Mo(gh|to!viS)di(ij|pu!taG)fied(fh|to!viM) (::)
+
+% Com spacing codes
+(c4) Spa(gh|to/vi!pu)ced(ij|to!vi/pu) fu(fh|to//vi!pu)sion(gh|to!vi`pu) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 5: Validação visual - Cores diferentes
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Comparação GABC:
+% - f@h → pitch + OPERATOR + pitch (verde-água + magenta + verde-água)
+% - @[fh] → FUNCTION (amarelo)
+% - f @ g → pitch + SPACING + pitch (verde-água + azul + verde-água)
+
+(c4) Op(f@h) func(@[fh]) spa(f @ g) test(h) (::)
+
+% Comparação NABC:
+% - to!vi → glyph + OPERATOR + glyph (roxo + magenta + roxo)
+% - to vi → glyph + space + glyph (roxo + space + roxo)
+
+(c4) Fu(gh|to!vi) sep(ij|to vi) test(fh|pu!ta) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 6: Casos edge
+% ═══════════════════════════════════════════════════════════════════════════
+
+% @ no início ou fim (spacing code, não fusion)
+(c4) Start(@f) end(h@) mid(@f@h@) test(g) (::)
+
+% @[...] com conteúdo vazio ou inválido
+(c4) Empty(@[]) in(@[x])valid(@[123]) test(f) (::)
+
+% ! em GABC (spacing code, não fusion)
+(c4) Spa(f)cing(!) test(g) (::)
+
+% ! no início ou fim de NABC
+(c4) Start(gh|!to) end(ij|vi!) mid(fh|!to!vi!) test(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% RESULTADO ESPERADO - RESUMO DE CORES
+% ═══════════════════════════════════════════════════════════════════════════
+
+% GABC:
+% ✓ @ entre pitches (f@h) → OPERATOR (magenta/rosa)
+% ✓ @ em @[fhi] → FUNCTION (amarelo), [fhi] → highlights normais dos pitches
+% ✓ @ standalone (spacing) → TYPE (azul - keyword.other.unit)
+% ✓ Pitches mantém suas cores (verde-água/azul/azul claro)
+
+% NABC:
+% ✓ ! entre glyphs (to!vi) → OPERATOR (magenta/rosa)
+% ✓ Glyphs mantém cor roxo (keyword)
+% ✓ Modifiers mantém cores (variable)
+% ✓ Spacing codes mantém cor azul (type)
+
+% TOKEN TYPES:
+% operator → variable.parameter.gabc (magenta/rosa)
+% function → entity.name.function.gabc (amarelo)
+% type → keyword.other.unit.gabc (azul)
