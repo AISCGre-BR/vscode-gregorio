@@ -291,11 +291,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     // Tokenize the gabc string character by character
     this.tokenizeGabcString(gabcText, range, builder);
     
-    // Tokenize NABC if present
-    if (noteGroup.nabcParsed && noteGroup.nabcParsed.length > 0) {
-      for (const nabcGlyph of noteGroup.nabcParsed) {
-        this.tokenizeNABCGlyph(nabcGlyph, builder);
-      }
+    // Tokenize NABC if present (detect pipe character)
+    const pipeIndex = gabcText.indexOf('|');
+    if (pipeIndex !== -1) {
+      // NABC content starts after the pipe
+      const nabcText = gabcText.substring(pipeIndex + 1);
+      const nabcStartChar = range.start.character + pipeIndex + 1;
+      this.tokenizeNABCContent(nabcText, range.start.line, nabcStartChar, builder);
     }
     
     // Tokenize custos if present
@@ -354,6 +356,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     // 2. Tokenize modifiers and note shapes
     while (pos < gabcText.length) {
       const char = gabcText[pos];
+      
+      // Skip NABC content (after pipe) - will be tokenized by tokenizeNABCGlyph()
+      // NABC syntax is (pitch|nabc_content) with only ONE pipe
+      if (char === '|') {
+        // Skip to end of gabcText since NABC continues until end of note group
+        pos = gabcText.length;
+        continue;
+      }
       
       // Skip attributes - they will be tokenized separately by tokenizeAttribute()
       if (char === '[') {
@@ -423,7 +433,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Spacing codes: !, !!, @, //, /[number]
+      // Spacing codes: !, !!, @, /, //, /0, /!, /[number]
       if (char === '!' || char === '@' || char === '/') {
         // Check for !! (centered text)
         if (char === '!' && pos + 1 < gabcText.length && gabcText[pos + 1] === '!') {
@@ -431,7 +441,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             range.start.line,
             range.start.character + pos,
             2,
-            this.getTokenType('class'),
+            this.getTokenType('type'),
             0
           );
           pos += 2;
@@ -444,14 +454,40 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             range.start.line,
             range.start.character + pos,
             2,
-            this.getTokenType('class'),
+            this.getTokenType('type'),
             0
           );
           pos += 2;
           continue;
         }
         
-        // Check for /[number] (custom spacing)
+        // Check for /0 (zero-width space)
+        if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '0') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2,
+            this.getTokenType('type'),
+            0
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Check for /! (custom space)
+        if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '!') {
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2,
+            this.getTokenType('type'),
+            0
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Check for /[number] (custom spacing with bracket)
         if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '[') {
           const closingBracket = gabcText.indexOf(']', pos + 2);
           if (closingBracket !== -1) {
@@ -460,7 +496,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
               range.start.line,
               range.start.character + pos,
               spacingLength,
-              this.getTokenType('class'),
+              this.getTokenType('type'),
               0
             );
             pos = closingBracket + 1;
@@ -468,12 +504,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           }
         }
         
-        // Single ! or @ (small space or no space)
+        // Single !, @, or / (small space, no space, or neumatic cut)
         builder.push(
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('class'),
+          this.getTokenType('type'),
           0
         );
         pos++;
@@ -557,8 +593,9 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Extra symbols: . (punctum mora), ' (ictus), _ (episema), ` (rare)
-      if (char === '.' || char === "'" || char === '_' || char === '`') {
+      // Extra symbols: . (punctum mora), ' (ictus), _ (episema)
+      // Note: ` is a separation bar (virgula) in GABC, handled earlier
+      if (char === '.' || char === "'" || char === '_') {
         // Check for double punctum mora (..)
         if (char === '.' && pos + 1 < gabcText.length && gabcText[pos + 1] === '.') {
           builder.push(
@@ -596,17 +633,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           }
           // Check for position digit after _ (episema: 0-5)
           if (currentSymbol === '_' && pos < gabcText.length && /[0-5]/.test(gabcText[pos])) {
-            builder.push(
-              range.start.line,
-              range.start.character + pos,
-              1,
-              this.getTokenType('number'),
-              0
-            );
-            pos++;
-          }
-          // Check for position digit after ` (backtick: 0, 1)
-          if (currentSymbol === '`' && pos < gabcText.length && /[01]/.test(gabcText[pos])) {
             builder.push(
               range.start.line,
               range.start.character + pos,
@@ -809,6 +835,198 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     );
   }
   
+  private tokenizeNABCContent(nabcText: string, line: number, startChar: number, builder: vscode.SemanticTokensBuilder): void {
+    // Tokenize NABC content character by character
+    // This includes: basic glyphs (2 letters), modifiers (S, G, M, -, >, ~), 
+    // spacing codes (/, //, `, ``), and other elements
+    
+    let pos = 0;
+    while (pos < nabcText.length) {
+      const char = nabcText[pos];
+      
+      // Spacing codes: /, //, `, ``
+      if (char === '/' || char === '`') {
+        // Check for double characters (//, ``)
+        if (pos + 1 < nabcText.length && nabcText[pos + 1] === char) {
+          builder.push(
+            line,
+            startChar + pos,
+            2,
+            this.getTokenType('type'),
+            0
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Single character (/, `)
+        builder.push(
+          line,
+          startChar + pos,
+          1,
+          this.getTokenType('type'),
+          0
+        );
+        pos++;
+        continue;
+      }
+      
+      // Check for 2-letter basic glyph
+      if (pos + 1 < nabcText.length) {
+        const twoLetters = nabcText.substring(pos, pos + 2);
+        const basicGlyphs = ['vi', 'pu', 'ta', 'gr', 'cl', 'pe', 'to', 'pr', 'sc', 'cm', 'un', 'sa', 'ob', 'tr', 'qu', 'vr'];
+        if (basicGlyphs.includes(twoLetters)) {
+          builder.push(
+            line,
+            startChar + pos,
+            2,
+            this.getTokenType('keyword'),
+            this.getModifier('readonly')
+          );
+          pos += 2;
+          continue;
+        }
+        
+        // Check for pp (prepunctis) or su (subpunctis)
+        if (twoLetters === 'pp' || twoLetters === 'su') {
+          builder.push(
+            line,
+            startChar + pos,
+            2,
+            this.getTokenType('class'),
+            this.getModifier('readonly')
+          );
+          pos += 2;
+          
+          // After pp/su, skip the number
+          if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+            const numStart = pos;
+            while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+              pos++;
+            }
+            builder.push(
+              line,
+              startChar + numStart,
+              pos - numStart,
+              this.getTokenType('number'),
+              0
+            );
+          }
+          continue;
+        }
+      }
+      
+      // Modifiers: S, G, M, -, >, ~
+      if (/[SGM\->~]/.test(char)) {
+        builder.push(
+          line,
+          startChar + pos,
+          1,
+          this.getTokenType('variable'),
+          0
+        );
+        pos++;
+        
+        // Check for variant number after modifier
+        if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+          const numStart = pos;
+          while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+            pos++;
+          }
+          builder.push(
+            line,
+            startChar + numStart,
+            pos - numStart,
+            this.getTokenType('number'),
+            0
+          );
+        }
+        continue;
+      }
+      
+      // Significant letters (St. Gall: a,c,e,i,l,m,s,t,v / Laon: a,b,e,i,m,o,p,q,s,t,v)
+      if (/[ls]/.test(char)) {
+        builder.push(
+          line,
+          startChar + pos,
+          1,
+          this.getTokenType('variable'),
+          0
+        );
+        pos++;
+        
+        // Check for second letter
+        if (pos < nabcText.length && /[aceimstv]/.test(nabcText[pos])) {
+          builder.push(
+            line,
+            startChar + pos,
+            1,
+            this.getTokenType('variable'),
+            0
+          );
+          pos++;
+        }
+        
+        // Check for number
+        if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+          const numStart = pos;
+          while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+            pos++;
+          }
+          builder.push(
+            line,
+            startChar + numStart,
+            pos - numStart,
+            this.getTokenType('number'),
+            0
+          );
+        }
+        continue;
+      }
+      
+      // Pitch descriptor (pd + letter)
+      if (char === 'p' && pos + 1 < nabcText.length && nabcText[pos + 1] === 'd') {
+        builder.push(
+          line,
+          startChar + pos,
+          2,
+          this.getTokenType('class'),
+          0
+        );
+        pos += 2;
+        
+        // Check for letter after pd
+        if (pos < nabcText.length && /[adlhs123]/.test(nabcText[pos])) {
+          builder.push(
+            line,
+            startChar + pos,
+            1,
+            this.getTokenType('class'),
+            0
+          );
+          pos++;
+        }
+        continue;
+      }
+      
+      // Fusion (+) and connection (-)
+      if (char === '+' || char === '-') {
+        builder.push(
+          line,
+          startChar + pos,
+          1,
+          this.getTokenType('operator'),
+          0
+        );
+        pos++;
+        continue;
+      }
+      
+      // Skip other characters (spaces, etc.)
+      pos++;
+    }
+  }
+  
   private tokenizeNABCGlyph(glyph: NABCGlyphDescriptor, builder: vscode.SemanticTokensBuilder): void {
     if (!glyph.range) {
       return;
@@ -889,7 +1107,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
               range.start.line,
               range.start.character + pos,
               2,
-              this.getTokenType('class'),
+              this.getTokenType('type'),
               0
             );
             pos += 2;
@@ -901,7 +1119,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             range.start.line,
             range.start.character + pos,
             1,
-            this.getTokenType('class'),
+            this.getTokenType('type'),
             0
           );
           pos++;

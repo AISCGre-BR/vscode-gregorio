@@ -1,0 +1,61 @@
+name: Teste Simples - Spacing Codes;
+%%
+
+% Teste rápido: Todos os spacing codes devem ter highlight keyword.other.unit
+
+% ═══════════════════════════════════════════════════════════════════════════
+% GABC spacing codes (TODOS os códigos):
+% ═══════════════════════════════════════════════════════════════════════════
+
+(c4) Test(/0)zero(g) (::)
+(c4) Test(/!)custom(g) (::)
+(c4) Test(/)cut(g) (::)
+(c4) Test(//)large(g) (::)
+(c4) Test(!)small(g) (::)
+(c4) Test(!!)centered(g) (::)
+(c4) Test(g@)nospace(h) (::)
+(c4) Test(/[0.5])bracket(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% NABC spacing codes (TODOS keyword.other.unit = AZUL):
+% ═══════════════════════════════════════════════════════════════════════════
+
+(c4) Test(g|vi`pu) NABC(h) (::)
+(c4) Test(g|vi``pu) NABC(h) (::)
+(c4) Test(g|vi/pu) NABC(h) (::)
+(c4) Test(g|vi//pu) NABC(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% GABC separation bar backtick (keyword = ROXO):
+% ═══════════════════════════════════════════════════════════════════════════
+
+(c4) Test(g)virgula(`) bar(h) (::)
+(c4) Test(g)ledger(`0) bar(h) (::)
+(c4) After(g`) pitch(h) bar(i) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% CRÍTICO: Backtick context-aware
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ` fora de |...| = ROXO (bar)
+% ` dentro de |...| = AZUL (spacing)
+(c4) GABC(`) vs(g|vi`pu) NABC(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% Comparação: spacing codes devem ter mesma cor que units
+% ═══════════════════════════════════════════════════════════════════════════
+
+(c4) Spa(/0)cing(g[ll:2mm]) sa(/!)me(h[ll:1cm]) co(//)lor(i[ll:2ex]) (::)
+(c4) NABC(g|vi`pu``ta) same(h[ll:2mm]) color(i[ll:1em]) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% VALIDAÇÃO CRÍTICA: /0 e /! devem ser UM ÚNICO TOKEN
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Se /0 aparece com / e 0 em cores diferentes = ERRO
+% Se /! aparece com / e ! em cores diferentes = ERRO
+% ESPERADO: /0 e /! inteiros na cor keyword.other.unit
+
+(c4) Check(/0)this(g) and(/!)this(h) (::)
+
+

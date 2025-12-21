@@ -1,0 +1,46 @@
+name: CRITICAL TEST - NABC Spacing Tokens;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE CRÍTICO: Os spacing codes NABC DEVEM receber semantic token 'type'
+% ═══════════════════════════════════════════════════════════════════════════
+
+% TESTE 1: / (slash) em NABC
+% ESPERADO: COR AZUL (keyword.other.unit) - MESMA COR QUE 2mm
+% PROBLEMA: Se estiver SEM COR ou ROXO = ERRO
+(c4) Slash(g|vi/pu) test(h[ll:2mm]) same(i) color(j) (::)
+
+% TESTE 2: // (double slash) em NABC
+% ESPERADO: COR AZUL (keyword.other.unit) - MESMA COR QUE 1cm
+% PROBLEMA: Se estiver SEM COR ou ROXO = ERRO
+(c4) Double(g|vi//pu) test(h[ll:1cm]) same(i) color(j) (::)
+
+% TESTE 3: ` (backtick) em NABC
+% ESPERADO: COR AZUL (keyword.other.unit) - MESMA COR QUE 2ex
+% PROBLEMA: Se estiver SEM COR ou ROXO = ERRO
+(c4) Backtick(g|vi`pu) test(h[ll:2ex]) same(i) color(j) (::)
+
+% TESTE 4: `` (double backtick) em NABC
+% ESPERADO: COR AZUL (keyword.other.unit) - MESMA COR QUE 1em
+% PROBLEMA: Se estiver SEM COR ou ROXO = ERRO
+(c4) Double(g|vi``pu) test(h[ll:1em]) same(i) color(j) (::)
+
+% TESTE 5: Todos juntos
+% ESPERADO: TODOS os spacing codes em COR AZUL
+(c4) All(g|vi/pu//ta`cl``pe) spacing(h) codes(i) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% COMPARAÇÃO: Backtick FORA vs DENTRO de NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% FORA de |...|: ` = ROXO (separation bar)
+% DENTRO de |...|: ` = AZUL (spacing code)
+(c4) Outside(`) purple(g) vs(h|vi`pu) blue(i) inside(j) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% VALIDAÇÃO: NABC glyphs devem ser ROXO, spacing codes AZUL
+% ═══════════════════════════════════════════════════════════════════════════
+
+% vi, pu, ta = ROXO (keyword)
+% /, ` = AZUL (keyword.other.unit)
+(c4) Glyphs(g|vi/pu`ta) mixed(h) (::)

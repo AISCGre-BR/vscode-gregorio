@@ -1,0 +1,84 @@
+name: Debug NABC Spacing - Validação Completa;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 1: Spacing code / (slash) no contexto NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: / deve ter highlight keyword.other.unit (azul claro/cyan)
+% INCORRETO: / com highlight keyword (roxo) ou sem highlight
+(c4) Test(g|vi/pu) slash(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 2: Spacing code // (double slash) no contexto NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: // deve ter highlight keyword.other.unit (azul claro/cyan)
+% DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Test(g|vi//pu) double(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: Spacing code ` (backtick) no contexto NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: ` deve ter highlight keyword.other.unit (azul claro/cyan)
+% INCORRETO: ` com highlight keyword (roxo - bar) ou sem highlight
+(c4) Test(g|vi`pu) backtick(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 4: Spacing code `` (double backtick) no contexto NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: `` deve ter highlight keyword.other.unit (azul claro/cyan)
+% DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Test(g|vi``pu) double(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 5: Múltiplos spacing codes em sequência
+% ═══════════════════════════════════════════════════════════════════════════
+
+(c4) Multi(g|vi/pu//ta`cl``pe) ple(h) spacing(i) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 6: NABC glyphs devem ter highlight keyword (roxo)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% vi, pu, ta, cl, pe devem ter highlight keyword (roxo)
+% /, //, `, `` devem ter highlight keyword.other.unit (azul)
+(c4) Glyphs(g|vi) and(h|pu) spa(i|ta/cl) cing(j|pe//to) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 7: Comparação com GABC spacing codes
+% ═══════════════════════════════════════════════════════════════════════════
+
+% GABC spacing: /, //, !, @ devem ter keyword.other.unit (azul)
+% NABC spacing: /, //, `, `` devem ter keyword.other.unit (azul)
+% Devem ter a MESMA COR
+
+(c4) GABC(/)spa(//)cing(g|vi/pu//ta) NABC(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 8: Backtick no contexto GABC vs NABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ` no GABC = separation bar (virgula) = keyword (roxo)
+% ` no NABC = spacing code = keyword.other.unit (azul)
+% Devem ter CORES DIFERENTES
+
+(c4) GABC(g)bar(`)here(h) vs(i|vi`pu) NABC(j) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% VALIDAÇÃO VISUAL ESPERADA
+% ═══════════════════════════════════════════════════════════════════════════
+
+% COR AZUL CLARO/CYAN (keyword.other.unit):
+% - / e // dentro de |...|
+% - ` e `` dentro de |...|
+% - /, //, !, @, /0, /!, /[n] fora de |...|
+% - mm, cm, ex, em, pt em atributos
+
+% COR ROXA (keyword):
+% - vi, pu, ta, cl, pe, to, pr, etc. dentro de |...|
+% - ` fora de |...| (separation bar)
+% - Outros separation bars: ^, ,, ;, :, ::
+

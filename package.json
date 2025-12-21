@@ -83,7 +83,7 @@
           "variable": ["variable.other.gabc", "entity.name.note.gabc"],
           "class": ["variable.language.gabc"],
           "macro": ["string.regexp.gabc"],
-          "type": ["entity.name.type.gabc", "support.type.gabc"],
+          "type": ["entity.name.type.gabc", "support.type.gabc", "keyword.other.unit.gabc"],
           "function": ["entity.name.function.gabc"],
           "modifier": ["storage.modifier.gabc"],
           "regexp": ["string.regexp.gabc"],

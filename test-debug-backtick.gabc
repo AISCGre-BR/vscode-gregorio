@@ -1,0 +1,82 @@
+name: Debug NABC Backtick - Validação de Highlight;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE CRÍTICO: Backtick no contexto NABC vs GABC
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 1: Backtick em NABC - DEVE ser keyword.other.unit (AZUL)
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 1.1: ` simples em NABC
+(c4) Test(g|vi`pu) NABC(h) (::)
+
+% Teste 1.2: `` duplo em NABC
+(c4) Test(g|vi``pu) NABC(h) (::)
+
+% Teste 1.3: Múltiplos backticks em NABC
+(c4) Multi(g|vi`pu`ta``cl) NABC(h) (::)
+
+% Teste 1.4: Backtick em diferentes posições NABC
+(c4) Start(g|`vipu) mid(h|vi`pu) end(i|vipu`) NABC(j) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 2: Backtick em GABC - DEVE ser keyword (ROXO)
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 2.1: ` como separation bar
+(c4) GABC(`) bar(g) test(h) (::)
+
+% Teste 2.2: `0 como separation bar com ledger
+(c4) GABC(`0) bar(g) test(h) (::)
+
+% Teste 2.3: Backtick entre notas
+(c4) Note(g`) bar(h) test(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 3: Comparação direta NABC vs GABC
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 3.1: Backtick GABC (roxo) vs NABC (azul) na mesma linha
+(c4) GABC(`) vs(g|vi`pu) NABC(h) (::)
+
+% Teste 3.2: Múltiplos contextos misturados
+(c4) Mix(`0)types(g|vi``pu)here(h`) test(i) (::)
+
+% Teste 3.3: Sequência complexa
+(`) GABC(g`) bar(h) (`0) vs(i|vi`pu) NABC(j|ta``cl) spacing(k) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 4: Validação com outros elementos
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 4.1: NABC backtick com / spacing
+(c4) Both(g|vi`pu/ta) spacings(h|cl//pe) NABC(i) (::)
+
+% Teste 4.2: NABC backtick com units (mesma cor esperada)
+(c4) NABC(g|vi`pu``ta)spa(h[ll:2mm])cing(i[ll:1cm]) match(j) (::)
+
+% Teste 4.3: Todos os spacing codes NABC
+(c4) All(g|vi/pu//ta`cl``pe) NABC(h) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% VERIFICAÇÃO ESPERADA
+% ───────────────────────────────────────────────────────────────────────────
+
+% ✓ Backtick DENTRO de NABC (|...|): keyword.other.unit (AZUL - mesma cor de mm, cm, ex)
+% ✓ Backtick FORA de NABC (GABC): keyword (ROXO - mesma cor de :, ;, ,)
+% ✓ `, `` em NABC: AZUL
+% ✓ `, `0 em GABC: ROXO
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE VISUAL FINAL
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Esta linha deve mostrar claramente a diferença:
+(c4) GABC(`) bar(g`) ROXO(`0) vs(h|vi`) NABC(i|pu``) AZUL(j) (::)
+
+% Se TODOS os backticks estão ROXO = ERRO
+% Se TODOS os backticks estão AZUL = ERRO
+% Se GABC=ROXO e NABC=AZUL = CORRETO ✓
+

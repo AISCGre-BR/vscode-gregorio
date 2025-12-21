@@ -1,0 +1,171 @@
+name: Teste Completo de Spacing Codes;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE DE SPACING CODES - TODOS devem ter highlight keyword.other.unit
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 1: SPACING CODES GABC
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 1.1: /0 (zero-width space) - DEVE SER UM ÚNICO TOKEN
+(c4) Zero(/0)width(g) space(h) (::)
+
+% Teste 1.2: /! (custom space) - DEVE SER UM ÚNICO TOKEN
+(c4) Cus(/!)tom(g) space(h) (::)
+
+% Teste 1.3: / (neumatic cut) - UM CARACTERE
+(c4) Neu(/)ma(g)tic(h) cut(i) (::)
+
+% Teste 1.4: // (large space) - DOIS CARACTERES, UM TOKEN
+(c4) Lar(//)ge(g) space(h) (::)
+
+% Teste 1.5: ! (small space) - UM CARACTERE
+(c4) Sma(!)ll(g) spa(!)ce(h) (::)
+
+% Teste 1.6: !! (centered text) - DOIS CARACTERES, UM TOKEN
+(c4) Cen(!!)te(g)red(h) text(i) (::)
+
+% Teste 1.7: @ (no space) - UM CARACTERE
+(c4) No(g@)space(h) (::)
+
+% Teste 1.8: /[number] (custom spacing with bracket)
+(c4) Cus(/[0.5])tom(g) spa(/[1])cing(h) with(/[1.5])bra(/[2])cket(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 2: SPACING CODES NABC
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 2.1: ` (horizontal adjustment in NABC) - UM CARACTERE
+(c4) Test(g|vi`pu) adjust(h) (::)
+
+% Teste 2.2: `` (double horizontal adjustment) - DOIS CARACTERES, UM TOKEN
+(c4) Test(g|vi``pu) double(h) adjust(i) (::)
+
+% Teste 2.3: / (small space in NABC) - UM CARACTERE
+(c4) Test(g|vi/pu) NABC(h) space(i) (::)
+
+% Teste 2.4: // (large space in NABC) - DOIS CARACTERES, UM TOKEN
+(c4) Test(g|vi//pu) large(h) NABC(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 3: TODOS OS SPACING CODES JUNTOS
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 3.1: Todos os spacing codes GABC em sequência
+(c4) All(/0)(/!)(/)(//)(!)(!!)(@)(/[0.5])codes(g) (::)
+
+% Teste 3.2: Todos os spacing codes NABC em um glyph
+(c4) All(g|vi/pu//ta`cl``pe) NABC(h) codes(i) (::)
+
+% Teste 3.3: GABC e NABC misturados
+(c4) Mix(/0)ed(g|vi/pu)spa(/!)cing(h|ta//cl)codes(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 4: VALIDAÇÃO DE TOKENIZAÇÃO
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 4.1: /0 deve ser UM token (não / e 0 separados)
+% ESPERADO: /0 inteiro em keyword.other.unit
+% INCORRETO: / em keyword.other.unit e 0 em número
+(c4) Vali(/0)date(g) token(h) (::)
+
+% Teste 4.2: /! deve ser UM token (não / e ! separados)
+% ESPERADO: /! inteiro em keyword.other.unit
+% INCORRETO: / em keyword.other.unit e ! em keyword.other.unit separados
+(c4) Vali(/!)date(g) token(h) (::)
+
+% Teste 4.3: // deve ser UM token (não dois / separados)
+% ESPERADO: // inteiro em keyword.other.unit
+% INCORRETO: Dois / separados em keyword.other.unit
+(c4) Vali(//)date(g) token(h) (::)
+
+% Teste 4.4: `` em NABC deve ser UM token
+% ESPERADO: `` inteiro em keyword.other.unit
+(c4) Vali(g|vi``pu)date(h) token(i) (::)
+
+% Teste 4.5: // em NABC deve ser UM token
+% ESPERADO: // inteiro em keyword.other.unit
+(c4) Vali(g|vi//pu)date(h) token(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 5: COMPARAÇÃO COM OUTROS ELEMENTOS
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 5.1: Spacing codes vs. números
+% /0 e /[0.5] devem ter keyword.other.unit
+% 0 isolado (em ll:0) deve ter constant.numeric
+(c4) Spa(/0)cing(g[ll:0]) vs(/[0.5])num(h[ll:1])bers(i) (::)
+
+% Teste 5.2: Spacing codes vs. bars
+% /, //, ! devem ter keyword.other.unit
+% :, ;, , devem ter keyword.control (bars)
+(c4) Spa(/)cing(g) (;) vs(!)bars(h) (,) test(i) (::)
+
+% Teste 5.3: Spacing codes vs. units
+% /, /0, /!, // devem ter keyword.other.unit (MESMA COR)
+% mm, cm, ex, em, pt devem ter keyword.other.unit (MESMA COR)
+(c4) Spa(/0)cing(g[ll:2mm]) sa(/!)me(h[ll:1cm]) co(//)lor(i[ll:2ex]) (::)
+
+% Teste 5.4: Spacing em NABC vs. NABC glyphs
+% /, //, `, `` devem ter keyword.other.unit
+% vi, pu, ta, cl devem ter keyword (glyphs)
+(c4) NABC(g|vi/pu//ta`cl``pe) spa(h)cing(i) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 6: CASOS EXTREMOS
+% ───────────────────────────────────────────────────────────────────────────
+
+% Teste 6.1: Spacing no início
+(c4) (/0)Start(g) (::)
+(c4) (/!)Start(g) (::)
+(c4) (/)Start(g) (::)
+(c4) (//)Start(g) (::)
+(c4) (!)Start(g) (::)
+
+% Teste 6.2: Múltiplos spacing consecutivos
+(c4) Mul(/0)(/!)(/)(//)(!)ti(g)ple(h) (::)
+
+% Teste 6.3: Spacing antes e depois de bars
+(c4) Be(/0)fore(g) (;) (/)after(h) (::)
+
+% Teste 6.4: Spacing com attributes
+(c4) With(/0)attr(g[ll:1]) and(/!)more(h[ll:2mm]) (::)
+
+% Teste 6.5: NABC spacing consecutivos
+(c4) Multi(g|vi/pu//ta`cl``pe) ple(h) (::)
+
+% Teste 6.6: Custom spacing com diferentes valores
+(c4) Va(/[0])lues(/[0.1])from(/[0.5])ze(/[1])ro(/[1.5])to(/[2])two(g) (::)
+
+% ───────────────────────────────────────────────────────────────────────────
+% GRUPO 7: VALIDAÇÃO FINAL
+% ───────────────────────────────────────────────────────────────────────────
+
+% TODOS os seguintes devem ter a MESMA cor (keyword.other.unit):
+(c4) /0(/0) /!(/!) /(/) //(//) !(:) mm(g[ll:2mm]) cm(h[ll:1cm]) (::)
+
+% NABC spacing deve ter a MESMA cor que GABC spacing:
+(c4) GABC(/0)spa(/!)cing(g|vi/pu//ta`cl``) NABC(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% VERIFICAÇÃO ESPERADA
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ✓ /0 = keyword.other.unit (2 chars, 1 token)
+% ✓ /! = keyword.other.unit (2 chars, 1 token)
+% ✓ / = keyword.other.unit (1 char)
+% ✓ // = keyword.other.unit (2 chars, 1 token)
+% ✓ ! = keyword.other.unit (1 char)
+% ✓ !! = keyword.other.unit (2 chars, 1 token)
+% ✓ @ = keyword.other.unit (1 char)
+% ✓ /[n] = keyword.other.unit (full construct)
+% ✓ ` (NABC) = keyword.other.unit (1 char)
+% ✓ `` (NABC) = keyword.other.unit (2 chars, 1 token)
+% ✓ / (NABC) = keyword.other.unit (1 char)
+% ✓ // (NABC) = keyword.other.unit (2 chars, 1 token)
+% ✓ mm, cm, ex, em, pt = keyword.other.unit (same color as spacing)
+
+% COR ESPERADA (Default Dark+): Azul claro / cyan
+% COR ESPERADA (Default Light+): Azul escuro

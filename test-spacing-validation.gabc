@@ -1,0 +1,131 @@
+name: Teste de Validação de Spacing Codes;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% SEÇÃO 1: SPACING CODES GABC - Devem ter highlight keyword.other.unit
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Teste 1.1: /0 (zero-width space) - DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Zero(/0)width(g) spa(/0)ce(h) test(i) (::)
+
+% Teste 1.2: /! (custom space) - DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Cus(/!)tom(g) spa(/!)ce(h) test(i) (::)
+
+% Teste 1.3: / (neumatic cut) - deve ter cor keyword.other.unit (1 char)
+(c4) Neu(/)ma(g)tic(h) cut(i) test(j) (::)
+
+% Teste 1.4: // (large space) - DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Lar(//)ge(g) spa(//)ce(h) test(i) (::)
+
+% Teste 1.5: ! (small space) - deve ter cor keyword.other.unit (1 char)
+(c4) Ky(g)ri(!)e(h) e(!)le(!)i(!)son(i) (::)
+
+% Teste 1.6: !! (centered text) - DEVE SER UM ÚNICO TOKEN (2 chars)
+(c4) Be(g)ne(!!)DI(h)CA(i)MUS(j) (::)
+
+% Teste 1.7: @ (no space) - deve ter cor keyword.other.unit (1 char)
+(c4) No(g@)space(h) te(i@)st(j) (::)
+
+% Teste 1.8: /[number] (custom spacing with bracket) - TODO O CONSTRUCT UM TOKEN
+(c4) Cus(/[0.5])tom(g) spa(/[1])cing(h) test(/[1.5])here(i) (::)
+
+% Teste 1.9: Todos os spacing GABC juntos
+(c4) All(/0)(/!)(/)(//)(!)(!!)(@)(/[0.5])codes(g) here(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% SEÇÃO 2: SPACING CODES NABC - Devem ter highlight keyword.other.unit
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Teste 2.1: / (small space in NABC) - deve ter cor keyword.other.unit
+(c4) Test(g|vi/pu) NABC(h) (::)
+
+% Teste 2.2: // (large space in NABC) - deve ter cor keyword.other.unit
+(c4) Test(g|vi//pu) NABC(h) (::)
+
+% Teste 2.3: ` (horizontal adjustment) - deve ter cor keyword.other.unit
+(c4) Test(g|vi`pu) NABC(h) (::)
+
+% Teste 2.4: `` (double adjustment) - deve ter cor keyword.other.unit
+(c4) Test(g|vi``pu) NABC(h) (::)
+
+% Teste 2.5: Múltiplos spacing codes
+(c4) Multi(g|vi/pu//ta`cl``pe) NABC(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% SEÇÃO 3: UNITS OF MEASURE - Devem TAMBÉM ter keyword.other.unit
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Teste 3.1: Unidades de medida em atributos (mm, cm, ex, em, pt)
+(c4) Test(g[ll:1]) with(h[ll:2mm]) units(i[ll:0.5cm]) here(j[ll:2ex]) (::)
+
+% Teste 3.2: Mais unidades
+(c4) More(g[ll:1.5em]) units(h[ll:10pt]) test(i) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% SEÇÃO 4: VALIDAÇÃO VISUAL COMPARATIVA
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Teste 4.1: Spacing codes vs. outros elementos
+% ! !! @ // /[0.5] devem ter COR DIFERENTE de:
+% - g h i j (pitches - devem ser class/entity.class.name em verde-água)
+% - : ; , (bars - devem ser keyword em roxo)
+% - [ll:1] (atributos - property em azul claro)
+
+(c4) Syl(!)la(g)ble(!)with(h)spa(!)cing(i) (::)
+(c4) Cen(!!)te(g)red(h) text(i) (::)
+(c4) No(g@)space(h) (::)
+(c4) Lar(//)ge(g) spa(!)ce(h) (::)
+(c4) Cus(/[0.5])tom(g) (::)
+
+% Teste 4.2: NABC spacing vs. NABC glyphs
+% / // ` `` devem ter COR DIFERENTE de:
+% - vi pu ta cl pe (glyphs - devem ser keyword em roxo)
+
+(c4) NABC(g|vi/pu) test(h|ta//cl) more(i|pe`pr) final(j|to``su) (::)
+
+% Teste 4.3: Comparação com números
+% Os números DENTRO de /[0.5] podem ter cor diferente
+% Mas todo o /[...] deve ter keyword.other.unit
+
+(c4) Num(/[0])bers(/[1])test(/[0.5])here(/[1.25])end(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% SEÇÃO 5: CASOS EXTREMOS E EDGE CASES
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Teste 5.1: Spacing no início
+(c4) (!)Start(g) (::)
+
+% Teste 5.2: Spacing antes de bar
+(c4) Be(g)fore(!)bar(h) (;) after(i) (::)
+
+% Teste 5.3: Spacing depois de bar
+(c4) Af(g)ter(h) (;) (!)spacing(i) (::)
+
+% Teste 5.4: Múltiplos spacing consecutivos
+(c4) Mul(!)ti(!)ple(!)spa(!)ces(g) (::)
+
+% Teste 5.5: Spacing com attributes
+(c4) With(g!)attr(h[ll:1]) test(i) (::)
+
+% Teste 5.6: Custom spacing com diferentes valores
+(c4) Va(/[0])lues(/[0.1])from(/[0.5])ze(/[1])ro(/[1.5])to(/[2])two(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% VERIFICAÇÃO ESPERADA
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% ✓ ! = keyword.other.unit (mesma cor que mm, cm, ex, em, pt)
+% ✓ !! = keyword.other.unit
+% ✓ @ = keyword.other.unit
+% ✓ // = keyword.other.unit
+% ✓ /[número] completo = keyword.other.unit
+% ✓ / (NABC) = keyword.other.unit
+% ✓ // (NABC) = keyword.other.unit
+% ✓ ` (NABC) = keyword.other.unit
+% ✓ `` (NABC) = keyword.other.unit
+% ✓ mm cm ex em pt = keyword.other.unit
+
+% COR ESPERADA (Default Dark+): Azul claro / cyan (similar a entity.name.type)
+% COR ESPERADA (Default Light+): Azul escuro
