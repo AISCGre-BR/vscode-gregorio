@@ -1,9 +1,34 @@
 name: GABC & NABC Syntax Showcase;
 office-part: Complete Syntax Reference;
-mode: 8;
+occasion: All Sundays;
+meter: Various meters;
+author: Gregorian Chant;
+date: Medieval Period;
+manuscript: Example MS 123;
+manuscript-reference: fol. 42v;
+manuscript-storage-place: Vatican Library;
 book: Tree-sitter-gregorio Test Corpus;
 transcriber: VS Code Extension;
+transcription-date: 20231215;
+mode: 8;
+mode-modifier: \textit{t.};
+mode-differentia: \textsc{g*};
+annotation: \textbf{ANT.};
+annotation: 8\textsuperscript{G};
+staff-lines: 4;
 nabc-lines: 1;
+def-m0: \textcolor{red}{Rubric};
+def-m1: \textbf{Bold};
+def-m2: \textit{Italic};
+def-m3: \emph{Emphasis};
+def-m4: \underline{Underlined};
+oriscus-orientation: legacy;
+gabc-copyright: CC0 - Public Domain;
+score-copyright: Public Domain;
+user-notes: This file demonstrates all header types and GABC/NABC features;
+commentary: This is a comprehensive example file that showcases
+all GABC and NABC syntax features including headers with LaTeX,
+numeric values, and multi-line text;;
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

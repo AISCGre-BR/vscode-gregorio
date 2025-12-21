@@ -12,9 +12,17 @@
   "repository": {
     "header": {
       "patterns": [
+        { "include": "#header-numeric" },
+        { "include": "#header-tex" },
+        { "include": "#header-generic" }
+      ]
+    },
+    "header-numeric": {
+      "patterns": [
         {
-          "name": "meta.header.gabc",
-          "begin": "^([a-zA-Z][a-zA-Z0-9_-]*)\\s*(:)\\s*",
+          "comment": "mode: numeric value (1-8 or Roman numerals)",
+          "name": "meta.header.numeric.mode.gabc",
+          "begin": "^(mode)\\s*(:)\\s*",
           "beginCaptures": {
             "1": { "name": "entity.name.tag.gabc" },
             "2": { "name": "punctuation.separator.gabc" }
@@ -24,20 +32,135 @@
             "0": { "name": "punctuation.terminator.gabc" }
           },
           "patterns": [
-            { "include": "#header-value" }
+            {
+              "comment": "Numbers in mode value",
+              "name": "constant.numeric.gabc",
+              "match": "\\d+"
+            },
+            {
+              "comment": "Roman numerals",
+              "name": "constant.numeric.gabc",
+              "match": "\\b[IVX]+\\b"
+            },
+            {
+              "name": "string.unquoted.gabc",
+              "match": "[^;\\n]+"
+            }
+          ]
+        },
+        {
+          "comment": "staff-lines: numeric value",
+          "name": "meta.header.numeric.staff-lines.gabc",
+          "begin": "^(staff-lines)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "contentName": "constant.numeric.gabc"
+        },
+        {
+          "comment": "nabc-lines: numeric value",
+          "name": "meta.header.numeric.nabc-lines.gabc",
+          "begin": "^(nabc-lines)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "contentName": "constant.numeric.gabc"
+        }
+      ]
+    },
+    "header-tex": {
+      "patterns": [
+        {
+          "comment": "annotation: LaTeX code",
+          "name": "meta.header.tex.annotation.gabc",
+          "begin": "^(annotation)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "patterns": [
+            { "include": "text.tex.latex" }
+          ]
+        },
+        {
+          "comment": "mode-modifier: LaTeX code",
+          "name": "meta.header.tex.mode-modifier.gabc",
+          "begin": "^(mode-modifier)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "patterns": [
+            { "include": "text.tex.latex" }
+          ]
+        },
+        {
+          "comment": "mode-differentia: LaTeX code",
+          "name": "meta.header.tex.mode-differentia.gabc",
+          "begin": "^(mode-differentia)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "patterns": [
+            { "include": "text.tex.latex" }
+          ]
+        },
+        {
+          "comment": "def-m0 through def-m9: LaTeX macro definitions",
+          "name": "meta.header.tex.def-macro.gabc",
+          "begin": "^(def-m[0-9])\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "patterns": [
+            { "include": "text.tex.latex" }
           ]
         }
       ]
     },
-    "header-value": {
+    "header-generic": {
       "patterns": [
         {
-          "name": "constant.numeric.gabc",
-          "match": "\\b\\d+\\b"
-        },
-        {
-          "name": "string.unquoted.gabc",
-          "match": "[^;\\n]+"
+          "comment": "Generic headers with string values",
+          "name": "meta.header.generic.gabc",
+          "begin": "^([a-zA-Z][a-zA-Z0-9_-]*)\\s*(:)\\s*",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.gabc" },
+            "2": { "name": "punctuation.separator.gabc" }
+          },
+          "end": ";;|;|$",
+          "endCaptures": {
+            "0": { "name": "punctuation.terminator.gabc" }
+          },
+          "contentName": "string.unquoted.gabc"
         }
       ]
     },

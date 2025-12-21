@@ -1,0 +1,23 @@
+name: Kyrie XVI;
+office-part: Kyriale;
+mode: 8;
+mode-modifier: \textit{t.};
+mode-differentia: \textsc{g};
+annotation: \textbf{IN.};
+annotation: 6;
+staff-lines: 4;
+nabc-lines: 1;
+def-m0: \textcolor{red}{Important};
+def-m1: \textbf{Bold};
+def-m2: \textit{Italic};
+book: Graduale Romanum, 1961;
+transcriber: John Doe;
+transcription-date: 20231215;
+commentary: This is a long comment
+that spans multiple lines
+and ends with double semicolon;;
+gabc-copyright: Public domain;
+
+%%
+
+(c4) Ký(f)ri(g)e(h) e(h)lé(g)i(f)son.(f.) (::)

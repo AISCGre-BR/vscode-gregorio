@@ -113,6 +113,59 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
   }
   
+  /**
+   * Determine the token type for a header value based on the header name
+   */
+  private getHeaderValueTokenType(headerName: string): string {
+    // Numeric headers
+    if (headerName === 'mode' || headerName === 'staff-lines' || headerName === 'nabc-lines') {
+      return 'number';
+    }
+    
+    // Headers that don't use special highlighting (plain string)
+    return 'string';
+  }
+  
+  /**
+   * Check if a header accepts LaTeX/TeX code
+   */
+  private isTexHeader(headerName: string): boolean {
+    return headerName === 'annotation' || 
+           headerName === 'mode-modifier' || 
+           headerName === 'mode-differentia' ||
+           /^def-m[0-9]$/.test(headerName);
+  }
+  
+  /**
+   * Tokenize LaTeX content within a header value
+   */
+  private tokenizeHeaderLatex(valueText: string, lineIdx: number, startOffset: number, builder: vscode.SemanticTokensBuilder): void {
+    let pos = 0;
+    while (pos < valueText.length) {
+      const char = valueText[pos];
+      
+      // LaTeX command (e.g., \textbf, \textit, etc.)
+      if (char === '\\') {
+        const commandMatch = valueText.substring(pos).match(/^\\[a-zA-Z]+/);
+        if (commandMatch) {
+          const commandLength = commandMatch[0].length;
+          builder.push(lineIdx, startOffset + pos, commandLength, this.getTokenType('function'), 0);
+          pos += commandLength;
+          continue;
+        }
+      }
+      
+      // LaTeX braces
+      if (char === '{' || char === '}') {
+        builder.push(lineIdx, startOffset + pos, 1, this.getTokenType('operator'), 0);
+        pos++;
+        continue;
+      }
+      
+      pos++;
+    }
+  }
+  
   private tokenizeHeaders(parsed: ParsedDocument, builder: vscode.SemanticTokensBuilder): void {
     const text = this.parser?.['text'] || '';
     const lines = text.split('\n');
@@ -167,7 +220,15 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             if (valueText.length > 0) {
               const valueStart = line.indexOf(valueText, colonIndex);
               if (valueStart !== -1) {
-                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+                // Apply appropriate token type based on header name
+                if (this.isTexHeader(currentHeaderName)) {
+                  // For TeX headers, tokenize LaTeX content
+                  this.tokenizeHeaderLatex(valueText, lineIdx, valueStart, builder);
+                } else {
+                  // For numeric or generic headers, use appropriate type
+                  const tokenType = this.getHeaderValueTokenType(currentHeaderName);
+                  builder.push(lineIdx, valueStart, valueText.length, this.getTokenType(tokenType), 0);
+                }
               }
             }
             
@@ -182,7 +243,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             if (valueText.length > 0) {
               const valueStart = line.indexOf(valueText, colonIndex);
               if (valueStart !== -1) {
-                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+                // Apply appropriate token type
+                if (this.isTexHeader(currentHeaderName)) {
+                  this.tokenizeHeaderLatex(valueText, lineIdx, valueStart, builder);
+                } else {
+                  const tokenType = this.getHeaderValueTokenType(currentHeaderName);
+                  builder.push(lineIdx, valueStart, valueText.length, this.getTokenType(tokenType), 0);
+                }
               }
             }
           }
@@ -197,7 +264,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           if (valueText.length > 0) {
             const valueStart = line.indexOf(valueText);
             if (valueStart !== -1) {
-              builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+              // Apply appropriate token type
+              if (this.isTexHeader(currentHeaderName)) {
+                this.tokenizeHeaderLatex(valueText, lineIdx, valueStart, builder);
+              } else {
+                const tokenType = this.getHeaderValueTokenType(currentHeaderName);
+                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType(tokenType), 0);
+              }
             }
           }
           
@@ -212,7 +285,13 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           if (valueText.length > 0) {
             const valueStart = line.indexOf(valueText);
             if (valueStart !== -1) {
-              builder.push(lineIdx, valueStart, valueText.length, this.getTokenType('string'), 0);
+              // Apply appropriate token type
+              if (this.isTexHeader(currentHeaderName)) {
+                this.tokenizeHeaderLatex(valueText, lineIdx, valueStart, builder);
+              } else {
+                const tokenType = this.getHeaderValueTokenType(currentHeaderName);
+                builder.push(lineIdx, valueStart, valueText.length, this.getTokenType(tokenType), 0);
+              }
             }
           }
         }
