@@ -241,6 +241,12 @@ an(c4)o(d)ther(e) clef(f) (::)
 % No custos
 (c4) No(d) cus(e)tos(f) [nocustos] (::)
 
+% Macro reference attributes (nm#, gm#, em#, altm# - digit concatenated, no colon)
+(c4) Ma(d[nm0]e[gm1])cro(f[em2]g[altm3]) re(h[nm4])fe(i[gm5])ren(j[em6])ces(k) (::)
+
+% Custom spacing with numeric factor /[number]
+(c4) Spa(/[0.5])cing(/[1.0]) with(/[1.5]) nu(/[2.0])me(/[-0.5])ric(/[0.25]) fac(/[3.14])tor(g) (::)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 10: COMPLEX NEUMES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

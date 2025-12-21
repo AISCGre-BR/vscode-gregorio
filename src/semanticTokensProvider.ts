@@ -838,15 +838,59 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         if (char === '/' && pos + 1 < gabcText.length && gabcText[pos + 1] === '[') {
           const closingBracket = gabcText.indexOf(']', pos + 2);
           if (closingBracket !== -1) {
-            const spacingLength = closingBracket - pos + 1;
+            // Tokenize / as spacing code
             builder.push(
               range.start.line,
               range.start.character + pos,
-              spacingLength,
+              1,
               this.getTokenType('type'),
               0
             );
-            pos = closingBracket + 1;
+            pos++; // Move past /
+            
+            // Tokenize [ as operator
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('operator'),
+              0
+            );
+            pos++; // Move past [
+            
+            // Extract and tokenize the numeric value (can be float, potentially negative)
+            const numericValue = gabcText.substring(pos, closingBracket);
+            const numericMatch = numericValue.match(/^-?\d+(\.\d+)?$/);
+            if (numericMatch) {
+              // Valid numeric value - highlight as number
+              builder.push(
+                range.start.line,
+                range.start.character + pos,
+                numericValue.length,
+                this.getTokenType('number'),
+                0
+              );
+            } else {
+              // Not a valid number - highlight as string
+              builder.push(
+                range.start.line,
+                range.start.character + pos,
+                numericValue.length,
+                this.getTokenType('string'),
+                0
+              );
+            }
+            pos += numericValue.length;
+            
+            // Tokenize ] as operator
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('operator'),
+              0
+            );
+            pos++; // Move past ]
             continue;
           }
         }
@@ -1002,6 +1046,34 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
     const nameLength = pos - nameStart;
     const attributeName = attrText.substring(nameStart, nameStart + nameLength);
+    
+    // Check for macro reference attributes (nm#, gm#, em#, altm# - digit concatenated)
+    // Format: [nm0], [gm1], [em2], [altm3], etc.
+    const macroMatch = attributeName.match(/^(nm|gm|em|altm)(\d)$/);
+    if (macroMatch) {
+      // Highlight the base name (nm, gm, em, altm)
+      const baseName = macroMatch[1];
+      builder.push(
+        range.start.line,
+        range.start.character + nameStart,
+        baseName.length,
+        this.getTokenType('property'),
+        0
+      );
+      
+      // Highlight the digit
+      const digitPos = nameStart + baseName.length;
+      builder.push(
+        range.start.line,
+        range.start.character + digitPos,
+        1,
+        this.getTokenType('number'),
+        0
+      );
+      
+      // No value expected after - skip to closing bracket
+      return;
+    }
     
     // Highlight attribute name (entity.other.attribute-name style)
     builder.push(
