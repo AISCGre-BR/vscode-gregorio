@@ -1,0 +1,130 @@
+name: Test - Clef Linking;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 1: Clef linking com @ (operator) - BÁSICO
+% ═══════════════════════════════════════════════════════════════════════════
+
+% TESTE CRÍTICO: Verificar se @ recebe operator (não type) e c4 recebe clef (não pitch)
+% ESPERADO:
+% - c2 → clef color (roxo - keyword) readonly
+% - @ → operator color (magenta/rosa)
+% - c4 → clef color (roxo - keyword) readonly
+% VERIFICAR: @ NÃO deve ser "type" (spacing code)
+% VERIFICAR: c4 NÃO deve ser "class" (pitch)
+(c2@c4) Ky(f)ri(f)e(f) (::)
+
+% Teste com f-clef
+% ESPERADO:
+% - f3 → clef color (roxo - keyword) readonly
+% - @ → operator color (magenta/rosa)  
+% - f4 → clef color (roxo - keyword) readonly
+(f3@f4) Chri(g)ste(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 2: Clef simples (sem linking) - CONTROLE
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: c4 completo como clef (não como pitch)
+(c4) Glo(h)ri(h)a(h) (::)
+
+% ESPERADO: f2 completo como clef
+(f2) San(a)ctus(a) (::)
+
+% ESPERADO: cb3 completo como clef (com flat)
+(cb3) A(g)gnus(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: Clef linking com flat
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% - cb2 → clef color (roxo - keyword) readonly
+% - @ → operator color (magenta/rosa)
+% - cb4 → clef color (roxo - keyword) readonly
+(cb2@cb4) Do(f)mi(f)ne(f) (::)
+
+% Com flat apenas no primeiro
+% ESPERADO:
+% - cb2 → clef color
+% - @ → operator color
+% - c4 → clef color
+(cb2@c4) Be(f)ne(g)dic(f)tus(e) (::)
+
+% Com flat apenas no segundo
+% ESPERADO:
+% - c2 → clef color
+% - @ → operator color
+% - cb4 → clef color
+(c2@cb4) Ho(f)san(g)na(f) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 4: Múltiplos clefs na mesma linha
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Clef simples seguido de clef linking
+(c4) Be(g)ne(h)di(i)ca(h)mus(g) (c2@c4) Do(f)mi(g)no(f) (::)
+
+% Clef linking seguido de clef simples
+(c2@c4) Lau(f)da(g)te(f) (f3) Do(a)mi(b)num(a) (::)
+
+% Dois clef linking
+(c2@c4) Al(f)le(g)lu(f)ia(e) (f3@f4) Al(a)le(b)lu(a)ia(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 5: Edge cases
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Clef linking no início de syllable
+(c2@c4) In(f) prin(g)ci(f)pi(e)o(d) (::)
+
+% Clef simples antes de notas
+(c4) Dó(c)mi(d)nus(e) (::)
+
+% Verificar que @ entre pitches não é confundido com clef linking
+(c4) Pi(f@g)tches(h) fu(g@h@i)sion(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 6: Validação de tokens específicos
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Esta linha testa ESPECIFICAMENTE o bug relatado:
+% BUG: @ estava recebendo token "type" (spacing code)
+% BUG: c4 estava recebendo token "class" (pitch)
+% CORREÇÃO: @ deve receber token "operator"
+% CORREÇÃO: c4 deve receber token "keyword" readonly (clef)
+(c2@c4) Test(f) (::)
+
+% Comparação lado a lado:
+% @ em clef linking = OPERATOR (magenta/rosa)
+% @ em pitch fusion = OPERATOR (magenta/rosa)
+% @ spacing code = TYPE (azul)
+(c2@c4) Link(f@g) @ Space(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% RESULTADO ESPERADO
+% ═══════════════════════════════════════════════════════════════════════════
+
+% TOKEN TYPES ESPERADOS:
+
+% CLEF (keyword readonly → keyword.control.gabc):
+% ✓ c2, c4, f3, f4, cb2, cb3, cb4
+% ✓ Em (c2@c4): c2 e c4 são AMBOS keyword readonly
+
+% OPERATOR (operator → variable.parameter.gabc):
+% ✓ @ em clef linking (c2@c4)
+% ✓ @ em pitch fusion (f@g)
+
+% TYPE (type → keyword.other.unit.gabc):
+% ✓ @ como spacing code standalone
+
+% PITCH (class/macro/parameter → variable.language/string.regexp/variable.other.constant):
+% ✓ f, g, h etc. em (f), (g), (h)
+% ✓ NÃO deve ser aplicado ao c4 em (c2@c4)
+
+% BUGS A EVITAR:
+% ✗ @ em (c2@c4) recebendo token "type" (spacing code)
+% ✗ c4 em (c2@c4) recebendo token "class" (pitch)
+% ✓ @ em (c2@c4) DEVE receber token "operator"
+% ✓ c4 em (c2@c4) DEVE receber token "keyword" readonly (clef)
+

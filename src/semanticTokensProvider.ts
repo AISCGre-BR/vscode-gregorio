@@ -100,7 +100,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       this.tokenizeComments(parsed, tokensBuilder);
       
       // Tokenize notation
-      this.tokenizeNotation(parsed, tokensBuilder);
+      this.tokenizeNotation(parsed, tokensBuilder, document);
       
       const tokens = tokensBuilder.build();
       console.log('[Gregorio] Built tokens, data length:', tokens.data.length);
@@ -233,17 +233,17 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
   }
   
-  private tokenizeNotation(parsed: ParsedDocument, builder: vscode.SemanticTokensBuilder): void {
+  private tokenizeNotation(parsed: ParsedDocument, builder: vscode.SemanticTokensBuilder, document: vscode.TextDocument): void {
     // Use parsed structure for accurate tokenization
     for (const syllable of parsed.notation.syllables) {
-      this.tokenizeSyllable(syllable, builder);
+      this.tokenizeSyllable(syllable, builder, document);
     }
   }
   
-  private tokenizeSyllable(syllable: Syllable, builder: vscode.SemanticTokensBuilder): void {
+  private tokenizeSyllable(syllable: Syllable, builder: vscode.SemanticTokensBuilder, document: vscode.TextDocument): void {
     // Tokenize clef if present
     if (syllable.clef) {
-      this.tokenizeClef(syllable.clef, builder);
+      this.tokenizeClef(syllable.clef, builder, document);
     }
     
     // Tokenize bar if present
@@ -257,9 +257,10 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     }
   }
   
-  private tokenizeClef(clef: Clef, builder: vscode.SemanticTokensBuilder): void {
+  private tokenizeClef(clef: Clef, builder: vscode.SemanticTokensBuilder, document: vscode.TextDocument): void {
+    // Note: Clef linking is now handled in tokenizeGabcString
+    // This method handles simple clefs parsed by the parser
     const range = clef.range;
-    // Highlight clef as a keyword
     builder.push(
       range.start.line,
       range.start.character,
@@ -324,6 +325,64 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       // Skip NABC content (after pipe)
       if (char === '|') {
         pos = gabcText.length;
+        continue;
+      }
+      
+      // Check for clef at beginning or after whitespace (but not in middle of notes)
+      // Pattern: (c|f)(b)?[1-4](@(c|f)(b)?[1-4])?
+      // This detects both simple clef (c4) and clef linking (c2@c4)
+      const clefPattern = /^([cf])(b)?([1-4])(@([cf])(b)?([1-4]))?/;
+      const remaining = gabcText.substring(pos);
+      const clefMatch = remaining.match(clefPattern);
+      
+      if (clefMatch && (pos === 0 || /[\s(]/.test(gabcText[pos - 1] || ''))) {
+        // Found a clef (with or without linking)
+        if (clefMatch[4]) {
+          // Clef linking detected (e.g., c2@c4)
+          const firstClefLength = clefMatch[1].length + (clefMatch[2]?.length || 0) + clefMatch[3].length;
+          const atPos = pos + firstClefLength;
+          const secondClefLength = clefMatch[5].length + (clefMatch[6]?.length || 0) + clefMatch[7].length;
+          
+          // Tokenize first clef
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            firstClefLength,
+            this.getTokenType('keyword'),
+            this.getModifier('readonly')
+          );
+          
+          // Tokenize @ as operator
+          builder.push(
+            range.start.line,
+            range.start.character + atPos,
+            1,
+            this.getTokenType('operator'),
+            0
+          );
+          
+          // Tokenize second clef
+          builder.push(
+            range.start.line,
+            range.start.character + atPos + 1,
+            secondClefLength,
+            this.getTokenType('keyword'),
+            this.getModifier('readonly')
+          );
+          
+          pos += clefMatch[0].length;
+        } else {
+          // Simple clef (e.g., c4)
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            clefMatch[0].length,
+            this.getTokenType('keyword'),
+            this.getModifier('readonly')
+          );
+          
+          pos += clefMatch[0].length;
+        }
         continue;
       }
       
