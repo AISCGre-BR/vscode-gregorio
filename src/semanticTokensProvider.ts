@@ -316,62 +316,138 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   private tokenizeGabcString(gabcText: string, range: any, builder: vscode.SemanticTokensBuilder): void {
     let pos = 0;
     
-    // 0. Check for initio debilis prefix (-)
-    if (pos < gabcText.length && gabcText[pos] === '-') {
-      builder.push(
-        range.start.line,
-        range.start.character + pos,
-        1,
-        this.getTokenType('parameter'),
-        0
-      );
-      pos++;
-    }
-    
-    // 1. Tokenize pitch [a-npA-NP] as class (maps to variable.language via semanticTokenScopes)
-    if (pos < gabcText.length && /[a-npA-NP]/.test(gabcText[pos])) {
-      const isUpperCase = /[A-NP]/.test(gabcText[pos]);
-      builder.push(
-        range.start.line,
-        range.start.character + pos,
-        1,
-        this.getTokenType('class'),
-        0
-      );
-      pos++;
-      
-      // Check for leaning indicator (0, 1, 2) after uppercase punctum inclinatum
-      if (isUpperCase && pos < gabcText.length && /[012]/.test(gabcText[pos])) {
-        builder.push(
-          range.start.line,
-          range.start.character + pos,
-          1,
-          this.getTokenType('number'),
-          0
-        );
-        pos++;
-      }
-    }
-    
-    // 2. Tokenize modifiers and note shapes
+    // Main tokenization loop
     while (pos < gabcText.length) {
       const char = gabcText[pos];
+      const tokenStart = pos;
       
-      // Skip NABC content (after pipe) - will be tokenized by tokenizeNABCGlyph()
-      // NABC syntax is (pitch|nabc_content) with only ONE pipe
+      // Skip NABC content (after pipe)
       if (char === '|') {
-        // Skip to end of gabcText since NABC continues until end of note group
         pos = gabcText.length;
         continue;
       }
       
-      // Skip attributes - they will be tokenized separately by tokenizeAttribute()
+      // Skip attributes
       if (char === '[') {
         const closingBracket = gabcText.indexOf(']', pos);
         if (closingBracket !== -1) {
           pos = closingBracket + 1;
           continue;
         }
+      }
+      
+      // Initio debilis with pitch: -[pitch][alterations][shapes]
+      if (char === '-' && pos + 1 < gabcText.length && /[a-npA-NP]/.test(gabcText[pos + 1])) {
+        let tokenLength = 1; // Start with the '-'
+        pos++; // Move past '-'
+        
+        // Include pitch
+        const isUpperCase = /[A-NP]/.test(gabcText[pos]);
+        tokenLength++;
+        pos++;
+        
+        // Include leaning indicator after uppercase pitch
+        if (isUpperCase && pos < gabcText.length && /[012]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+        }
+        
+        // Include alterations (x, X, y, Y, #, ##, with optional ?)
+        while (pos < gabcText.length && /[xyXY#?]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+        }
+        
+        // Include note shapes (v, w, s, q, r, =, ~, <, >, O)
+        while (pos < gabcText.length && /[wvosqr=~<>O]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+          
+          // Include oriscus orientation or r0
+          if (pos < gabcText.length && /[01]/.test(gabcText[pos])) {
+            const prevChar = gabcText[pos - 1];
+            if (prevChar === 'o' || prevChar === 'O' || prevChar === 'r') {
+              tokenLength++;
+              pos++;
+            }
+          }
+        }
+        
+        // Tokenize entire initio debilis construct as parameter
+        builder.push(
+          range.start.line,
+          range.start.character + tokenStart,
+          tokenLength,
+          this.getTokenType('parameter'),
+          0
+        );
+        continue;
+      }
+      
+      // Pitch with optional alterations and shapes: [pitch][alterations][shapes]
+      if (/[a-npA-NP]/.test(char)) {
+        const isUpperCase = /[A-NP]/.test(char);
+        let tokenLength = 1;
+        let hasAlteration = false;
+        let hasShape = false;
+        pos++;
+        
+        // Include leaning indicator after uppercase pitch
+        if (isUpperCase && pos < gabcText.length && /[012]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+        }
+        
+        // Include alterations (x, X, y, Y, #, ##, with optional ?)
+        const alterationStart = pos;
+        while (pos < gabcText.length && /[xyXY#?]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+        }
+        if (pos > alterationStart) {
+          hasAlteration = true;
+        }
+        
+        // Include note shapes (v, w, s, q, r, =, ~, <, >, O)
+        const shapeStart = pos;
+        while (pos < gabcText.length && /[wvosqr=~<>O]/.test(gabcText[pos])) {
+          tokenLength++;
+          pos++;
+          
+          // Include oriscus orientation or r0
+          if (pos < gabcText.length && /[01]/.test(gabcText[pos])) {
+            const prevChar = gabcText[pos - 1];
+            if (prevChar === 'o' || prevChar === 'O' || prevChar === 'r') {
+              tokenLength++;
+              pos++;
+            }
+          }
+        }
+        if (pos > shapeStart) {
+          hasShape = true;
+        }
+        
+        // Determine token type based on what's present
+        let tokenType: string;
+        if (hasAlteration) {
+          // Use 'macro' token for alterations (string.regexp.gabc)
+          tokenType = 'macro';
+        } else if (hasShape) {
+          // Use 'parameter' token for shapes (variable.other.constant.gabc)
+          tokenType = 'parameter';
+        } else {
+          // Use 'class' token for plain pitch (variable.language.gabc)
+          tokenType = 'class';
+        }
+        
+        builder.push(
+          range.start.line,
+          range.start.character + tokenStart,
+          tokenLength,
+          this.getTokenType(tokenType),
+          0
+        );
+        continue;
       }
       
       // Separation bars (virgula, divisio minimus/minima/minor/maior/finalis)
@@ -516,7 +592,8 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Rhythmic signs: r followed by digit 1-8 (r0 is cavum with bars, treated below)
+      // Rhythmic signs: r followed by digit 1-8
+      // Note: r0, rv, rw, etc. are handled as pitch+shape above
       if (char === 'r' && pos + 1 < gabcText.length && /[1-8]/.test(gabcText[pos + 1])) {
         builder.push(
           range.start.line,
@@ -529,69 +606,8 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Note shape specifiers
-      if (/[wvosqr=~<>O]/.test(char)) {
-        const isOriscus = char === 'o' || char === 'O';
-        const isCavum = char === 'r';
-        
-        let shapeLength = 1;
-        
-        // Check for r0 (cavum with bars)
-        if (isCavum && pos + 1 < gabcText.length && gabcText[pos + 1] === '0') {
-          shapeLength = 2;
-        }
-        
-        builder.push(
-          range.start.line,
-          range.start.character + pos,
-          shapeLength,
-          this.getTokenType('parameter'),
-          0
-        );
-        pos += shapeLength;
-        
-        // Check for oriscus orientation indicator (0, 1) after 'o' or 'O'
-        if (isOriscus && pos < gabcText.length && /[01]/.test(gabcText[pos])) {
-          builder.push(
-            range.start.line,
-            range.start.character + pos,
-            1,
-            this.getTokenType('number'),
-            0
-          );
-          pos++;
-        }
-        continue;
-      }
-      
-      // Alterations
-      if (/[xyXY#]/.test(char)) {
-        let alterationLength = 1;
-        
-        // Check for double sharp (##)
-        if (char === '#' && pos + 1 < gabcText.length && gabcText[pos + 1] === '#') {
-          alterationLength = 2;
-          // Check for ##?
-          if (pos + 2 < gabcText.length && gabcText[pos + 2] === '?') {
-            alterationLength = 3;
-          }
-        } else {
-          // Check for single character alteration with ?
-          if (pos + 1 < gabcText.length && gabcText[pos + 1] === '?') {
-            alterationLength = 2;
-          }
-        }
-        
-        builder.push(
-          range.start.line,
-          range.start.character + pos,
-          alterationLength,
-          this.getTokenType('macro'),
-          0
-        );
-        pos += alterationLength;
-        continue;
-      }
+      // Note: Standalone shapes and alterations without pitch are no longer tokenized separately
+      // They should always come after a pitch and are included in the pitch token
       
       // Extra symbols: . (punctum mora), ' (ictus), _ (episema)
       // Note: ` is a separation bar (virgula) in GABC, handled earlier

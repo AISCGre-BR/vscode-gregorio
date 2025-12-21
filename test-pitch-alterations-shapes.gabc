@@ -1,0 +1,178 @@
+name: Test - Pitch with Alterations and Shapes;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 1: Pitches com alterations - DEVEM SER UM ÚNICO TOKEN
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: cx como 1 token (não c + x separados)
+% COR: AZUL (string.regexp.gabc) - COR DE ALTERATION
+(c4) Flat(cx) al(dx)te(ex)ra(fx)tion(gx) (::)
+
+% ESPERADO: cy como 1 token
+% COR: AZUL (string.regexp.gabc)
+(c4) Na(cy)tu(dy)ral(ey) al(fy)te(gy)ra(hy)tion(iy) (::)
+
+% ESPERADO: c# como 1 token
+% COR: AZUL (string.regexp.gabc)
+(c4) Sharp(c#) al(d#)te(e#)ra(f#)tion(g#) (::)
+
+% ESPERADO: c## como 1 token (3 chars)
+% COR: AZUL (string.regexp.gabc)
+(c4) Dou(c##)ble(d##) sharp(e##) (::)
+
+% ESPERADO: cx? como 1 token (3 chars)
+% COR: AZUL (string.regexp.gabc)
+(c4) Flat(cx?) ques(dx?)tion(ex?) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 2: Pitches com shapes (SEM alteration) - DEVEM SER UM ÚNICO TOKEN
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: gv como 1 token (não g + v separados)
+% COR: AZUL CLARO (variable.other.constant.gabc) - COR DE SHAPE
+(c4) Vir(gv)ga(hv) test(iv) (::)
+
+% ESPERADO: go como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) O(go)ris(ho)cus(io) test(jo) (::)
+
+% ESPERADO: gw como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Qui(gw)lis(hw)ma(iw) test(jw) (::)
+
+% ESPERADO: gs como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Stro(gs)pha(hs) test(is) (::)
+
+% ESPERADO: gr como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Ca(gr)vum(hr) test(ir) (::)
+
+% ESPERADO: g= como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Li(g=)ne(h=)a(i=) test(j=) (::)
+
+% ESPERADO: g~ como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Li(g~)ques(h~)cent(i~) test(j~) (::)
+
+% ESPERADO: g< como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Aug(g<)men(h<)tive(i<) test(j<) (::)
+
+% ESPERADO: g> como 1 token
+% COR: AZUL CLARO (variable.other.constant.gabc)
+(c4) Di(g>)mi(h>)nu(i>)tive(j>) test(k>) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: Pitches SIMPLES (sem alteration ou shape)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: c como 1 token
+% COR: VERDE-ÁGUA (variable.language.gabc) - COR DE PITCH
+(c4) Sim(c)ple(d) pit(e)ches(f) here(g) (::)
+
+% ESPERADO: G como 1 token (uppercase)
+% COR: VERDE-ÁGUA (variable.language.gabc)
+(c4) Up(G)per(H)case(I) pit(J)ches(K) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 4: Pitches com alterations E shapes - ALTERATION TEM PRIORIDADE
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: cxv como 1 token (pitch + alteration + shape)
+% COR: AZUL (string.regexp.gabc) - COR DE ALTERATION (prioridade sobre shape)
+(c4) Com(cxv)bi(dxw)ned(exs) test(fxq) (::)
+
+% ESPERADO: cy# como 1 token
+% COR: AZUL (string.regexp.gabc)
+(c4) Multi(cy#)ple(dy#) alts(ey#) test(fy#) (::)
+
+% ESPERADO: c##v como 1 token (4 chars)
+% COR: AZUL (string.regexp.gabc)
+(c4) Complex(c##v) construct(d##w) test(e##s) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 5: Initio debilis - MANTÉM COR DE PARAMETER
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: -g como 1 token (não - + g separados)
+% COR: AZUL CLARO (variable.other.constant) - COR DE PARAMETER/INITIO
+(c4) I(g)ni(h)ti(i)o(-g) de(-h)bi(-i)lis(j) (::)
+
+% ESPERADO: -gx como 1 token (3 chars: initio + pitch + alteration)
+% COR: AZUL CLARO (variable.other.constant) - INITIO sempre parameter
+(c4) De(-gx)bi(-hx)lis(-ix) with(-jx) alt(k) (::)
+
+% ESPERADO: -gv como 1 token (3 chars: initio + pitch + shape)
+% COR: AZUL CLARO (variable.other.constant)
+(c4) De(-gv)bi(-hv)lis(-iv) with(-jv) shape(k) (::)
+
+% ESPERADO: -gxv como 1 token (4 chars: initio + pitch + alt + shape)
+% COR: AZUL CLARO (variable.other.constant)
+(c4) De(-gxv)bi(-hxv)lis(-ixv) complex(j) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 6: Validação visual - CORES DIFERENTES
+% ═══════════════════════════════════════════════════════════════════════════
+
+% c (pitch simples) = VERDE-ÁGUA
+% cx (alteration) = AZUL (macro)
+% cv (shape) = AZUL CLARO (parameter)
+% cxv (alt+shape) = AZUL (macro - prioridade alteration)
+
+(c4) Pitch(c) alt(cx) shape(cv) both(cxv) (::)
+
+% Comparação de cores:
+% - c, d, e (sem modificadores) = VERDE-ÁGUA
+% - cx, dx, c# (com alteration) = AZUL
+% - cv, dv, gw (com shape) = AZUL CLARO
+% - -g, -h (initio) = AZUL CLARO
+
+(c4) Plain(c) flat(cx) vir(cv)ga(-g) test(d) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 7: Casos especiais
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO: go0 como 1 token (oriscus + orientation)
+% COR: AZUL CLARO (shape color)
+(c4) O(go0)ris(ho1)cus(io) orient(jo0) (::)
+
+% ESPERADO: gxo0 como 1 token (pitch + alt + oriscus + orientation)
+% COR: AZUL (alteration color - prioridade)
+(c4) Alt(gxo0) ori(hxo1)scus(ixo) test(jxo0) (::)
+
+% ESPERADO: gr0 como 1 token (cavum + 0)
+% COR: AZUL CLARO (shape color)
+(c4) Ca(gr0)vum(hr) with(ir0) bar(jr) (::)
+
+% ESPERADO: G0 como 1 token (uppercase + leaning)
+% COR: VERDE-ÁGUA (pitch color - sem alt/shape)
+(c4) Lean(G0) ing(H1) test(I0) here(J1) (::)
+
+% ESPERADO: G0x como 1 token (uppercase + leaning + alteration)
+% COR: AZUL (alteration color)
+(c4) Complex(G0x) upper(H1x) case(I0x) test(J1x) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% RESULTADO ESPERADO - RESUMO DE CORES
+% ═══════════════════════════════════════════════════════════════════════════
+
+% VERDE-ÁGUA (class token → variable.language.gabc):
+% ✓ Pitches simples: c, d, e, G, H, G0, G1
+
+% AZUL (macro token → string.regexp.gabc):
+% ✓ Com alteration: cx, cy, c#, c##, cx?, cxv, c#v, c##v, G0x
+
+% AZUL CLARO (parameter token → variable.other.constant.gabc):
+% ✓ Com shape (sem alt): cv, cw, cs, gr, g=, g~, go0, gO1
+% ✓ Initio debilis: -g, -gx, -gv, -gxv, -G0
+
+% REGRAS DE PRIORIDADE:
+% 1. Se tem alteration (x, y, #) → usa macro (AZUL)
+% 2. Senão, se tem shape (v, w, s, etc.) → usa parameter (AZUL CLARO)
+% 3. Senão (pitch puro) → usa class (VERDE-ÁGUA)
+% 4. Initio debilis sempre usa parameter (AZUL CLARO)
+

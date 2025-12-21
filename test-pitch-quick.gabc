@@ -1,0 +1,17 @@
+name: Quick Test - Pitch Tokens;
+%%
+
+% Pitch + alteration = 1 token
+(c4) Test(cx) (dx#) (ex##) (fxv) (::)
+
+% Pitch + shape = 1 token
+(c4) Test(gv) (hw) (is) (jq) (::)
+
+% Initio debilis + pitch = 1 token
+(c4) Test(-g) (-hx) (-iv) (-jxv) (::)
+
+% All should have SAME color (pitch color)
+(c4) Same(c) (cx) (cv) (cxv) (c##v) color(d) (::)
+
+% All initio debilis should have SAME color (parameter color)
+(c4) Same(-g) (-gx) (-gv) (-gxv) (-G0xv) color(h) (::)
