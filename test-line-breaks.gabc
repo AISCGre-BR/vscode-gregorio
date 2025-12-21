@@ -1,0 +1,204 @@
+name: Test - Line Break Codes and Custos;
+%%
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 1: Line break simples (z/Z)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% - z → escape character color (constant.character.escape - regexp token)
+% - Z → escape character color (constant.character.escape - regexp token)
+(c4) No(g) line(h) z break(i) here(h) (::)
+
+(c4) For(g)ced(h) Z line(i) break(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 2: Line break com modificadores (+/-)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% - z → escape character color (regexp token)
+% - + → operator color (magenta/rosa)
+(c4) No(g) break(h) z+ with(i) mod(h) (::)
+
+% ESPERADO:
+% - z → escape character color (regexp token)
+% - - → operator color (magenta/rosa)
+(c4) No(g) break(h) z- neg(i) mod(h) (::)
+
+% ESPERADO:
+% - Z → escape character color (regexp token)
+% - + → operator color (magenta/rosa)
+(c4) For(g)ced(h) Z+ break(i) mod(h) (::)
+
+% ESPERADO:
+% - Z → escape character color (regexp token)
+% - - → operator color (magenta/rosa)
+(c4) For(g)ced(h) Z- break(i) neg(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: Custos (z0, Z0, pitch+)
+% ═══════════════════════════════════════════════════════════════════════════
+
+% ESPERADO:
+% - z0 → custos (1 token - variable.other.gabc - nome de variável)
+% NÃO deve ser z (line break) + 0 (número)
+(c4) Cus(g)tos(h) at(i) end(z0) (::)
+
+% ESPERADO:
+% - Z0 → custos (1 token - variable.other.gabc)
+(c4) Cus(g)tos(h) cap(i)i(Z0)tal(g) (::)
+
+% ESPERADO:
+% - f+ → custos forçado (1 token - variable.other.gabc)
+% Pitch seguido de + = custos forçado
+(c4) For(g)ced(h) cus(i)tos(::f+) (::)
+
+% ESPERADO:
+% - g+ → custos forçado (1 token - variable.other.gabc)
+(c4) An(f)o(g)ther(h) cus(i)tos(::g+) (::)
+
+% Comparação: z+ vs z0
+% z+ → 2 tokens (z = line break, + = operator)
+% z0 → 1 token (custos)
+(c4) Line(g) z+ break(h) cus(i)tos(z0) (::)
+
+% Comparação: f+ vs f
+% f+ → custos forçado (1 token - escape)
+% f → pitch simples (1 token - pitch)
+(c4) Pitch(f) cus(::f+)tos(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 3: Múltiplos line breaks
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Múltiplos z
+(c4) First(g) z sec(h)ond(i) z third(h) z fourth(g) (::)
+
+% Múltiplos Z
+(c4) First(g) Z sec(h)ond(i) Z third(h) Z fourth(g) (::)
+
+% Misturado z e Z
+(c4) No(g) z break(h) Z forced(i) z no(h) Z yes(g) (::)
+
+% Com modificadores misturados
+(c4) Test(g) z+ one(h) z- two(i) Z+ three(h) Z- four(g) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 4: Line breaks em diferentes contextos
+% ═══════════════════════════════════════════════════════════════════════════
+
+% No meio de melisma
+(c4) Me(ghi z jkl)lis(h)ma(g) (::)
+
+% Com spacing codes
+(c4) Spa(g)ced(h) / z text(i) ! Z here(h) (::)
+
+% Com bars
+(c4) Be(g)fore(h) z bar(i) (:) Z af(h)ter(g) (::)
+
+% Com alterations e shapes
+(c4) Al(gx) z ter(hv) Z ation(iv) shape(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 5: Edge cases
+% ═══════════════════════════════════════════════════════════════════════════
+
+% z/Z no início
+(c4) z Start(g) with(h) no(i) break(h) (::)
+
+(c4) Z Start(g) with(h) forced(i) break(h) (::)
+
+% z/Z no final
+(c4) End(g) with(h) no(i) break(h) z (::)
+
+(c4) End(g) with(h) forced(i) break(h) Z (::)
+
+% z/Z com modificador no início
+(c4) z+ Start(g) mod(h) (::)
+
+(c4) Z- Start(g) neg(h) (::)
+
+% Consecutivos
+(c4) Con(g)se(h)cu z z tive(i) (::)
+
+(c4) Con(g)se(h)cu Z Z tive(i) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 6: Validação visual
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Comparação de cores:
+% - z, Z → escape color (diferente de pitches)
+% - +, - depois de z/Z → operator color (magenta/rosa)
+% - +, - em outros contextos → outros highlights
+
+(c4) Es(g)ca(h)pe(i) z code(h) z+ mod(g) (::)
+
+% z vs Z (ambos devem ter mesma cor - escape)
+(c4) Low(g)er(h) z case(i) up(h)per(g) Z case(f) (::)
+
+% Modificadores vs outros símbolos
+(c4) Mo(g)di z+ fi(h)er(-g) test(h) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TESTE 7: Casos reais de uso
+% ═══════════════════════════════════════════════════════════════════════════
+
+% Evitar quebra de linha em palavra
+(c4) Do(g)mi(h)ni z Do(i)mi(h)ni(g) (::)
+
+% Forçar quebra de linha antes de palavra
+(c4) Glo(g)ri(h)a(i) Z Pa(h)tri(g) (::)
+
+% Controle fino de quebras
+(c4) Sanc(g)tus(h) z+ Sanc(i)tus(h) z+ Sanc(g)tus(f) (::)
+
+% Custos no final de linha (como no showcase.gabc)
+(c4) Cus(g)tos(h) at(i) line(j) end(z+::f+) (::)
+
+% Custos com z0
+(c4) End(g) of(h) line(i) with(j) cus(k)tos(z0::) (::)
+
+% ═══════════════════════════════════════════════════════════════════════════
+% RESULTADO ESPERADO
+% ═══════════════════════════════════════════════════════════════════════════
+
+% TOKEN TYPES:
+
+% LINE BREAK (regexp → constant.character.escape.gabc):
+% ✓ z (no line break) - 1 token
+% ✓ Z (forced line break) - 1 token
+
+% LINE BREAK MODIFIER (operator → keyword.operator.gabc):
+% ✓ + após z/Z (z+, Z+) - separate token
+% ✓ - após z/Z (z-, Z-) - separate token
+
+% CUSTOS (variable → variable.other.gabc):
+% ✓ z0 (custos) - 1 token (NÃO z + 0)
+% ✓ Z0 (custos) - 1 token (NÃO Z + 0)
+% ✓ f+ (custos forçado) - 1 token (NÃO f + +)
+% ✓ g+ (custos forçado) - 1 token (NÃO g + +)
+% ✓ Qualquer pitch seguido de + = custos forçado
+
+% CORES ESPERADAS:
+% z, Z (line break) → escape character (laranja/amarelo)
+% z0, Z0 (custos) → nome de variável (variable.other.gabc)
+% f+, g+ (custos forçado) → nome de variável (variable.other.gabc)
+% +, - após z/Z (modificador) → operator (magenta/rosa)
+
+% DIFERENCIAÇÃO CRÍTICA:
+% z+ → 2 tokens: z (escape) + (operator)
+% z0 → 1 token: z0 (escape/custos)
+% f+ → 1 token: f+ (escape/custos)
+% f → 1 token: f (pitch)
+
+% AGRUPAMENTO:
+% Line breaks com modificador:
+% - z+ → z (escape) + + (operator)
+% - Z- → Z (escape) + - (operator)
+% 
+% Custos (variable token):
+% - z0 → z0 (variable - 1 token completo)
+% - f+ → f+ (variable - 1 token completo)
+% - g+ → g+ (variable - 1 token completo)

@@ -86,7 +86,7 @@
           "type": ["entity.name.type.gabc", "support.type.gabc", "keyword.other.unit.gabc"],
           "function": ["entity.name.function.gabc"],
           "modifier": ["storage.modifier.gabc"],
-          "regexp": ["string.regexp.gabc"],
+          "regexp": ["constant.character.escape.gabc"],
           "decorator": ["entity.name.class.gabc"],
           "customLiteral": ["constant.other.gabc"]
         }

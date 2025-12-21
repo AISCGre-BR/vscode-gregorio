@@ -603,24 +603,39 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           tokenType = 'class';
         }
         
-        builder.push(
-          range.start.line,
-          range.start.character + tokenStart,
-          tokenLength,
-          this.getTokenType(tokenType),
-          0
-        );
-        
-        // Check for @ fusion operator after pitch (f@h@i)
-        if (pos < gabcText.length && gabcText[pos] === '@') {
+        // Check for custos forçado (pitch followed by +)
+        // This must be checked before tokenizing the pitch
+        if (pos < gabcText.length && gabcText[pos] === '+') {
+          // Tokenize pitch+ as custos (variable token - nome de variável)
           builder.push(
             range.start.line,
-            range.start.character + pos,
-            1,
-            this.getTokenType('operator'),
+            range.start.character + tokenStart,
+            tokenLength + 1, // Include the +
+            this.getTokenType('variable'),
             0
           );
-          pos++;
+          pos++; // Skip the +
+        } else {
+          // Normal pitch tokenization
+          builder.push(
+            range.start.line,
+            range.start.character + tokenStart,
+            tokenLength,
+            this.getTokenType(tokenType),
+            0
+          );
+          
+          // Check for @ fusion operator after pitch (f@h@i)
+          if (pos < gabcText.length && gabcText[pos] === '@') {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('operator'),
+              0
+            );
+            pos++;
+          }
         }
         
         continue;
@@ -781,6 +796,47 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           0
         );
         pos += 2;
+        continue;
+      }
+      
+      // Line break codes and custos: z, Z, z0
+      // z (no line break), Z (forced line break)
+      // z0 (custos), z+ (line break with modifier), z- (line break with modifier)
+      if (char === 'z' || char === 'Z') {
+        // Check if followed by 0 (custos)
+        if (pos + 1 < gabcText.length && gabcText[pos + 1] === '0') {
+          // z0 or Z0 is custos (variable token - nome de variável)
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            2, // z0 as single token
+            this.getTokenType('variable'),
+            0
+          );
+          pos += 2;
+        } else {
+          // z or Z as line break escape character
+          builder.push(
+            range.start.line,
+            range.start.character + pos,
+            1,
+            this.getTokenType('regexp'),
+            0
+          );
+          pos++;
+          
+          // Check for + or - after z/Z (line break modifiers)
+          if (pos < gabcText.length && (gabcText[pos] === '+' || gabcText[pos] === '-')) {
+            builder.push(
+              range.start.line,
+              range.start.character + pos,
+              1,
+              this.getTokenType('operator'),
+              0
+            );
+            pos++;
+          }
+        }
         continue;
       }
       
