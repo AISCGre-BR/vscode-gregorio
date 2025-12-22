@@ -5,9 +5,40 @@
  * Can be disabled via environment variable: DISABLE_TREE_SITTER=true
  */
 
-import Parser from 'tree-sitter';
 import { ParsedDocument, ParseError, Position, Range } from '../parser/types';
 
+// Type declarations for tree-sitter (when not available as static import)
+declare namespace Parser {
+  interface SyntaxNode {
+    type: string;
+    text: string;
+    startPosition: { row: number; column: number };
+    endPosition: { row: number; column: number };
+    startIndex: number;
+    endIndex: number;
+    children: SyntaxNode[];
+    childCount: number;
+    parent: SyntaxNode | null;
+    hasError(): boolean;
+    isMissing: boolean;
+    childForFieldName(name: string): SyntaxNode | null;
+    descendantForPosition(point: { row: number; column: number }): SyntaxNode | null;
+  }
+  
+  interface Tree {
+    rootNode: SyntaxNode;
+    walk(): TreeCursor;
+  }
+  
+  interface TreeCursor {
+    currentNode: SyntaxNode;
+    gotoFirstChild(): boolean;
+    gotoNextSibling(): boolean;
+    gotoParent(): boolean;
+  }
+}
+
+let Parser: any;
 let Gregorio: any;
 
 // Check if tree-sitter should be disabled
@@ -15,15 +46,17 @@ const TREE_SITTER_DISABLED = process.env.DISABLE_TREE_SITTER === 'true';
 
 if (!TREE_SITTER_DISABLED) {
   try {
+    // Try to load tree-sitter dynamically
+    Parser = require('tree-sitter');
     // Try to load tree-sitter-gregorio
     Gregorio = require('tree-sitter-gregorio');
   } catch (error) {
-    console.warn('tree-sitter-gregorio not available, will use fallback parser');
+    console.warn('tree-sitter not available, will use fallback parser');
   }
 }
 
 export class TreeSitterParser {
-  private parser: Parser | null = null;
+  private parser: any = null;
   private isAvailable: boolean = false;
   private forceDisabled: boolean = false;
 
@@ -63,7 +96,7 @@ export class TreeSitterParser {
     const errors: ParseError[] = [];
 
     const visitNode = (node: Parser.SyntaxNode) => {
-      if (node.hasError) {
+      if (node.hasError()) {
         if (node.type === 'ERROR' || node.isMissing) {
           errors.push({
             message: `Syntax error: unexpected ${node.type}`,
