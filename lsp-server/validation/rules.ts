@@ -367,6 +367,51 @@ export const validateBalancedPitchDescriptorsInFusedGlyphs: ValidationRule = {
 };
 
 /**
+ * Validate that modifiers in fused NABC glyphs only appear on the last glyph
+ * In Gregorio 6.1.0, only the last glyph descriptor in a fusion can have modifiers
+ */
+export const validateModifiersInFusedGlyphs: ValidationRule = {
+  name: 'modifiers-in-fused-glyphs',
+  severity: 'warning',
+  validate: (doc: ParsedDocument): ParseError[] => {
+    const errors: ParseError[] = [];
+
+    // NABC glyph modifiers: S, G, M, -, >, ~
+    const modifierPattern = /[SGM\->~]/;
+
+    for (const syllable of doc.notation.syllables) {
+      for (const note of syllable.notes) {
+        if (!note.nabc || note.nabc.length === 0) continue;
+
+        for (const nabcLine of note.nabc) {
+          if (!nabcLine.includes('!')) continue;
+
+          // Split by ! to get individual glyph descriptors
+          const parts = nabcLine.split('!');
+          
+          // Check all parts except the last one for modifiers
+          for (let i = 0; i < parts.length - 1; i++) {
+            const part = parts[i];
+            
+            // Check if this part has any modifiers
+            if (modifierPattern.test(part)) {
+              errors.push({
+                message: `Modifiers in fused glyphs are only allowed on the last glyph descriptor (Gregorio 6.1.0). Found modifier in '${part}' but only '${parts[parts.length - 1]}' (the last glyph) can have modifiers.`,
+                range: note.range || { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+                severity: 'warning'
+              });
+              break; // Only report once per NABC line
+            }
+          }
+        }
+      }
+    }
+
+    return errors;
+  }
+};
+
+/**
  * All validation rules
  */
 export const allValidationRules: ValidationRule[] = [
@@ -379,5 +424,6 @@ export const allValidationRules: ValidationRule[] = [
   validateVirgaStrataFollowedByHigherPitch,
   validateQuilismaticConnector,
   validateStaffLines,
-  validateBalancedPitchDescriptorsInFusedGlyphs
+  validateBalancedPitchDescriptorsInFusedGlyphs,
+  validateModifiersInFusedGlyphs
 ];

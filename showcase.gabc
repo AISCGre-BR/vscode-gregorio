@@ -388,7 +388,21 @@ both(j|vihj!tahj) have(k|vihn!tahn)pitches(l) (::)
 (c4) No(g|vi!ta)pitch(h|pe!cl)de(i|to!gr)scrip(j|pr!sc)tors(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 20: NABC - CONNECTING STROKES
+% SECTION 21: NABC - MODIFIERS IN FUSED GLYPHS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Modifiers only on last glyph - VALID
+(c4) Val(g|pe!toG)id(h|pehk!toGhk) ex(i|vi!clM)am(j|ta!peS)ples(k) (::)
+
+% VALIDATION WARNING: Modifiers on non-last glyphs - INVALID in Gregorio 6.1.0
+% These will trigger a linting warning:
+(c4) In(g|peG!toG)val(h|peG!to)id(i|peGhk!tohk) (::)
+
+% Combinations with other features - VALID when modifiers only on last
+(c4) Com(g|pe!to>)bi(h|vi!clM-)ned(i|ta!grG) mod(j|pe!clSGM->~)i(k|vi!taG)fiers(l) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 22: NABC - CONNECTING STROKES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Con(g|vi-cl)nec(h|pu-pe)ting(i|ta-to) stro(j|gr-pr)kes(k) (,)

@@ -8,7 +8,8 @@ import {
   validateFirstSyllableLineBreak,
   validateNabcWithoutHeader,
   validateQuilismaFollowedByLowerPitch,
-  validateBalancedPitchDescriptorsInFusedGlyphs
+  validateBalancedPitchDescriptorsInFusedGlyphs,
+  validateModifiersInFusedGlyphs
 } from '../validation/rules';
 
 describe('Validation Rules', () => {
@@ -310,6 +311,208 @@ describe('Validation Rules', () => {
       const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
       // This should NOT warn because both sides have pitch descriptors (hg and hk)
       expect(errors.length).toBe(0);
+    });
+  });
+
+  describe('validateModifiersInFusedGlyphs', () => {
+    it('should warn when first glyph has modifier in fusion', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['peG!to'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(1);
+      expect(errors[0].severity).toBe('warning');
+      expect(errors[0].message).toContain('only allowed on the last glyph descriptor');
+    });
+
+    it('should warn when middle glyph has modifier in multi-fusion', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['pe!toM!cl'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(1);
+      expect(errors[0].message).toContain('toM');
+    });
+
+    it('should not warn when only last glyph has modifier', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['pe!toG'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should not warn when no glyphs have modifiers', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['pe!to!cl'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should allow all modifier types on last glyph', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['pe!toSGM->~'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should work with pitch descriptors present', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['pehk!toGhk'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should warn when first glyph has modifier with pitch descriptor', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['peGhk!tohk'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateModifiersInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(1);
+      expect(errors[0].message).toContain('peGhk');
     });
   });
 });
