@@ -3,7 +3,7 @@
  * Implements error and warning detection based on Gregorio compiler documentation
  */
 
-import { ParsedDocument, ParseError, Range, Syllable, Note, NoteShape } from '../parser/types';
+import { ParsedDocument, ParseError, NoteShape } from '../parser/types';
 
 export interface ValidationRule {
   name: string;
@@ -317,6 +317,56 @@ function getPitchValue(pitch: string): number {
 }
 
 /**
+ * Check for unbalanced pitch descriptors in fused NABC glyphs
+ * Fused glyphs (connected with !) must have pitch descriptors on both sides or neither
+ * This is not supported in Gregorio 6.1.0
+ */
+export const validateBalancedPitchDescriptorsInFusedGlyphs: ValidationRule = {
+  name: 'balanced-pitch-descriptors-fused-glyphs',
+  severity: 'warning',
+  validate: (doc: ParsedDocument): ParseError[] => {
+    const errors: ParseError[] = [];
+
+    // Iterate through all syllables
+    for (const syllable of doc.notation.syllables) {
+      // Check each note for NABC content
+      for (const note of syllable.notes) {
+        if (!note.nabc || note.nabc.length === 0) continue;
+
+        // Parse NABC notation to find fused glyphs (containing !)
+        for (const nabcLine of note.nabc) {
+          if (!nabcLine.includes('!')) continue;
+
+          // Split by ! to get individual glyph descriptors
+          const parts = nabcLine.split('!');
+          
+          for (let i = 0; i < parts.length - 1; i++) {
+            const leftPart = parts[i];
+            const rightPart = parts[i + 1];
+
+            // Check if parts have pitch descriptors (h followed by pitch letter a-n, p)
+            const leftHasPitch = /h[a-np]/.test(leftPart);
+            const rightHasPitch = /h[a-np]/.test(rightPart);
+
+            // If only one side has a pitch descriptor, emit warning
+            if (leftHasPitch !== rightHasPitch) {
+              errors.push({
+                message: `Unbalanced pitch descriptors in fused glyphs are not supported in Gregorio 6.1.0. Both glyphs must have pitch descriptors (e.g., 'vihk!tahk') or neither should have them.`,
+                range: note.range || { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+                severity: 'warning'
+              });
+              break; // Only report once per NABC line
+            }
+          }
+        }
+      }
+    }
+
+    return errors;
+  }
+};
+
+/**
  * All validation rules
  */
 export const allValidationRules: ValidationRule[] = [
@@ -328,5 +378,6 @@ export const allValidationRules: ValidationRule[] = [
   validateQuilismaPesPrecededByHigherPitch,
   validateVirgaStrataFollowedByHigherPitch,
   validateQuilismaticConnector,
-  validateStaffLines
+  validateStaffLines,
+  validateBalancedPitchDescriptorsInFusedGlyphs
 ];

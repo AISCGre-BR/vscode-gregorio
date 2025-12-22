@@ -423,29 +423,6 @@ export function parseNABCSnippets(nabcArray: string[], startPos?: Position): NAB
 }
 
 /**
- * Parse all NABC snippets with their real positions from segments
- */
-export function parseNABCSnippetsWithPositions(
-  nabcArray: string[],
-  nabcSegments: Array<{type: string, content: string, start: Position}>,
-  fallbackStart?: Position
-): NABCGlyphDescriptor[] {
-  const allDescriptors: NABCGlyphDescriptor[] = [];
-  
-  nabcArray.forEach((nabc, index) => {
-    // Use real position from segment if available, otherwise fallback
-    const pos = nabcSegments[index]?.start || (fallbackStart ? {
-      line: fallbackStart.line,
-      character: fallbackStart.character + index * 10
-    } : undefined);
-    const descriptors = parseNABCSnippet(nabc, pos);
-    allDescriptors.push(...descriptors);
-  });
-  
-  return allDescriptors;
-}
-
-/**
  * Validate NABC glyph descriptor
  */
 export function validateNABCDescriptor(descriptor: NABCGlyphDescriptor): string[] {

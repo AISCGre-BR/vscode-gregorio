@@ -369,8 +369,23 @@ high(g|tohh)low(h|prhd)same(i|schf) (::)
 % SECTION 19: NABC - GLYPH FUSION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-(c4) Fu(g|vi+cl)sion(h|pu+pe) ex(i|ta+to)am(j|gr+pr)ples(k) (,)
-com(g|cl+pe+to)plex(h|vi+pu+ta) fu(i|pe+pr+sc)sions(j) (::)
+(c4) Fu(g|vi!cl)sion(h|pu!pe) ex(i|ta!to)am(j|gr!pr)ples(k) (,)
+com(g|cl!pe!to)plex(h|vi!pu!ta) fu(i|pe!pr!sc)sions(j) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 20: NABC - FUSED GLYPHS WITH PITCH DESCRIPTORS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Fused glyphs (!) with balanced pitch descriptors - VALID
+(c4) Bal(g|vihk!tahk)anced(h|vihf!tahf) pitch:(i|vihg!tahg) (,)
+both(j|vihj!tahj) have(k|vihn!tahn)pitches(l) (::)
+
+% VALIDATION WARNING: Unbalanced pitch descriptors - INVALID in Gregorio 6.1.0
+% These will trigger a linting warning:
+(c4) Un(g|vihk!ta)bal(h|vi!tahk)anced(i|vihf!pe) (::)
+
+% Without pitch descriptors - VALID
+(c4) No(g|vi!ta)pitch(h|pe!cl)de(i|to!gr)scrip(j|pr!sc)tors(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 20: NABC - CONNECTING STROKES

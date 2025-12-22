@@ -143,36 +143,32 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
   }
 
   const text = textDocument.getText();
-  let parsedDoc;
+  
+  // Always use TypeScript parser for full document parsing (including syllables and NABC)
+  // This ensures validation rules have access to complete document structure
+  const parser = new GabcParser(text);
+  const parsedDoc = parser.parse();
 
-  // Try tree-sitter first, fall back to TypeScript parser
-  if (treeSitterParser.isTreeSitterAvailable()) {
-    try {
-      const tree = treeSitterParser.parse(text);
-      if (tree) {
-        const headers = treeSitterParser.extractHeaders(tree, text);
-        const errors = treeSitterParser.extractErrors(tree);
-        
-        parsedDoc = {
-          headers,
-          notation: { syllables: [], range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } } },
-          comments: [],
-          errors
-        };
+  // Debug: Log NABC content
+  connection.console.log(`[DEBUG] Validating document with ${parsedDoc.notation.syllables.length} syllables`);
+  let nabcCount = 0;
+  let fusedCount = 0;
+  for (const syllable of parsedDoc.notation.syllables) {
+    for (const note of syllable.notes) {
+      if (note.nabc && note.nabc.length > 0) {
+        nabcCount++;
+        if (note.nabc.some(n => n.includes('!'))) {
+          fusedCount++;
+          connection.console.log(`[DEBUG] Found fused NABC: ${note.nabc.join(', ')}`);
+        }
       }
-    } catch (error) {
-      connection.console.warn(`Tree-sitter parsing failed, using fallback: ${error}`);
     }
   }
-
-  // Fallback to TypeScript parser
-  if (!parsedDoc) {
-    const parser = new GabcParser(text);
-    parsedDoc = parser.parse();
-  }
+  connection.console.log(`[DEBUG] Found ${nabcCount} notes with NABC, ${fusedCount} with fusion (!)`);
 
   // Validate the document with validation rules
   const errors = validator.validate(parsedDoc);
+  connection.console.log(`[DEBUG] Validation produced ${errors.length} errors`);
 
   // Run semantic analysis
   const semanticErrors = analyzeSemantics(parsedDoc);

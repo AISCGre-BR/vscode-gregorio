@@ -18,7 +18,7 @@ import {
   Range,
   Comment
 } from './types';
-import { parseNABCSnippets, parseNABCSnippetsWithPositions } from './nabc-parser';
+import { parseNABCSnippets } from './nabc-parser';
 
 export class GabcParser {
   private text: string;
@@ -27,7 +27,6 @@ export class GabcParser {
   private character: number;
   private errors: ParseError[];
   private comments: Comment[];
-  private headers: Map<string, string>;
 
   constructor(text: string) {
     this.text = text;
@@ -36,16 +35,15 @@ export class GabcParser {
     this.character = 0;
     this.errors = [];
     this.comments = [];
-    this.headers = new Map();
   }
 
   parse(): ParsedDocument {
-    this.headers = this.parseHeaders();
+    const headers = this.parseHeaders();
     this.skipWhitespaceAndComments(); // Skip whitespace after header separator
     const notation = this.parseNotation();
 
     return {
-      headers: this.headers,
+      headers,
       notation,
       comments: this.comments,
       errors: this.errors
@@ -188,31 +186,16 @@ export class GabcParser {
     const noteStart = this.getCurrentPosition();
     
     // Parse alternating GABC and NABC segments
-    // Pattern depends on nabc-lines header:
-    // - nabc-lines: 1 => (gabc|nabc|gabc|nabc|...)
-    // - nabc-lines: 2 => (gabc|nabc1|nabc2|gabc|nabc1|nabc2|...)
+    // Pattern: (gabc|nabc|gabc|nabc|...)
     // We concatenate all GABC content but track original positions for each character
     
-    const nabcLines = parseInt(this.headers?.get('nabc-lines') || '1', 10);
     const segments: Array<{type: 'gabc' | 'nabc', content: string, start: Position}> = [];
     let isNabc = false; // Start with GABC
-    let nabcCount = 0; // Count how many NABC segments we've added in current group
     
     while (this.pos < this.text.length && this.peek() !== ')') {
       if (this.peek() === '|') {
         this.advance(1); // Skip '|'
-        
-        if (!isNabc) {
-          // Switching from GABC to first NABC
-          isNabc = true;
-          nabcCount = 0;
-        } else if (nabcCount >= nabcLines) {
-          // We've already added enough NABC segments, switch back to GABC
-          isNabc = false;
-          nabcCount = 0;
-        }
-        // else: stay in NABC mode for next segment
-        
+        isNabc = !isNabc; // Toggle between GABC and NABC
         continue;
       }
       
@@ -225,17 +208,11 @@ export class GabcParser {
       }
       
       if (content.length > 0) {
-        const segmentType = isNabc ? 'nabc' : 'gabc';
         segments.push({
-          type: segmentType,
+          type: isNabc ? 'nabc' : 'gabc',
           content,
           start: segmentStart
         });
-        
-        // If we just added a NABC segment, increment the counter
-        if (segmentType === 'nabc') {
-          nabcCount++;
-        }
       }
     }
 
@@ -272,7 +249,7 @@ export class GabcParser {
 
     // Parse note group with position map
     if (gabcContent.trim().length > 0) {
-      const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap, nabcSegments);
+      const noteGroup = this.parseNoteGroupWithPositionMap(gabcContent, nabcSnippets, noteStart, positionMap);
       if (noteGroup) {
         notes.push(noteGroup);
       }
@@ -383,51 +360,6 @@ export class GabcParser {
         }
       }
 
-      // Check for initio debilis prefix (-)
-      if (char === '-' && i + 1 < gabc.length && /[a-np]/i.test(gabc[i + 1])) {
-        const noteStart: Position = {
-          line: start.line,
-          character: start.character + i
-        };
-        const isUpperCase = /[A-NP]/.test(gabc[i + 1]);
-        const pitch = gabc[i + 1].toLowerCase();
-        let shape = isUpperCase ? NoteShape.PunctumInclinatum : NoteShape.Punctum;
-        const modifiers: any[] = [{ type: ModifierType.InitioDebilis }];
-        let noteLength = 2; // '-' + pitch
-
-        i += 2; // Skip '-' and pitch
-
-        // Parse shape modifiers and note modifiers (same logic as regular notes)
-        while (i < gabc.length) {
-          const mod = gabc[i];
-
-          // Leaning modifiers for punctum inclinatum
-          if (isUpperCase && /[012]/.test(mod)) {
-            noteLength++;
-            i++;
-            continue;
-          }
-
-          // Other modifiers like alterations, episema, etc. - same as below
-          // For now, break to keep it simple
-          break;
-        }
-
-        const noteEnd: Position = {
-          line: start.line,
-          character: start.character + noteLength
-        };
-
-        notes.push({
-          pitch,
-          shape,
-          modifiers,
-          range: { start: noteStart, end: noteEnd }
-        });
-
-        continue;
-      }
-
       // Check for pitch letters (lowercase or uppercase)
       if (/[a-np]/i.test(char)) {
         const noteStart: Position = {
@@ -469,6 +401,11 @@ export class GabcParser {
             modifiers.push({ type: ModifierType.OriscusScapus });
             noteLength++;
             i++;
+            // Check for orientation (0=downwards, 1=upwards)
+            if (i < gabc.length && /[01]/.test(gabc[i])) {
+              noteLength++;
+              i++;
+            }
           } else if (mod === 'w') {
             shape = NoteShape.Quilisma;
             noteLength++;
@@ -607,6 +544,11 @@ export class GabcParser {
               noteLength++;
               i++;
             }
+          } else if (mod === '-') {
+            // Initio debilis (must be before the note, but we handle it here)
+            modifiers.push({ type: ModifierType.InitioDebilis });
+            noteLength++;
+            i++;
           }
           
           // Liquescence modifiers
@@ -687,8 +629,7 @@ export class GabcParser {
     gabc: string,
     nabc: string[],
     start: Position,
-    positionMap: Position[],
-    nabcSegments?: Array<{type: 'gabc' | 'nabc', content: string, start: Position}>
+    positionMap: Position[]
   ): NoteGroup | null {
     const notes: Note[] = [];
     const end = this.getCurrentPosition();
@@ -744,46 +685,6 @@ export class GabcParser {
           i += attrResult.length;
           continue;
         }
-      }
-
-      // Check for initio debilis prefix (-)
-      if (char === '-' && i + 1 < gabc.length && /[a-np]/i.test(gabc[i + 1])) {
-        const noteStartIndex = i;
-        const noteStart = getPosition(i);
-        const isUpperCase = /[A-NP]/.test(gabc[i + 1]);
-        const pitch = gabc[i + 1].toLowerCase();
-        let shape = isUpperCase ? NoteShape.PunctumInclinatum : NoteShape.Punctum;
-        const modifiers: any[] = [{ type: ModifierType.InitioDebilis }];
-        let noteLength = 2; // '-' + pitch
-
-        i += 2; // Skip '-' and pitch
-
-        // Parse shape modifiers and note modifiers (simple version)
-        while (i < gabc.length) {
-          const mod = gabc[i];
-
-          // Leaning modifiers for punctum inclinatum
-          if (isUpperCase && /[012]/.test(mod)) {
-            noteLength++;
-            i++;
-            continue;
-          }
-
-          // For now, break to avoid complexity
-          break;
-        }
-
-        const noteEndIndex = noteStartIndex + noteLength;
-        const noteEnd = getPosition(noteEndIndex);
-
-        notes.push({
-          pitch,
-          shape,
-          modifiers,
-          range: { start: noteStart, end: noteEnd }
-        });
-
-        continue;
       }
 
       // Check for pitch letters (lowercase or uppercase)
@@ -885,69 +786,7 @@ export class GabcParser {
             modifiers.push({ type: ModifierType.Quadratum });
             noteLength++;
             i++;
-          }
-          
-          // Alteration modifiers
-          else if (mod === 'x') {
-            shape = NoteShape.Flat;
-            noteLength++;
-            i++;
-            if (i < gabc.length && gabc[i] === '?') {
-              // Parenthesized flat
-              noteLength++;
-              i++;
-            }
-          } else if (mod === 'X') {
-            // Soft flat
-            shape = NoteShape.Flat;
-            noteLength++;
-            i++;
-            if (i < gabc.length && gabc[i] === '?') {
-              // Parenthesized soft flat
-              noteLength++;
-              i++;
-            }
-          } else if (mod === '#') {
-            shape = NoteShape.Sharp;
-            noteLength++;
-            i++;
-            if (i < gabc.length && gabc[i] === '#') {
-              // Double sharp (##)
-              noteLength++;
-              i++;
-              if (i < gabc.length && gabc[i] === '?') {
-                // Parenthesized double sharp (##?)
-                noteLength++;
-                i++;
-              }
-            } else if (i < gabc.length && gabc[i] === '?') {
-              // Parenthesized sharp (#?)
-              noteLength++;
-              i++;
-            }
-          } else if (mod === 'y') {
-            shape = NoteShape.Natural;
-            noteLength++;
-            i++;
-            if (i < gabc.length && gabc[i] === '?') {
-              // Parenthesized natural
-              noteLength++;
-              i++;
-            }
-          } else if (mod === 'Y') {
-            // Soft natural
-            shape = NoteShape.Natural;
-            noteLength++;
-            i++;
-            if (i < gabc.length && gabc[i] === '?') {
-              // Parenthesized soft natural
-              noteLength++;
-              i++;
-            }
-          }
-          
-          // Rhythmic and expression modifiers
-          else if (mod === '.') {
+          } else if (mod === '.') {
             modifiers.push({ type: ModifierType.PunctumMora });
             noteLength++;
             i++;
@@ -1009,13 +848,10 @@ export class GabcParser {
       }
     }
 
-    // Filter only NABC segments from nabcSegments
-    const nabcSegmentsFiltered = nabcSegments ? nabcSegments.filter(s => s.type === 'nabc') : [];
-    
     return {
       gabc,
       nabc: nabc.length > 0 ? nabc : undefined,
-      nabcParsed: nabc.length > 0 ? parseNABCSnippetsWithPositions(nabc, nabcSegmentsFiltered, start) : undefined,
+      nabcParsed: nabc.length > 0 ? parseNABCSnippets(nabc, start) : undefined,
       range: { start, end },
       notes,
       custos: custos || undefined,

@@ -7,7 +7,8 @@ import {
   validateNameHeader,
   validateFirstSyllableLineBreak,
   validateNabcWithoutHeader,
-  validateQuilismaFollowedByLowerPitch
+  validateQuilismaFollowedByLowerPitch,
+  validateBalancedPitchDescriptorsInFusedGlyphs
 } from '../validation/rules';
 
 describe('Validation Rules', () => {
@@ -162,6 +163,153 @@ describe('Validation Rules', () => {
       const errors = validateQuilismaFollowedByLowerPitch.validate(doc);
       expect(errors.length).toBe(1);
       expect(errors[0].severity).toBe('warning');
+    });
+  });
+
+  describe('validateBalancedPitchDescriptorsInFusedGlyphs', () => {
+    it('should warn when left glyph has pitch descriptor but right does not', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['vihk!ta'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(1);
+      expect(errors[0].severity).toBe('warning');
+      expect(errors[0].message).toContain('Unbalanced pitch descriptors');
+      expect(errors[0].message).toContain('Gregorio 6.1.0');
+    });
+
+    it('should warn when right glyph has pitch descriptor but left does not', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['vi!tahk'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(1);
+      expect(errors[0].severity).toBe('warning');
+    });
+
+    it('should not warn when both glyphs have pitch descriptors', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['vihk!tahk'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should not warn when neither glyph has pitch descriptors', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['vi!ta'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should warn for mismatched pitch descriptors with different pitches', () => {
+      const doc: ParsedDocument = {
+        headers: new Map(),
+        notation: {
+          syllables: [
+            {
+              text: 'Test',
+              notes: [
+                {
+                  gabc: 'g',
+                  nabc: ['vihg!tahk'],
+                  range: { start: { line: 2, character: 10 }, end: { line: 2, character: 20 } },
+                  notes: []
+                }
+              ],
+              range: { start: { line: 2, character: 0 }, end: { line: 2, character: 25 } }
+            }
+          ],
+          range: { start: { line: 0, character: 0 }, end: { line: 3, character: 0 } }
+        },
+        comments: [],
+        errors: []
+      };
+
+      const errors = validateBalancedPitchDescriptorsInFusedGlyphs.validate(doc);
+      // This should NOT warn because both sides have pitch descriptors (hg and hk)
+      expect(errors.length).toBe(0);
     });
   });
 });
