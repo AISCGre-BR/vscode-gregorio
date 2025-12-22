@@ -72,6 +72,7 @@
     "semanticTokenTypes": [
       {
         "id": "NABCSignificantLetterPrefix",
+        "superType": "keyword",
         "description": "NABC significant letter prefix (ls)"
       },
       {
@@ -172,7 +173,18 @@
             "macro:gabc": "#569CD6",
             "parameter:gabc": "#9CDCFE",
             "variable:gabc": "#4FC1FF",
-            "customLiteral:gabc": "#CE9178"
+            "customLiteral:gabc": "#CE9178",
+            "NABCSignificantLetterPrefix:gabc": "#C586C0",
+            "NABCTironianLetterPrefix:gabc": "#C586C0",
+            "NABCSignificantLetterShorthand:gabc": "#DCDCAA",
+            "NABCSignificantLetterPosition:gabc": "#B5CEA8",
+            "NABCSubpunctisPrefix:gabc": "#4EC9B0",
+            "NABCPrepunctisPrefix:gabc": "#4EC9B0",
+            "NABCSubpunctisModifier:gabc": "#9CDCFE",
+            "NABCSubpunctisRepetitionCount:gabc": "#B5CEA8",
+            "NABCPitchDescriptorPrefix:gabc": "#DCDCAA",
+            "NABCPitchDescriptorValue:gabc": "#9CDCFE",
+            "NABCBasicGlyphDescriptor:gabc": "#C586C0"
           }
         },
         "[Default Light+]": {
@@ -184,7 +196,18 @@
             "macro:gabc": "#0000FF",
             "parameter:gabc": "#001080",
             "variable:gabc": "#0070C1",
-            "customLiteral:gabc": "#A31515"
+            "customLiteral:gabc": "#A31515",
+            "NABCSignificantLetterPrefix:gabc": "#AF00DB",
+            "NABCTironianLetterPrefix:gabc": "#AF00DB",
+            "NABCSignificantLetterShorthand:gabc": "#795E26",
+            "NABCSignificantLetterPosition:gabc": "#098658",
+            "NABCSubpunctisPrefix:gabc": "#267F99",
+            "NABCPrepunctisPrefix:gabc": "#267F99",
+            "NABCSubpunctisModifier:gabc": "#001080",
+            "NABCSubpunctisRepetitionCount:gabc": "#098658",
+            "NABCPitchDescriptorPrefix:gabc": "#795E26",
+            "NABCPitchDescriptorValue:gabc": "#001080",
+            "NABCBasicGlyphDescriptor:gabc": "#AF00DB"
           }
         }
       }

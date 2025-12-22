@@ -1273,31 +1273,31 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     
     // 1. Tokenize subpunctis/prepunctis (if present)
     if (glyph.subpunctis || glyph.prepunctis) {
-      // 'pp' or 'su' prefix - highlight as class (nome de classe)
+      // 'pp' or 'su' prefix
       const prefix = glyphText.substring(0, 2);
       if (prefix === 'pp' || prefix === 'su') {
         builder.push(
           range.start.line,
           range.start.character + pos,
           2,
-          this.getTokenType('class'),
-          this.getModifier('readonly')
+          this.getTokenType(prefix === 'su' ? 'NABCSubpunctisPrefix' : 'NABCPrepunctisPrefix'),
+          0
         );
         pos += 2;
         
-        // Modifier letter (t, n, z, etc.) - highlight as string (valor de atributo)
-        if (pos < glyphText.length && /[a-z]/.test(glyphText[pos])) {
+        // Modifier letter (t, n, u, v, w, x, y, q, z)
+        if (pos < glyphText.length && /[tunvwxyqz]/.test(glyphText[pos])) {
           builder.push(
             range.start.line,
             range.start.character + pos,
             1,
-            this.getTokenType('string'),
+            this.getTokenType('NABCSubpunctisModifier'),
             0
           );
           pos++;
         }
         
-        // Numeric value - highlight as number
+        // Numeric value - repetition count
         while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
           const numStart = pos;
           while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
@@ -1307,7 +1307,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             range.start.line,
             range.start.character + numStart,
             pos - numStart,
-            this.getTokenType('number'),
+            this.getTokenType('NABCSubpunctisRepetitionCount'),
             0
           );
         }
@@ -1391,23 +1391,22 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       
       // 4. Tokenize pitch descriptor (h + pitch letter)
       if (pos < glyphText.length && glyphText[pos] === 'h') {
-        // 'h' - highlight as function (nome de função)
         builder.push(
           range.start.line,
           range.start.character + pos,
           1,
-          this.getTokenType('function'),
+          this.getTokenType('NABCPitchDescriptorPrefix'),
           0
         );
         pos++;
         
-        // Pitch letter (a-n or p) - highlight as parameter (maps to variable.name via semanticTokenScopes)
+        // Pitch letter (a-n or p)
         if (pos < glyphText.length && /[a-np]/.test(glyphText[pos])) {
           builder.push(
             range.start.line,
             range.start.character + pos,
             1,
-            this.getTokenType('parameter'),
+            this.getTokenType('NABCPitchDescriptorValue'),
             0
           );
           pos++;
@@ -1415,20 +1414,42 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
     }
     
-    // 5. Highlight significant letters if present
-    if (glyph.significantLetters && glyph.significantLetters.length > 0) {
-      for (const letter of glyph.significantLetters) {
-        if (letter.range) {
-          // Significant letters are performance indications - use decorator
-          builder.push(
-            letter.range.start.line,
-            letter.range.start.character,
-            letter.range.end.character - letter.range.start.character,
-            this.getTokenType('decorator'),
-            this.getModifier('documentation')
-          );
-        }
-      }
+    // 5. Highlight significant letters (ls/lt + letters + number)
+    // Use a regex over the glyph text to avoid relying on parser ranges that may be ignored by VS Code
+    const sigRegex = /(ls|lt)([a-z]+)([0-9]+)/g;
+    let sigMatch: RegExpExecArray | null;
+    while ((sigMatch = sigRegex.exec(glyphText)) !== null) {
+      const basePos = range.start.character + sigMatch.index;
+      const prefix = sigMatch[1];
+      const letters = sigMatch[2];
+      const number = sigMatch[3];
+
+      // Prefix ls/lt
+      builder.push(
+        range.start.line,
+        basePos,
+        2,
+        this.getTokenType(prefix === 'ls' ? 'NABCSignificantLetterPrefix' : 'NABCTironianLetterPrefix'),
+        0
+      );
+
+      // Letter shorthand
+      builder.push(
+        range.start.line,
+        basePos + 2,
+        letters.length,
+        this.getTokenType('NABCSignificantLetterShorthand'),
+        0
+      );
+
+      // Position number
+      builder.push(
+        range.start.line,
+        basePos + 2 + letters.length,
+        number.length,
+        this.getTokenType('NABCSignificantLetterPosition'),
+        0
+      );
     }
     
     // Handle fusion recursively
