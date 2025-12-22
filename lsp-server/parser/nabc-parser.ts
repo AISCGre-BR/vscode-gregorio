@@ -87,7 +87,10 @@ function parseSingleComplexDescriptor(
     if (left && left.consumed === beforeFusion.length) {
       // Parse what comes after the fusion
       const afterFusionStart = fusionIndex + 1;
-      const right = parseSingleComplexDescriptor(nabc, afterFusionStart, position);
+      const rightPosition = position
+        ? { line: position.line, character: position.character + (afterFusionStart - startPos) }
+        : undefined;
+      const right = parseSingleComplexDescriptor(nabc, afterFusionStart, rightPosition);
       
       if (right) {
         left.descriptor.fusion = right.descriptor;
