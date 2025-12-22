@@ -2,63 +2,190 @@
  * Tree-sitter Integration Module
  * Integrates tree-sitter-gregorio parser with the LSP
  * 
- * NOTE: Tree-sitter is disabled for VS Code extension - uses TypeScript fallback parser only
+ * Can be disabled via environment variable: DISABLE_TREE_SITTER=true
  */
 
+import Parser from 'tree-sitter';
 import { ParsedDocument, ParseError, Position, Range } from '../parser/types';
 
-export class TreeSitterParser {
-  private parser: any = null;
-  private isAvailable: boolean = false;
+let Gregorio: any;
 
-  constructor() {
-    // Tree-sitter is disabled for VS Code extension
-    // Always use TypeScript fallback parser
-    this.isAvailable = false;
-  }
+// Check if tree-sitter should be disabled
+const TREE_SITTER_DISABLED = process.env.DISABLE_TREE_SITTER === 'true';
 
-  isTreeSitterAvailable(): boolean {
-    return false; // Always disabled for VS Code extension
-  }
-
-  parse(text: string): any | null {
-    return null; // Always disabled
-  }
-
-  findNodeAt(tree: any, position: Position): any | null {
-    return null; // Disabled
-  }
-
-  getNodeText(node: any, text: string): string {
-    return ''; // Disabled
-  }
-
-  nodeToRange(node: any): Range {
-    return {
-      start: { line: 0, character: 0 },
-      end: { line: 0, character: 0 }
-    };
-  }
-
-  extractHeaders(tree: any, text: string): Map<string, string> {
-    return new Map(); // Disabled
-  }
-
-  extractNotation(tree: any, text: string): any[] {
-    return []; // Disabled
-  }
-
-  isNabcNode(node: any): boolean {
-    return false; // Disabled
-  }
-
-  extractNabcSnippets(node: any, text: string): string[] {
-    return []; // Disabled
-  }
-
-  extractErrors(tree: any): ParseError[] {
-    return []; // Disabled
+if (!TREE_SITTER_DISABLED) {
+  try {
+    // Try to load tree-sitter-gregorio
+    Gregorio = require('tree-sitter-gregorio');
+  } catch (error) {
+    console.warn('tree-sitter-gregorio not available, will use fallback parser');
   }
 }
 
+export class TreeSitterParser {
+  private parser: Parser | null = null;
+  private isAvailable: boolean = false;
+  private forceDisabled: boolean = false;
+
+  constructor(options?: { disabled?: boolean }) {
+    this.forceDisabled = options?.disabled || TREE_SITTER_DISABLED;
+    
+    if (!this.forceDisabled && Gregorio) {
+      try {
+        this.parser = new Parser();
+        this.parser.setLanguage(Gregorio);
+        this.isAvailable = true;
+      } catch (error) {
+        // Silently fall back to TypeScript parser
+        this.isAvailable = false;
+      }
+    }
+  }
+
+  isTreeSitterAvailable(): boolean {
+    return !this.forceDisabled && this.isAvailable;
+  }
+
+  parse(text: string): Parser.Tree | null {
+    if (!this.parser || this.forceDisabled) {
+      return null;
+    }
+
+    try {
+      return this.parser.parse(text);
+    } catch (error) {
+      console.error('Tree-sitter parse error:', error);
+      return null;
+    }
+  }
+
+  extractErrors(tree: Parser.Tree): ParseError[] {
+    const errors: ParseError[] = [];
+
+    const visitNode = (node: Parser.SyntaxNode) => {
+      if (node.hasError) {
+        if (node.type === 'ERROR' || node.isMissing) {
+          errors.push({
+            message: `Syntax error: unexpected ${node.type}`,
+            range: this.nodeToRange(node),
+            severity: 'error'
+          });
+        }
+      }
+
+      for (const child of node.children) {
+        visitNode(child);
+      }
+    };
+
+    visitNode(tree.rootNode);
+    return errors;
+  }
+
+  findNodeAt(tree: Parser.Tree, position: Position): Parser.SyntaxNode | null {
+    const point = { row: position.line, column: position.character };
+    return tree.rootNode.descendantForPosition(point);
+  }
+
+  getNodeText(node: Parser.SyntaxNode, text: string): string {
+    return text.substring(node.startIndex, node.endIndex);
+  }
+
+  nodeToRange(node: Parser.SyntaxNode): Range {
+    return {
+      start: {
+        line: node.startPosition.row,
+        character: node.startPosition.column
+      },
+      end: {
+        line: node.endPosition.row,
+        character: node.endPosition.column
+      }
+    };
+  }
+
+  /**
+   * Extract headers from tree-sitter parse tree
+   */
+  extractHeaders(tree: Parser.Tree, text: string): Map<string, string> {
+    const headers = new Map<string, string>();
+    
+    const findHeaders = (node: Parser.SyntaxNode) => {
+      if (node.type === 'header' || node.type === 'header_line') {
+        const nameNode = node.childForFieldName('name');
+        const valueNode = node.childForFieldName('value');
+        
+        if (nameNode && valueNode) {
+          const name = this.getNodeText(nameNode, text).toLowerCase();
+          const value = this.getNodeText(valueNode, text).trim();
+          headers.set(name, value);
+        }
+      }
+
+      for (const child of node.children) {
+        findHeaders(child);
+      }
+    };
+
+    findHeaders(tree.rootNode);
+    return headers;
+  }
+
+  /**
+   * Extract notation syllables from tree-sitter parse tree
+   */
+  extractNotation(tree: Parser.Tree, text: string): any[] {
+    const syllables: any[] = [];
+
+    const findSyllables = (node: Parser.SyntaxNode) => {
+      if (node.type === 'syllable' || node.type === 'word') {
+        const textNode = node.childForFieldName('text');
+        const notesNode = node.childForFieldName('notes');
+
+        syllables.push({
+          text: textNode ? this.getNodeText(textNode, text) : '',
+          notes: notesNode ? this.getNodeText(notesNode, text) : '',
+          range: this.nodeToRange(node)
+        });
+      }
+
+      for (const child of node.children) {
+        findSyllables(child);
+      }
+    };
+
+    findSyllables(tree.rootNode);
+    return syllables;
+  }
+
+  /**
+   * Check if a node represents a NABC section
+   */
+  isNabcNode(node: Parser.SyntaxNode): boolean {
+    return node.type === 'nabc_snippet' || node.type === 'nabc_content';
+  }
+
+  /**
+   * Extract NABC snippets from a notes section
+   */
+  extractNabcSnippets(node: Parser.SyntaxNode, text: string): string[] {
+    const snippets: string[] = [];
+
+    const findNabc = (n: Parser.SyntaxNode) => {
+      if (this.isNabcNode(n)) {
+        snippets.push(this.getNodeText(n, text));
+      }
+
+      for (const child of n.children) {
+        findNabc(child);
+      }
+    };
+
+    findNabc(node);
+    return snippets;
+  }
+}
+
+// Export singleton instance
+// Can be overridden by creating a new instance with { disabled: true }
 export const treeSitterParser = new TreeSitterParser();

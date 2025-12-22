@@ -55,7 +55,7 @@ async function main() {
 		sourcesContent: false,
 		platform: 'node',
 		outfile: 'dist/server.js',
-		external: [],
+		external: ['tree-sitter', 'tree-sitter-gregorio'],
 		logLevel: 'silent',
 		plugins: [
 			esbuildProblemMatcherPlugin,

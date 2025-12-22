@@ -108,11 +108,20 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   const serverOptions: ServerOptions = {
-    run: { module: serverPath, transport: TransportKind.ipc },
+    run: { 
+      module: serverPath, 
+      transport: TransportKind.ipc,
+      options: {
+        env: { ...process.env, DISABLE_TREE_SITTER: 'true' }
+      }
+    },
     debug: {
       module: serverPath,
       transport: TransportKind.ipc,
-      options: { execArgv: ['--nolazy', '--inspect=6009'] }
+      options: { 
+        execArgv: ['--nolazy', '--inspect=6009'],
+        env: { ...process.env, DISABLE_TREE_SITTER: 'true' }
+      }
     }
   };
 
