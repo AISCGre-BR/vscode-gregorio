@@ -69,6 +69,27 @@
         "category": "Gregorio"
       }
     ],
+    "semanticTokenTypes": [
+      {
+        "id": "NABCSignificantLetterPrefix",
+        "description": "NABC significant letter prefix (ls)"
+      },
+      {
+        "id": "NABCTironianLetterPrefix",
+        "superType": "NABCSignificantLetterPrefix",
+        "description": "NABC tironian letter prefix (lt)"
+      },
+      {
+        "id": "NABCSignificantLetterShorthand",
+        "superType": "function",
+        "description": "NABC significant/tironian letter specifier"
+      },
+      {
+        "id": "NABCSignificantLetterPosition",
+        "superType": "parameter",
+        "description": "NABC significant/tironian letter position"
+      }
+    ],
     "semanticTokenScopes": [
       {
         "scopes": {
@@ -79,16 +100,22 @@
           "comment": ["comment.line.gabc", "comment.block.gabc"],
           "number": ["constant.numeric.gabc"],
           "operator": ["keyword.operator.gabc", "punctuation.separator.gabc"],
-          "parameter": ["variable.other.constant.gabc"],
+          "parameter": ["variable.parameter.gabc", "variable.other.constant.gabc"],
           "variable": ["variable.other.gabc", "entity.name.note.gabc"],
           "class": ["variable.language.gabc"],
-          "macro": ["string.regexp.gabc"],
-          "type": ["entity.name.type.gabc", "support.type.gabc", "keyword.other.unit.gabc"],
-          "function": ["entity.name.function.gabc"],
-          "modifier": ["storage.modifier.gabc"],
-          "regexp": ["constant.character.escape.gabc"],
+          "namespace": ["entity.name.namespace.gabc", "storage.type.nabc.significant.gabc"],
+          "type": ["storage.type.gabc", "entity.name.type.gabc", "support.type.gabc", "keyword.other.unit.gabc"],
           "decorator": ["entity.name.class.gabc"],
-          "customLiteral": ["constant.other.gabc"]
+          "macro": ["string.regexp.gabc"],
+          "regexp": ["constant.character.escape.gabc"],
+          "label": ["entity.name.label.gabc", "storage.type.nabc.tironian.gabc"],
+          "modifier": ["storage.modifier.gabc"],
+          "function": ["entity.name.function.gabc"],
+          "customLiteral": ["constant.other.gabc", "entity.name.tag.nabc.specifier.gabc"],
+          "NABCSignificantLetterPrefix": ["storage.type.gabc"],
+          "NABCTironianLetterPrefix": ["storage.type.gabc"],
+          "NABCSignificantLetterShorthand": ["entity.name.function.gabc"],
+          "NABCSignificantLetterPosition": ["variable.parameter.gabc"]
         }
       }
     ],

@@ -42,7 +42,11 @@ export const tokenTypes = [
   'regexp',        // 15
   'label',         // 16
   'modifier',      // 17
-  'customLiteral'  // 18
+  'customLiteral', // 18
+  'NABCSignificantLetterPrefix',    // 19 - NABC: significant letter prefix (ls)
+  'NABCTironianLetterPrefix',       // 20 - NABC: tironian letter prefix (lt)
+  'NABCSignificantLetterShorthand', // 21 - NABC: letter specifier (foo, bar, etc.)
+  'NABCSignificantLetterPosition'   // 22 - NABC: position number (1, 2, etc.)
 ];
 
 // Define semantic token modifiers
@@ -1358,30 +1362,39 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Significant letters (St. Gall: a,c,e,i,l,m,s,t,v / Laon: a,b,e,i,m,o,p,q,s,t,v)
-      if (/[ls]/.test(char)) {
+      // Significant letters and tironian notes (St. Gall: ls + letters + number / Laon: lt + letters + number)
+      // Pattern: ls (significant prefix) / lt (tironian prefix) + letter specifier + number
+      if (char === 'l' && pos + 1 < nabcText.length && /[st]/.test(nabcText[pos + 1])) {
+        const prefix = nabcText[pos + 1]; // 's' or 't'
+        
+        // Tokenize 'ls' or 'lt' prefix
         builder.push(
           line,
           startChar + pos,
-          1,
-          this.getTokenType('variable'),
+          2,
+          this.getTokenType(prefix === 's' ? 'NABCSignificantLetterPrefix' : 'NABCTironianLetterPrefix'),
           0
         );
-        pos++;
+        pos += 2; // Move past 'ls' or 'lt'
         
-        // Check for second letter
-        if (pos < nabcText.length && /[aceimstv]/.test(nabcText[pos])) {
-          builder.push(
-            line,
-            startChar + pos,
-            1,
-            this.getTokenType('variable'),
-            0
-          );
+        // Capture letter sequence as NABCSignificantLetterShorthand
+        const letterStart = pos;
+        while (pos < nabcText.length && /[a-z]/.test(nabcText[pos])) {
           pos++;
         }
         
-        // Check for number
+        if (pos > letterStart) {
+          // Tokenize letter sequence as NABCSignificantLetterShorthand
+          builder.push(
+            line,
+            startChar + letterStart,
+            pos - letterStart,
+            this.getTokenType('NABCSignificantLetterShorthand'),
+            0
+          );
+        }
+        
+        // Capture number as NABCSignificantLetterPosition
         if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
           const numStart = pos;
           while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
@@ -1391,7 +1404,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             line,
             startChar + numStart,
             pos - numStart,
-            this.getTokenType('number'),
+            this.getTokenType('NABCSignificantLetterPosition'),
             0
           );
         }

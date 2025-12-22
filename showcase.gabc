@@ -328,6 +328,10 @@ punc(g|unsuz1)tum(h|vippt1) pre(i|puppu3)punc(j|clppt4)tis(k) (::)
 % SECTION 16: NABC - SIGNIFICANT LETTERS (St. Gall)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Simple examples: ls/lt prefix (like 'def'), letter sequence (function name), number (parameter)
+(c4) Sim(g|vilsfoo1)ple(h|pulsbar2) ex(i|clltbaz3)am(j|pelstest4)ples(k) (::)
+
+% Complex examples with multiple letters
 (c4) Al(g|vilsal2)ti(h|talsc4)us(i|pelst8) ce(j|prlsm3)le(k|sclsme1)ri(l|cmlss5)ter(m) (,)
 te(g|unlsk7)ne(h|vilsi6)re(i|talsv9) sur(j|pelssum10)sum(k) (::)
 
@@ -335,6 +339,10 @@ te(g|unlsk7)ne(h|vilsi6)re(i|talsv9) sur(j|pelssum10)sum(k) (::)
 % SECTION 17: NABC - SIGNIFICANT LETTERS (Laon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Simple examples: ls/lt prefix (like 'def'), letter sequence (function name), number (parameter)
+(c4) Sim(g|vilsabc1)ple(h|pultdef2) ex(i|clltxyz3)am(j|pelsqrs4)ples(k) (::)
+
+% Complex examples with multiple letters
 (c4) Au(g|vilsa2)ge(h|talse4)te(i|pelse8) de(j|prlsp3)pri(k|sclsme1)me(l|cmlst5) (,)
 te(g|unlseq7)ne(h|vilsb6)te(i|talsiem9) le(j|pelsvo10)vi(k)ter(l) (::)
 
