@@ -317,12 +317,22 @@ por(hgh|un)rec(ghg|sa)tus(hgh|ob) scan(ghi|tr)di(hij|qu)cus(ijk|vr) (::)
 % SECTION 15: NABC - SUBPUNCTIS AND PREPUNCTIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-(c4) Sub(g|visu3)punc(h|pupp2)tis(i|clsut2) pre(j|pesuu1)punc(k|posuv3)tis(l) (::)
+% St. Gall modifiers: t (tractulus), u (tractulus+episema), v (tractulus+double episema),
+%                     w (gravis), x (liquescens stropha), y (gravis+episema)
+(c4) Sub(g|visu3)punc(h|pupp2)tis(i|clsut2) pre(j|pesu1)punc(k|posuv3)tis(l) (::)
 
-(c4) Gra(g|tosuw2)vis(h|prsux3) sub(i|scsuy4)punc(j|cmsun2)tis(k) (,)
-punc(g|unsuz1)tum(h|vippt1) pre(i|puppu3)punc(j|clppt4)tis(k) (::)
+(c4) Gra(g|tosuw2)vis(h|prsux3) sub(i|scsuy4)punc(j|cmsut2)tis(k) (,)
+punc(g|unsuw1)tum(h|vippt1) pre(i|puxu3)punc(j|clppt4)tis(k) (::)
 
-(c4) In(g|vippn3)cli(h|puppq2)na(i|clppz1)tum(j) mo(k)di(l)fiers(m) (::)
+% Laon modifiers: n (uncinus), q (quilisma), z (virga), x (cephalicus)
+(c4) In(g|vippn3)cli(h|puppq2)na(i|clppz1)tum(j|pesux2) mo(k|posun1)di(l|clppx3)fiers(m) (::)
+
+% New examples for subpunctis and prepunctis with custom token types
+(c4) Sub(g|visut2)punc(h|pusun1)tis(i|clsu3) ex(j|pesuw4)am(k|posuv2)ples(l) (::)
+
+(c4) Pre(g|vippt2)punc(h|puppn1)tis(i|clppq3) ex(j|peppy4)am(k|poppx2)ples(l) (::)
+
+(c4) Mixed(g|visut2ppn1) pat(h|pusuw3ppt2)terns(i|clsu1ppq2) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 16: NABC - SIGNIFICANT LETTERS (St. Gall)

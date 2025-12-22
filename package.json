@@ -86,8 +86,28 @@
       },
       {
         "id": "NABCSignificantLetterPosition",
-        "superType": "parameter",
+        "superType": "number",
         "description": "NABC significant/tironian letter position"
+      },
+      {
+        "id": "NABCSubpunctisPrefix",
+        "superType": "class",
+        "description": "NABC subpunctis prefix (su)"
+      },
+      {
+        "id": "NABCPrepunctisPrefix",
+        "superType": "NABCSubpunctisPrefix",
+        "description": "NABC prepunctis prefix (pp)"
+      },
+      {
+        "id": "NABCSubpunctisModifier",
+        "superType": "parameter",
+        "description": "NABC subpunctis/prepunctis modifier (t/n/etc.)"
+      },
+      {
+        "id": "NABCSubpunctisRepetitionCount",
+        "superType": "number",
+        "description": "NABC subpunctis/prepunctis repetition count"
       }
     ],
     "semanticTokenScopes": [
@@ -115,7 +135,11 @@
           "NABCSignificantLetterPrefix": ["storage.type.gabc"],
           "NABCTironianLetterPrefix": ["storage.type.gabc"],
           "NABCSignificantLetterShorthand": ["entity.name.function.gabc"],
-          "NABCSignificantLetterPosition": ["variable.parameter.gabc"]
+          "NABCSignificantLetterPosition": ["constant.numeric.gabc"],
+          "NABCSubpunctisPrefix": ["entity.name.class.gabc"],
+          "NABCPrepunctisPrefix": ["entity.name.class.gabc"],
+          "NABCSubpunctisModifier": ["variable.parameter.gabc"],
+          "NABCSubpunctisRepetitionCount": ["constant.numeric.gabc"]
         }
       }
     ],

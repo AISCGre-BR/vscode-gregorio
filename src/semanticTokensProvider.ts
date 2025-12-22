@@ -46,7 +46,11 @@ export const tokenTypes = [
   'NABCSignificantLetterPrefix',    // 19 - NABC: significant letter prefix (ls)
   'NABCTironianLetterPrefix',       // 20 - NABC: tironian letter prefix (lt)
   'NABCSignificantLetterShorthand', // 21 - NABC: letter specifier (foo, bar, etc.)
-  'NABCSignificantLetterPosition'   // 22 - NABC: position number (1, 2, etc.)
+  'NABCSignificantLetterPosition',  // 22 - NABC: position number (1, 2, etc.)
+  'NABCSubpunctisPrefix',           // 23 - NABC: subpunctis prefix (su)
+  'NABCPrepunctisPrefix',           // 24 - NABC: prepunctis prefix (pp)
+  'NABCSubpunctisModifier',         // 25 - NABC: subpunctis/prepunctis modifier (t/n/u/v/w/x/y/q/z)
+  'NABCSubpunctisRepetitionCount'   // 26 - NABC: subpunctis/prepunctis repetition count
 ];
 
 // Define semantic token modifiers
@@ -1304,34 +1308,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           
           continue;
         }
-        
-        // Check for pp (prepunctis) or su (subpunctis)
-        if (twoLetters === 'pp' || twoLetters === 'su') {
-          builder.push(
-            line,
-            startChar + pos,
-            2,
-            this.getTokenType('class'),
-            this.getModifier('readonly')
-          );
-          pos += 2;
-          
-          // After pp/su, skip the number
-          if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
-            const numStart = pos;
-            while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
-              pos++;
-            }
-            builder.push(
-              line,
-              startChar + numStart,
-              pos - numStart,
-              this.getTokenType('number'),
-              0
-            );
-          }
-          continue;
-        }
       }
       
       // Modifiers: S, G, M, -, >, ~
@@ -1405,6 +1381,51 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             startChar + numStart,
             pos - numStart,
             this.getTokenType('NABCSignificantLetterPosition'),
+            0
+          );
+        }
+        continue;
+      }
+      
+      // Subpunctis and prepunctis (su + modifier + number / pp + modifier + number)
+      // Pattern: su (subpunctis prefix) / pp (prepunctis prefix) + modifier (t/n) + repetition number
+      if ((char === 's' && pos + 1 < nabcText.length && nabcText[pos + 1] === 'u') ||
+          (char === 'p' && pos + 1 < nabcText.length && nabcText[pos + 1] === 'p')) {
+        const prefix = nabcText.substring(pos, pos + 2); // 'su' or 'pp'
+        
+        // Tokenize 'su' or 'pp' prefix
+        builder.push(
+          line,
+          startChar + pos,
+          2,
+          this.getTokenType(prefix === 'su' ? 'NABCSubpunctisPrefix' : 'NABCPrepunctisPrefix'),
+          0
+        );
+        pos += 2; // Move past 'su' or 'pp'
+        
+        // Capture modifier (valid: t, u, v, w, x, y for St. Gall; n, q, z, x for Laon)
+        if (pos < nabcText.length && /[tunvwxyqz]/.test(nabcText[pos])) {
+          builder.push(
+            line,
+            startChar + pos,
+            1,
+            this.getTokenType('NABCSubpunctisModifier'),
+            0
+          );
+          pos++; // Move past modifier
+        }
+        
+        // Capture number as NABCSubpunctisRepetitionCount
+        if (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+          const numStart = pos;
+          while (pos < nabcText.length && /[0-9]/.test(nabcText[pos])) {
+            pos++;
+          }
+          builder.push(
+            line,
+            startChar + numStart,
+            pos - numStart,
+            this.getTokenType('NABCSubpunctisRepetitionCount'),
             0
           );
         }
