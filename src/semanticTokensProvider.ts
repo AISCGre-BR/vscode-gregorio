@@ -52,7 +52,8 @@ export const tokenTypes = [
   'NABCSubpunctisModifier',         // 25 - NABC: subpunctis/prepunctis modifier (t/n/u/v/w/x/y/q/z)
   'NABCSubpunctisRepetitionCount',  // 26 - NABC: subpunctis/prepunctis repetition count
   'NABCPitchDescriptorPrefix',      // 27 - NABC: pitch descriptor prefix (h)
-  'NABCPitchDescriptorValue'        // 28 - NABC: pitch descriptor value (a-n, p)
+  'NABCPitchDescriptorValue',       // 28 - NABC: pitch descriptor value (a-n, p)
+  'NABCBasicGlyphDescriptor'        // 29 - NABC: basic glyph descriptor (pe, vi, to, etc.)
 ];
 
 // Define semantic token modifiers
@@ -1531,15 +1532,15 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         }
       }
     } else if (glyph.basicGlyph) {
-      // 2. Tokenize basic glyph (2 letters) - highlight as keyword
+      // 2. Tokenize basic glyph (2 letters) - highlight as NABCBasicGlyphDescriptor
       const basicGlyphText = glyphText.substring(pos, pos + 2);
       if (basicGlyphText.length === 2) {
         builder.push(
           range.start.line,
           range.start.character + pos,
           2,
-          this.getTokenType('keyword'),
-          this.getModifier('readonly')
+          this.getTokenType('NABCBasicGlyphDescriptor'),
+          0
         );
         pos += 2;
       }

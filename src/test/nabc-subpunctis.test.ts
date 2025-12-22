@@ -50,14 +50,10 @@ function getTokenContent(token: DecodedToken, text: string): string {
   return lines[token.line]?.substring(token.char, token.char + token.length) || '';
 }
 
-describe('NABC Subpunctis and Prepunctis Test Suite', () => {
-  let provider: GabcSemanticTokensProvider;
-  
-  beforeEach(() => {
-    provider = new GabcSemanticTokensProvider();
-  });
+suite('NABC Subpunctis and Prepunctis Test Suite', () => {
   
   test('Should highlight su prefix as NABCSubpunctisPrefix', async () => {
+    const provider = new GabcSemanticTokensProvider();
     const gabcText = `name: Test;\n%%\n(c4) Test(g|visut2) (::)`;
     const doc = await vscode.workspace.openTextDocument({ content: gabcText, language: 'gabc' });
     const tokens = await provider.provideDocumentSemanticTokens(doc, new vscode.CancellationTokenSource().token);

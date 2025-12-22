@@ -118,6 +118,11 @@
         "id": "NABCPitchDescriptorValue",
         "superType": "parameter",
         "description": "NABC pitch descriptor value (a-n, p)"
+      },
+      {
+        "id": "NABCBasicGlyphDescriptor",
+        "superType": "keyword",
+        "description": "NABC basic glyph descriptor (pe, vi, to, qi, ql, etc.)"
       }
     ],
     "semanticTokenScopes": [
@@ -151,7 +156,8 @@
           "NABCSubpunctisModifier": ["variable.parameter.gabc"],
           "NABCSubpunctisRepetitionCount": ["constant.numeric.gabc"],
           "NABCPitchDescriptorPrefix": ["entity.name.function.gabc"],
-          "NABCPitchDescriptorValue": ["variable.parameter.gabc"]
+          "NABCPitchDescriptorValue": ["variable.parameter.gabc"],
+          "NABCBasicGlyphDescriptor": ["keyword.control.gabc"]
         }
       }
     ],
