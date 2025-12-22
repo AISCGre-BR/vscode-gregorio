@@ -360,8 +360,10 @@ te(g|unlseq7)ne(h|vilsb6)te(i|talsiem9) le(j|pelsvo10)vi(k)ter(l) (::)
 % SECTION 18: NABC - PITCH DESCRIPTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-(c4) Pitch(g|vipdl)des(h|pupda)crip(i|clpdl)tors:(j|pepds) (,)
-high(g|topd3)low(h|prpd1)same(i|scpds) (::)
+% Pitch descriptor: h + pitch letter (a-n, p)
+% Default pitch is 'hf' if not specified
+(c4) Pitch(g|vihf)des(h|puhj)crip(i|clha)tors:(j|pehn) (,)
+high(g|tohh)low(h|prhd)same(i|schf) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 19: NABC - GLYPH FUSION

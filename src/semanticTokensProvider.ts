@@ -50,7 +50,9 @@ export const tokenTypes = [
   'NABCSubpunctisPrefix',           // 23 - NABC: subpunctis prefix (su)
   'NABCPrepunctisPrefix',           // 24 - NABC: prepunctis prefix (pp)
   'NABCSubpunctisModifier',         // 25 - NABC: subpunctis/prepunctis modifier (t/n/u/v/w/x/y/q/z)
-  'NABCSubpunctisRepetitionCount'   // 26 - NABC: subpunctis/prepunctis repetition count
+  'NABCSubpunctisRepetitionCount',  // 26 - NABC: subpunctis/prepunctis repetition count
+  'NABCPitchDescriptorPrefix',      // 27 - NABC: pitch descriptor prefix (h)
+  'NABCPitchDescriptorValue'        // 28 - NABC: pitch descriptor value (a-n, p)
 ];
 
 // Define semantic token modifiers
@@ -1432,28 +1434,27 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         continue;
       }
       
-      // Pitch descriptor (pd + letter)
-      if (char === 'p' && pos + 1 < nabcText.length && nabcText[pos + 1] === 'd') {
+      // Pitch descriptor (h + pitch letter: a-n, p)
+      if (char === 'h' && pos + 1 < nabcText.length && /[a-np]/.test(nabcText[pos + 1])) {
+        // Tokenize 'h' prefix
         builder.push(
           line,
           startChar + pos,
-          2,
-          this.getTokenType('class'),
+          1,
+          this.getTokenType('NABCPitchDescriptorPrefix'),
           0
         );
-        pos += 2;
+        pos++; // Move past 'h'
         
-        // Check for letter after pd
-        if (pos < nabcText.length && /[adlhs123]/.test(nabcText[pos])) {
-          builder.push(
-            line,
-            startChar + pos,
-            1,
-            this.getTokenType('class'),
-            0
-          );
-          pos++;
-        }
+        // Tokenize pitch letter (a-n, p)
+        builder.push(
+          line,
+          startChar + pos,
+          1,
+          this.getTokenType('NABCPitchDescriptorValue'),
+          0
+        );
+        pos++; // Move past pitch letter
         continue;
       }
       

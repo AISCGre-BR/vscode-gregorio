@@ -108,6 +108,16 @@
         "id": "NABCSubpunctisRepetitionCount",
         "superType": "number",
         "description": "NABC subpunctis/prepunctis repetition count"
+      },
+      {
+        "id": "NABCPitchDescriptorPrefix",
+        "superType": "function",
+        "description": "NABC pitch descriptor prefix (h)"
+      },
+      {
+        "id": "NABCPitchDescriptorValue",
+        "superType": "parameter",
+        "description": "NABC pitch descriptor value (a-n, p)"
       }
     ],
     "semanticTokenScopes": [
@@ -139,7 +149,9 @@
           "NABCSubpunctisPrefix": ["entity.name.class.gabc"],
           "NABCPrepunctisPrefix": ["entity.name.class.gabc"],
           "NABCSubpunctisModifier": ["variable.parameter.gabc"],
-          "NABCSubpunctisRepetitionCount": ["constant.numeric.gabc"]
+          "NABCSubpunctisRepetitionCount": ["constant.numeric.gabc"],
+          "NABCPitchDescriptorPrefix": ["entity.name.function.gabc"],
+          "NABCPitchDescriptorValue": ["variable.parameter.gabc"]
         }
       }
     ],
