@@ -75,6 +75,12 @@ See [SEMANTIC_HIGHLIGHTING.md](docs/SEMANTIC_HIGHLIGHTING.md) for semantic highl
 3. Open a \`.gabc\` file
 4. Automatic activation, highlighting, and diagnostics
 
+## Known Issues
+
+### NABC Pitch Descriptor Validation
+
+The LSP validation for balanced pitch descriptors in fused NABC glyphs may produce false positive warnings when a NABC snippet contains multiple complex neume descriptors separated by spaces. This is a known limitation in the gregorio-lsp validation rules. See the [gregorio-lsp documentation](https://github.com/AISCGre-BR/gregorio-lsp#known-issues) for details and workarounds.
+
 ## Release Notes
 
 ### 0.1.0

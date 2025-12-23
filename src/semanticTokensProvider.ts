@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { GabcParser } from '../lsp-server/parser/gabc-parser';
-import { parseNABCSnippet } from '../lsp-server/parser/nabc-parser';
+import { parseNABCDescriptors } from '../lsp-server/parser/nabc-parser';
 import {
   ParsedDocument,
   Syllable,
@@ -1123,7 +1123,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
             line: range.start.line,
             character: range.start.character + valueStart
           };
-          const nabcGlyphs = parseNABCSnippet(attributeValue, nabcStartPos);
+          const nabcGlyphs = parseNABCDescriptors(attributeValue, nabcStartPos);
           
           // Tokenize each NABC glyph
           for (const glyph of nabcGlyphs) {
@@ -1250,7 +1250,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
   private tokenizeNABCContent(nabcText: string, line: number, startChar: number, builder: vscode.SemanticTokensBuilder): void {
     // Use the NABC parser to properly tokenize NABC content
     const startPos = { line, character: startChar };
-    const glyphs = parseNABCSnippet(nabcText, startPos);
+    const glyphs = parseNABCDescriptors(nabcText, startPos);
     
     // Tokenize each parsed glyph
     for (const glyph of glyphs) {
@@ -1271,48 +1271,48 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     // Track current position within the glyph text
     let pos = 0;
     
-    // 1. Tokenize subpunctis/prepunctis (if present)
-    if (glyph.subpunctis || glyph.prepunctis) {
-      // 'pp' or 'su' prefix
-      const prefix = glyphText.substring(0, 2);
-      if (prefix === 'pp' || prefix === 'su') {
+    // 1. Tokenize all subpunctis/prepunctis occurrences in the glyph text.
+    // They can appear multiple times (e.g., visut2ppn1, pusuw3ppt2).
+    const suPpRegex = /(su|pp)([tunvwxyqz]?)(\d+)/g;
+    let suPpMatch: RegExpExecArray | null;
+    while ((suPpMatch = suPpRegex.exec(glyphText)) !== null) {
+      const [full, prefix, modifierChar, digits] = suPpMatch;
+      const baseOffset = range.start.character + suPpMatch.index;
+
+      // Prefix token (su/pp)
+      builder.push(
+        range.start.line,
+        baseOffset,
+        2,
+        this.getTokenType(prefix === 'su' ? 'NABCSubpunctisPrefix' : 'NABCPrepunctisPrefix'),
+        0
+      );
+
+      let cursor = 2;
+
+      // Optional modifier token
+      if (modifierChar) {
         builder.push(
           range.start.line,
-          range.start.character + pos,
-          2,
-          this.getTokenType(prefix === 'su' ? 'NABCSubpunctisPrefix' : 'NABCPrepunctisPrefix'),
+          baseOffset + cursor,
+          1,
+          this.getTokenType('NABCSubpunctisModifier'),
           0
         );
-        pos += 2;
-        
-        // Modifier letter (t, n, u, v, w, x, y, q, z)
-        if (pos < glyphText.length && /[tunvwxyqz]/.test(glyphText[pos])) {
-          builder.push(
-            range.start.line,
-            range.start.character + pos,
-            1,
-            this.getTokenType('NABCSubpunctisModifier'),
-            0
-          );
-          pos++;
-        }
-        
-        // Numeric value - repetition count
-        while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
-          const numStart = pos;
-          while (pos < glyphText.length && /[0-9]/.test(glyphText[pos])) {
-            pos++;
-          }
-          builder.push(
-            range.start.line,
-            range.start.character + numStart,
-            pos - numStart,
-            this.getTokenType('NABCSubpunctisRepetitionCount'),
-            0
-          );
-        }
+        cursor += 1;
       }
-    } else if (glyph.basicGlyph) {
+
+      // Repetition count token(s)
+      builder.push(
+        range.start.line,
+        baseOffset + cursor,
+        digits.length,
+        this.getTokenType('NABCSubpunctisRepetitionCount'),
+        0
+      );
+    }
+
+    if (glyph.basicGlyph && !glyphText.startsWith('su') && !glyphText.startsWith('pp')) {
       // 2. Tokenize basic glyph (2 letters) - highlight as NABCBasicGlyphDescriptor
       const basicGlyphText = glyphText.substring(pos, pos + 2);
       if (basicGlyphText.length === 2) {

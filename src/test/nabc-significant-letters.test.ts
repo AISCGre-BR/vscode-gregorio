@@ -50,10 +50,10 @@ function getTokenContent(token: DecodedToken, text: string): string {
   return lines[token.line]?.substring(token.char, token.char + token.length) || '';
 }
 
-describe('NABC Significant Letters Test Suite', () => {
+suite('NABC Significant Letters Test Suite', () => {
   let provider: GabcSemanticTokensProvider;
   
-  beforeEach(() => {
+  setup(() => {
     provider = new GabcSemanticTokensProvider();
   });
   

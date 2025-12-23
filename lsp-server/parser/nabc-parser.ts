@@ -15,10 +15,19 @@ import {
 } from './types';
 
 /**
+ * Parse a single NABC snippet and return the first glyph descriptor
+ * Use parseNABCDescriptors when you need all descriptors in the snippet
+ */
+export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDescriptor | null {
+  const all = parseNABCDescriptors(nabc, startPos);
+  return all.length > 0 ? all[0] : null;
+}
+
+/**
  * Parse a single NABC snippet into an array of glyph descriptors
  * A snippet can contain a sequence of complex neume descriptors
  */
-export function parseNABCSnippet(nabc: string, startPos?: Position): NABCGlyphDescriptor[] {
+export function parseNABCDescriptors(nabc: string, startPos?: Position): NABCGlyphDescriptor[] {
   if (!nabc || nabc.trim().length === 0) {
     return [];
   }
@@ -76,39 +85,104 @@ function parseSingleComplexDescriptor(
 ): { descriptor: NABCGlyphDescriptor; consumed: number } | null {
   let pos = startPos;
 
-  // Check for fusion (!) in the upcoming section
-  // Find the extent of this descriptor first
-  const fusionIndex = nabc.indexOf('!', pos);
-  if (fusionIndex > pos && fusionIndex < nabc.length - 1) {
-    // Check if there's a valid basic glyph before the fusion
-    const beforeFusion = nabc.substring(pos, fusionIndex);
-    const left = parseComplexGlyphDescriptor(beforeFusion, 0, position);
-    
-    if (left && left.consumed === beforeFusion.length) {
-      // Parse what comes after the fusion
-      const afterFusionStart = fusionIndex + 1;
-      const rightPosition = position
-        ? { line: position.line, character: position.character + (afterFusionStart - startPos) }
-        : undefined;
-      const right = parseSingleComplexDescriptor(nabc, afterFusionStart, rightPosition);
-      
-      if (right) {
-        left.descriptor.fusion = right.descriptor;
-        return {
-          descriptor: left.descriptor,
-          consumed: right.consumed
-        };
-      }
-    }
-  }
-
-  // Parse the complex glyph descriptor
-  const result = parseComplexGlyphDescriptor(nabc, pos, position);
-  if (!result) {
+  // Parse the first glyph descriptor (which may be a basic glyph OR subpunctis/prepunctis)
+  const first = parseComplexGlyphDescriptor(nabc, pos, position);
+  if (!first) {
     return null;
   }
 
-  return result;
+  let currentDescriptor = first.descriptor;
+  pos = first.consumed;
+
+  // Check for fusion chain: keep parsing while we find '!' followed by a valid glyph
+  // But stop if we encounter 'su' or 'pp' (subpunctis/prepunctis) which mark the end of the complex glyph descriptor
+  while (pos < nabc.length && nabc[pos] === '!') {
+    const fusionPos = pos + 1; // Skip the '!'
+    
+    if (fusionPos >= nabc.length) {
+      break; // Nothing after '!'
+    }
+
+    // Check if what follows the '!' is 'su' or 'pp' (subpunctis/prepunctis)
+    // These mark the end of the complex glyph descriptor, so '!' is not a fusion marker here
+    const remaining = nabc.substring(fusionPos);
+    if (remaining.startsWith('su') || remaining.startsWith('pp')) {
+      break; // Not a fusion, stop here
+    }
+
+    // Try to parse the next glyph descriptor
+    const nextPos = position
+      ? { line: position.line, character: position.character + fusionPos }
+      : undefined;
+    
+    const next = parseComplexGlyphDescriptor(nabc, fusionPos, nextPos);
+    if (!next) {
+      break; // Not a valid glyph descriptor, stop fusion chain
+    }
+
+    // Add to fusion chain
+    currentDescriptor.fusion = next.descriptor;
+    currentDescriptor = next.descriptor;
+    pos = next.consumed;
+  }
+
+  // After fusion chain, check for prepunctis/subpunctis (can be multiple)
+  // These are part of the complex glyph descriptor
+  const subpunctisList: NABCSubpunctis[] = [];
+  const prepunctisList: NABCPrepunctis[] = [];
+  
+  while (pos < nabc.length) {
+    const remaining = nabc.substring(pos);
+    if (!remaining.startsWith('su') && !remaining.startsWith('pp')) {
+      break; // No more su/pp
+    }
+    
+    const ppPos = position
+      ? { line: position.line, character: position.character + pos }
+      : undefined;
+    const ppResult = parseSubpunctisPrepunctis(remaining, ppPos);
+    
+    if (!ppResult) {
+      break; // Failed to parse
+    }
+    
+    // Collect su/pp
+    if (ppResult.descriptor.subpunctis) {
+      subpunctisList.push(ppResult.descriptor.subpunctis);
+    }
+    if (ppResult.descriptor.prepunctis) {
+      prepunctisList.push(ppResult.descriptor.prepunctis);
+    }
+    
+    pos += ppResult.consumed;
+  }
+  
+  // Attach all collected su/pp to the FIRST descriptor in the chain
+  if (subpunctisList.length > 0) {
+    // If multiple subpunctis, use the last one (or merge them - depends on spec)
+    first.descriptor.subpunctis = subpunctisList[subpunctisList.length - 1];
+  }
+  if (prepunctisList.length > 0) {
+    // If multiple prepunctis, use the last one (or merge them - depends on spec)
+    first.descriptor.prepunctis = prepunctisList[prepunctisList.length - 1];
+  }
+
+  // Extend the range of the first descriptor to cover the entire complex glyph,
+  // including any fused glyphs and trailing su/pp sequences.
+  if (first.descriptor.range) {
+    first.descriptor.range = {
+      start: first.descriptor.range.start,
+      end: {
+        line: first.descriptor.range.start.line,
+        character: first.descriptor.range.start.character + (pos - startPos)
+      }
+    };
+  }
+
+  return {
+    descriptor: first.descriptor,
+    consumed: pos
+  };
 }
 
 /**
@@ -217,7 +291,12 @@ function parseComplexGlyphDescriptor(
     if (pos + 1 < nabc.length && nabc[pos] === 'l') {
       const nextChar = nabc[pos + 1];
       if (nextChar === 's' || nextChar === 't') {
-        const parsed = parseSignificantLetter(nabc.substring(pos), position);
+        // Calculate the correct position for the significant letter
+        const letterPos = position ? {
+          line: position.line,
+          character: position.character + pos
+        } : undefined;
+        const parsed = parseSignificantLetter(nabc.substring(pos), letterPos);
         if (parsed) {
           significantLetters.push(parsed.letter);
           // Move position forward by the total length consumed
@@ -418,7 +497,7 @@ export function parseNABCSnippets(nabcArray: string[], startPos?: Position): NAB
       line: startPos.line,
       character: startPos.character + index * 10 // Approximate offset
     } : undefined;
-    const descriptors = parseNABCSnippet(nabc, pos);
+    const descriptors = parseNABCDescriptors(nabc, pos);
     allDescriptors.push(...descriptors);
   });
   

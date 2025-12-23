@@ -8,6 +8,8 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { GabcSemanticTokensProvider, tokenTypes, legend } from '../semanticTokensProvider';
 
+const provider = new GabcSemanticTokensProvider();
+
 interface DecodedToken {
   line: number;
   char: number;
@@ -326,5 +328,90 @@ suite('NABC Subpunctis and Prepunctis Test Suite', () => {
     assert.ok(pdToken, 'Should find pd token');
     assert.strictEqual(getTokenTypeName(ppToken!.type), 'NABCPrepunctisPrefix', 'pp should be NABCPrepunctisPrefix');
     assert.strictEqual(getTokenTypeName(pdToken!.type), 'class', 'pd should be class token');
+  });
+  
+  test('Should tokenize complex mixed su+pp patterns (visut2ppn1)', async () => {
+    const gabcText = `name: Test;\n%%\n(c4) Test(g|visut2ppn1) (::)`;
+    const doc = await vscode.workspace.openTextDocument({ content: gabcText, language: 'gabc' });
+    const tokens = await provider.provideDocumentSemanticTokens(doc, new vscode.CancellationTokenSource().token);
+    
+    if (!tokens) {
+      assert.fail('No tokens returned');
+      return;
+    }
+    
+    const allTokens = decodeSemanticTokens(tokens.data);
+    const nabcTokens = allTokens.filter(t => t.line === 2);
+    
+    // Should tokenize: vi + su + t + 2 + pp + n + 1
+    const suToken = nabcTokens.find(t => getTokenContent(t, gabcText) === 'su');
+    const tToken = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === 't' && 
+      getTokenTypeName(t.type) === 'NABCSubpunctisModifier'
+    );
+    const su2Token = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === '2' && 
+      t.char > (suToken?.char || 0) &&
+      getTokenTypeName(t.type) === 'NABCSubpunctisRepetitionCount'
+    );
+    const ppToken = nabcTokens.find(t => getTokenContent(t, gabcText) === 'pp');
+    const nToken = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === 'n' && 
+      getTokenTypeName(t.type) === 'NABCSubpunctisModifier'
+    );
+    const pp1Token = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === '1' && 
+      t.char > (ppToken?.char || 0) &&
+      getTokenTypeName(t.type) === 'NABCSubpunctisRepetitionCount'
+    );
+    
+    assert.ok(suToken, 'Should find su token');
+    assert.ok(tToken, 'Should find t modifier');
+    assert.ok(su2Token, 'Should find su repetition count 2');
+    assert.ok(ppToken, 'Should find pp token');
+    assert.ok(nToken, 'Should find n modifier');
+    assert.ok(pp1Token, 'Should find pp repetition count 1');
+  });
+  
+  test('Should tokenize pusuw3ppt2 from showcase', async () => {
+    const gabcText = `name: Test;\n%%\n(c4) Test(g|pusuw3ppt2) (::)`;
+    const doc = await vscode.workspace.openTextDocument({ content: gabcText, language: 'gabc' });
+    const tokens = await provider.provideDocumentSemanticTokens(doc, new vscode.CancellationTokenSource().token);
+    
+    if (!tokens) {
+      assert.fail('No tokens returned');
+      return;
+    }
+    
+    const allTokens = decodeSemanticTokens(tokens.data);
+    const nabcTokens = allTokens.filter(t => t.line === 2);
+    
+    // Should tokenize: pu + su + w + 3 + pp + t + 2
+    const suToken = nabcTokens.find(t => getTokenContent(t, gabcText) === 'su');
+    const wToken = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === 'w' && 
+      getTokenTypeName(t.type) === 'NABCSubpunctisModifier'
+    );
+    const su3Token = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === '3' && 
+      getTokenTypeName(t.type) === 'NABCSubpunctisRepetitionCount'
+    );
+    const ppToken = nabcTokens.find(t => getTokenContent(t, gabcText) === 'pp');
+    const tToken = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === 't' && 
+      getTokenTypeName(t.type) === 'NABCSubpunctisModifier'
+    );
+    const pp2Token = nabcTokens.find(t => 
+      getTokenContent(t, gabcText) === '2' && 
+      t.char > (ppToken?.char || 0) &&
+      getTokenTypeName(t.type) === 'NABCSubpunctisRepetitionCount'
+    );
+    
+    assert.ok(suToken, 'Should find su token');
+    assert.ok(wToken, 'Should find w modifier');
+    assert.ok(su3Token, 'Should find su repetition count 3');
+    assert.ok(ppToken, 'Should find pp token');
+    assert.ok(tToken, 'Should find t modifier');
+    assert.ok(pp2Token, 'Should find pp repetition count 2');
   });
 });

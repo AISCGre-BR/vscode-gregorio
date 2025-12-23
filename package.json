@@ -23,7 +23,13 @@
     "notation",
     "music"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:gabc",
+    "onCommand:gregorio.restartServer",
+    "onCommand:gregorio.toggleLinting",
+    "onCommand:gregorio.toggleSemanticHighlighting",
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "languages": [
