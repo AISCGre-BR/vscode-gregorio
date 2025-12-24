@@ -181,7 +181,6 @@
           "NABCPitchDescriptorValue": ["variable.parameter.gabc"],
           "NABCBasicGlyphDescriptor": ["keyword.control.gabc"],
           "NABCGlyphModifier": ["support.type.gabc"],
-          "GABCPunctum": ["entity.name.type.gabc"],
           "GABCPunctumInclinatum": ["entity.name.type.gabc"]
         }
       }
