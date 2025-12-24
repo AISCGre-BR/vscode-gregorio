@@ -4,12 +4,22 @@
   "scopeName": "source.gabc",
   "fileTypes": ["gabc"],
   "patterns": [
+    { "include": "#comments" },
     { "include": "#header" },
     { "include": "#section-separator" },
     { "include": "#syllable-text" },
     { "include": "#note-group" }
   ],
   "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "comment": "Comment lines starting with one or more % characters",
+          "name": "comment.line.percentage.gabc",
+          "match": "^%+.*$"
+        }
+      ]
+    },
     "header": {
       "patterns": [
         { "include": "#header-numeric" },
@@ -276,7 +286,9 @@
       "patterns": [
         { "include": "#nabc-spacing" },
         { "include": "#nabc-fusion" },
+        { "include": "#nabc-significant-letters" },
         { "include": "#nabc-subpunctis-prepunctis" },
+        { "include": "#nabc-pitch-descriptor" },
         { "include": "#nabc-basic-glyphs" },
         { "include": "#nabc-modifiers" }
       ]
@@ -287,6 +299,40 @@
           "comment": "NABC spacing codes: /, //, `, ``",
           "name": "keyword.other.unit.gabc",
           "match": "//|``|/|`"
+        }
+      ]
+    },
+    "nabc-significant-letters": {
+      "patterns": [
+        {
+          "comment": "Tironian letters: lt prefix + letter code + position digit",
+          "match": "(lt)([a-z]+)([1-9]\\d*)",
+          "captures": {
+            "1": { "name": "entity.name.label.gabc" },
+            "2": { "name": "entity.name.function.gabc" },
+            "3": { "name": "constant.numeric.gabc" }
+          }
+        },
+        {
+          "comment": "Significant letters: ls prefix + letter code + position digit",
+          "match": "(ls)([a-z]+)([1-9]\\d*)",
+          "captures": {
+            "1": { "name": "entity.name.namespace.gabc" },
+            "2": { "name": "entity.name.function.gabc" },
+            "3": { "name": "constant.numeric.gabc" }
+          }
+        }
+      ]
+    },
+    "nabc-pitch-descriptor": {
+      "patterns": [
+        {
+          "comment": "NABC pitch descriptor: h prefix + pitch letter (a-n, p)",
+          "match": "(h)([a-np])",
+          "captures": {
+            "1": { "name": "entity.name.function.gabc" },
+            "2": { "name": "variable.parameter.gabc" }
+          }
         }
       ]
     },
@@ -314,11 +360,12 @@
     "nabc-subpunctis-prepunctis": {
       "patterns": [
         {
-          "comment": "Subpunctis and prepunctis with numbers",
-          "match": "(pp|su)(\\d+)",
+          "comment": "Subpunctis (su) and prepunctis (pp) with optional modifier and mandatory count",
+          "match": "(su|pp)([tunvwxyqz])?(\\d+)",
           "captures": {
-            "1": { "name": "variable.language.gabc" },
-            "2": { "name": "constant.numeric.gabc" }
+            "1": { "name": "entity.name.class.gabc" },
+            "2": { "name": "variable.parameter.gabc" },
+            "3": { "name": "constant.numeric.gabc" }
           }
         }
       ]
@@ -326,10 +373,10 @@
     "nabc-modifiers": {
       "patterns": [
         {
-          "comment": "NABC modifiers with optional variant numbers",
-          "match": "([SGM\\->~])(\\d*)",
+          "comment": "NABC glyph modifiers (S, G, M, -, >, ~) with optional variant digit",
+          "match": "([SGM\\->~])(\\d?)",
           "captures": {
-            "1": { "name": "variable.other.gabc" },
+            "1": { "name": "storage.type.gabc" },
             "2": { "name": "constant.numeric.gabc" }
           }
         }
