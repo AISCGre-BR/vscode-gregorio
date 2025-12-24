@@ -53,7 +53,8 @@ export const tokenTypes = [
   'NABCSubpunctisRepetitionCount',  // 26 - NABC: subpunctis/prepunctis repetition count
   'NABCPitchDescriptorPrefix',      // 27 - NABC: pitch descriptor prefix (h)
   'NABCPitchDescriptorValue',       // 28 - NABC: pitch descriptor value (a-n, p)
-  'NABCBasicGlyphDescriptor'        // 29 - NABC: basic glyph descriptor (pe, vi, to, etc.)
+  'NABCBasicGlyphDescriptor',       // 29 - NABC: basic glyph descriptor (pe, vi, to, etc.)
+  'NABCGlyphModifier'               // 30 - NABC: glyph modifier (S, G, M, -, >, ~) with optional digit
 ];
 
 // Define semantic token modifiers
@@ -1358,17 +1359,22 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         }
         
         if (/[SGM\->~]/.test(char)) {
-          // Modifier character - highlight as operator
+          // Modifier character + optional variant number
+          const modStart = pos;
+          pos++;
+          // Check for optional variant number after modifier
+          if (pos < glyphText.length && /[1-9]/.test(glyphText[pos])) {
+            pos++;
+          }
           builder.push(
             range.start.line,
-            range.start.character + pos,
-            1,
-            this.getTokenType('operator'),
+            range.start.character + modStart,
+            pos - modStart,
+            this.getTokenType('NABCGlyphModifier'),
             0
           );
-          pos++;
         } else if (/[1-9]/.test(char)) {
-          // Variant number - highlight as number
+          // Standalone variant number (without modifier) - highlight as number
           builder.push(
             range.start.line,
             range.start.character + pos,
