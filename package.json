@@ -135,6 +135,16 @@
         "id": "NABCGlyphModifier",
         "superType": "type",
         "description": "NABC glyph modifier (S, G, M, -, >, ~) with optional variant digit"
+      },
+      {
+        "id": "GABCPunctum",
+        "superType": "type",
+        "description": "GABC punctum quadratum (basic pitch a-n, p)"
+      },
+      {
+        "id": "GABCPunctumInclinatum",
+        "superType": "GABCPunctum",
+        "description": "GABC punctum inclinatum (uppercase pitch A-N, P)"
       }
     ],
     "semanticTokenScopes": [
@@ -169,7 +179,10 @@
           "NABCSubpunctisRepetitionCount": ["constant.numeric.gabc"],
           "NABCPitchDescriptorPrefix": ["entity.name.function.gabc"],
           "NABCPitchDescriptorValue": ["variable.parameter.gabc"],
-          "NABCBasicGlyphDescriptor": ["keyword.control.gabc"]
+          "NABCBasicGlyphDescriptor": ["keyword.control.gabc"],
+          "NABCGlyphModifier": ["support.type.gabc"],
+          "GABCPunctum": ["entity.name.type.gabc"],
+          "GABCPunctumInclinatum": ["entity.name.type.gabc"]
         }
       }
     ],

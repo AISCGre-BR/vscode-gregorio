@@ -54,7 +54,9 @@ export const tokenTypes = [
   'NABCPitchDescriptorPrefix',      // 27 - NABC: pitch descriptor prefix (h)
   'NABCPitchDescriptorValue',       // 28 - NABC: pitch descriptor value (a-n, p)
   'NABCBasicGlyphDescriptor',       // 29 - NABC: basic glyph descriptor (pe, vi, to, etc.)
-  'NABCGlyphModifier'               // 30 - NABC: glyph modifier (S, G, M, -, >, ~) with optional digit
+  'NABCGlyphModifier',              // 30 - NABC: glyph modifier (S, G, M, -, >, ~) with optional digit
+  'GABCPunctum',                    // 31 - GABC: punctum quadratum (basic pitch a-n, p)
+  'GABCPunctumInclinatum'           // 32 - GABC: punctum inclinatum (uppercase pitch A-N, P)
 ];
 
 // Define semantic token modifiers
@@ -681,7 +683,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
           hasShape = true;
         }
         
-        // Determine token type based on what's present
+        // Determine token type based on pitch case and modifiers
         let tokenType: string;
         if (hasAlteration) {
           // Use 'macro' token for alterations (string.regexp.gabc)
@@ -689,9 +691,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
         } else if (hasShape) {
           // Use 'parameter' token for shapes (variable.other.constant.gabc)
           tokenType = 'parameter';
+        } else if (isUpperCase) {
+          // Use GABCPunctumInclinatum for uppercase pitches A-NP
+          tokenType = 'GABCPunctumInclinatum';
         } else {
-          // Use 'class' token for plain pitch (variable.language.gabc)
-          tokenType = 'class';
+          // Use GABCPunctum for lowercase pitches a-np
+          tokenType = 'GABCPunctum';
         }
         
         // Check for custos forçado (pitch followed by +)
