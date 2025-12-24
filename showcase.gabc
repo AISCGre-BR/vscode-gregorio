@@ -32,7 +32,63 @@ numeric values, and multi-line text;;
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 1: CLEFS
+% SECTION 1: SYLLABLE TEXT STYLE TAGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(c4) <b>Bold</b>(g) text(h) example(i) (::)
+
+(c4) <i>Italic</i>(g) text(h) example(i) (::)
+
+(c4) <ul>Underlined</ul>(g) text(h) example(i) (::)
+
+(c4) <sc>Small Caps</sc>(g) text(h) example(i) (::)
+
+(c4) <tt>Monospace</tt>(g) text(h) example(i) (::)
+
+(c4) <c>Colored</c>(g) text(h) example(i) (::)
+
+(c4) <b>Com</b>bi(g)<i>na</i>tion(h) of(i) <sc>sty</sc>les(j) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2: SYLLABLE SPECIAL TAGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(c4) <v>Verbatim text</v>(g) example(h) (::)
+
+(c4) Text(g) <alt>above lines</alt>(h) example(i) (::)
+
+(c4) Spe(g)cial(h) <sp>R/</sp>(i) char(j) (::)
+
+(c4) <sp>V/</sp>(g) Multiple(h) <sp>A/</sp>(i) special(j) chars(k) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 3: SYLLABLE CONTROL TAGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(c4) <clear/>Clear(g) syl(h)la(i)ble(j) (::)
+
+(c4) Pro(g)<pr/>tru(h)sion(i) ex(j)am(k)ple(l) (::)
+
+(c4) Pro(g)<pr:.5/>tru(h)sion(i) par(j)tial(k) (::)
+
+(c4) E<e>li</e>sion(g) text(h) ex(i)am(j)ple(k) (::)
+
+(c4) E(g) u(h) o(i) u(j) <eu>a e</eu>(k) (::)
+
+(c4) No(g) <nlba>line break</nlba>(h) a(i)re(j)a(k) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 4: NESTED AND COMPLEX TEXT TAGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(c4) <b><i>Bold italic</i></b>(g) text(h) (::)
+
+(c4) <i>Italic</i>(g) and(h) <b>bold</b>(i) mixed(j) (::)
+
+(c4) <sc>Small</sc>(g) <tt>mono</tt>(h) <ul>under</ul>(i) variety(j) (::)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 5: CLEFS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c1) C(c) clef(d) po(e)si(f)tion(g) 1(h) (::)
@@ -56,7 +112,7 @@ numeric values, and multi-line text;;
 (cb4) C(c) clef(d) flat(e) po(f)si(g)tion(h) 4(i) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2: BASIC PITCHES
+% SECTION 6: BASIC PITCHES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Punc(a)tum(b) qua(c)dra(d)tum:(e) (,) 
@@ -64,7 +120,7 @@ low(f)er(g)case(h) pit(i)ches(j) (,)
 a(a) through(b) n(c) (,) (abcdefghijklmn) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 3: PUNCTUM INCLINATUM
+% SECTION 7: PUNCTUM INCLINATUM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Punc(A)tum(B) in(C)cli(D)na(E)tum:(F) (,) 
@@ -74,7 +130,7 @@ up(G)per(H)case(I) pit(J)ches(K) (,) (ABCDEFGHIJK) (::)
 non(L2) lean(M0)ing(N1) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 4: NOTE SHAPES
+% SECTION 8: NOTE SHAPES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Vir(gv)ga(hv) (,) 
@@ -102,7 +158,7 @@ di(g>)mi(h>)nu(i>)tive(j>) (::)
 (c4) I(g)ni(h)ti(i)o(j) de(-g-h-i)bi(j)lis(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 5: ALTERATIONS
+% SECTION 9: ALTERATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Flat(cx) al(dx)te(ex)ra(fx)tion(gx) (::)
@@ -128,7 +184,7 @@ dou(c##?)ble(d##?) sharp(e##?) ques(f##?)tion(g##?) (::)
 (c4) Mixed(cxdye#f) al(gxhyi#j)te(kXlYm##)ra(nxoypq#)tions(r) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 6: EXTRA SYMBOLS
+% SECTION 10: EXTRA SYMBOLS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Punc(g.)tum(h.) mo(i.)ra(j..) (,) 
@@ -146,7 +202,7 @@ a(g'1)cu(h'1)tus(i'1) (::)
 ac(j'_0)cen(k_')tus(l_0') (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 7: SEPARATION BARS
+% SECTION 11: SEPARATION BARS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Vir(g)gu(h)la(`) (,) 
@@ -171,7 +227,7 @@ led(k)ger(:0) line(l) (::)
 (g`) (g`0) (g^) (g^0) (g,) (g,0) (g;) (g:) (g:?) (g::) (g;1) (g;2) (g;3) (g;4) (g;5) (g;6) (g;7) (g;8)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 8: SPACING AND LINE BREAKS
+% SECTION 12: SPACING AND LINE BREAKS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Small(g)space(!) (,) 
@@ -189,7 +245,7 @@ an(c4)o(d)ther(e) clef(f) (::)
 (/0) (/!) (/) (//) (!) (g|`) (g|``) (g|/) (g|//)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 9: ATTRIBUTES
+% SECTION 13: ATTRIBUTES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Shape modifier attributes
@@ -248,7 +304,7 @@ an(c4)o(d)ther(e) clef(f) (::)
 (c4) Spa(/[0.5])cing(/[1.0]) with(/[1.5]) nu(/[2.0])me(/[-0.5])ric(/[0.25]) fac(/[3.14])tor(g) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 10: COMPLEX NEUMES
+% SECTION 14: COMPLEX NEUMES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Pes(df) cli(fd)vis(fe) (,) 
@@ -274,7 +330,7 @@ di(fgg)sti(ghh)ro(hii)pha(ijj) (::)
 mi(fxgh)nus(gxhi) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 11: LIQUESCENT NEUMES
+% SECTION 15: LIQUESCENT NEUMES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Pes(df~) li(gh~)ques(hi~)cens(ij~) (::)
@@ -290,13 +346,13 @@ mi(fxgh)nus(gxhi) (::)
 (c4) An(fhg~)cus(ghf~) li(hgf~)ques(ihg~)cens(jih~) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 12: CUSTOS
+% SECTION 16: CUSTOS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Cus(g)tos(h) at(i) line(j) end(z+::f+) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 13: NABC - BASIC GLYPH DESCRIPTORS
+% SECTION 17: NABC - BASIC GLYPH DESCRIPTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) NABC(g|vi) vir(h|pu)ga(i|ta) and(j|gr) punc(k|cl)tum:(l|pe) (,)
@@ -306,7 +362,7 @@ trac(g|to)tu(h|pr)lus(i|sc) gra(j|cm)vis(k|un) (::)
 por(hgh|un)rec(ghg|sa)tus(hgh|ob) scan(ghi|tr)di(hij|qu)cus(ijk|vr) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 14: NABC - GLYPH MODIFIERS
+% SECTION 18: NABC - GLYPH MODIFIERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Mark(g|viS) mo(h|puG)di(i|taM)fi(j|cl-)ca(k|pe>)tion(l|to~) (::)
@@ -314,7 +370,7 @@ por(hgh|un)rec(ghg|sa)tus(hgh|ob) scan(ghi|tr)di(hij|qu)cus(ijk|vr) (::)
 (c4) Va(g|clM2)ri(h|peS3)ant(i|toG1) num(j|prM4)bers(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 15: NABC - SUBPUNCTIS AND PREPUNCTIS
+% SECTION 19: NABC - SUBPUNCTIS AND PREPUNCTIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % St. Gall modifiers: t (tractulus), u (tractulus+episema), v (tractulus+double episema),
@@ -335,7 +391,7 @@ punc(g|unsuw1)tum(h|vippt1) pre(i|puxu3)punc(j|clppt4)tis(k) (::)
 (c4) Mixed(g|visut2ppn1) pat(h|pusuw3ppt2)terns(i|clsu1ppq2) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 16: NABC - SIGNIFICANT LETTERS (St. Gall)
+% SECTION 20: NABC - SIGNIFICANT LETTERS (St. Gall)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Simple examples: ls/lt prefix (like 'def'), letter sequence (function name), number (parameter)
@@ -346,7 +402,7 @@ punc(g|unsuw1)tum(h|vippt1) pre(i|puxu3)punc(j|clppt4)tis(k) (::)
 te(g|unlsk7)ne(h|vilsi6)re(i|talsv9) sur(j|pelssum10)sum(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 17: NABC - SIGNIFICANT LETTERS (Laon)
+% SECTION 21: NABC - SIGNIFICANT LETTERS (Laon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Simple examples: ls/lt prefix (like 'def'), letter sequence (function name), number (parameter)
@@ -357,7 +413,7 @@ te(g|unlsk7)ne(h|vilsi6)re(i|talsv9) sur(j|pelssum10)sum(k) (::)
 te(g|unlseq7)ne(h|vilsb6)te(i|talsiem9) le(j|pelsvo10)vi(k)ter(l) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 18: NABC - PITCH DESCRIPTORS
+% SECTION 22: NABC - PITCH DESCRIPTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Pitch descriptor: h + pitch letter (a-n, p)
@@ -366,14 +422,14 @@ te(g|unlseq7)ne(h|vilsb6)te(i|talsiem9) le(j|pelsvo10)vi(k)ter(l) (::)
 high(g|tohh)low(h|prhd)same(i|schf) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 19: NABC - GLYPH FUSION
+% SECTION 23: NABC - GLYPH FUSION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Fu(g|vi!cl)sion(h|pu!pe) ex(i|ta!to)am(j|gr!pr)ples(k) (,)
 com(g|cl!pe!to)plex(h|vi!pu!ta) fu(i|pe!pr!sc)sions(j) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 20: NABC - FUSED GLYPHS WITH PITCH DESCRIPTORS
+% SECTION 24: NABC - FUSED GLYPHS WITH PITCH DESCRIPTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Fused glyphs (!) with balanced pitch descriptors - VALID
@@ -388,7 +444,7 @@ both(j|vihj!tahj) have(k|vihn!tahn)pitches(l) (::)
 (c4) No(g|vi!ta)pitch(h|pe!cl)de(i|to!gr)scrip(j|pr!sc)tors(k) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 21: NABC - MODIFIERS IN FUSED GLYPHS
+% SECTION 25: NABC - MODIFIERS IN FUSED GLYPHS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Modifiers only on last glyph - VALID
@@ -402,14 +458,14 @@ both(j|vihj!tahj) have(k|vihn!tahn)pitches(l) (::)
 (c4) Com(g|pe!to>)bi(h|vi!clM-)ned(i|ta!grG) mod(j|pe!clSGM->~)i(k|vi!taG)fiers(l) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 22: NABC - CONNECTING STROKES
+% SECTION 26: NABC - CONNECTING STROKES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) Con(g|vi-cl)nec(h|pu-pe)ting(i|ta-to) stro(j|gr-pr)kes(k) (,)
 mul(g|cl-pe-to)ti(h|vi-pu-ta)ple(i|pe-pr-sc) con(j|to-pr-cm)nec(k|sc-cm-un)tions(l) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 21: REAL EXAMPLE - Kyrie VIII (De Angelis)
+% SECTION 27: REAL EXAMPLE - Kyrie VIII (De Angelis)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c3) KY(d)ri(gxfgh)e(h.ivHGh.) *(/[-2]kvIH'Ghih.) (,) 
@@ -425,7 +481,7 @@ Ký(k')ri(j)e(kvJI'jkh.) *(,) (kjkvJI'jkh.gxkhiv./[-0.5]fg!hv.) **(,)
 e(gxhvFE'Dgf)lé(e')i(e)son.(d.) (::)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 22: REAL EXAMPLE - Gaudeamus Omnes
+% SECTION 28: REAL EXAMPLE - Gaudeamus Omnes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 (c4) GAU(g|vi)de(gh|pe)á(h|ta)mus(hg~|cl~) om(hih|to)nes(h|ta) (,)

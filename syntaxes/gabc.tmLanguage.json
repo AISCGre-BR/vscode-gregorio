@@ -181,68 +181,234 @@
     "syllable-text": {
       "patterns": [
         { "include": "#syllable-style" },
-        { "include": "#syllable-special" }
+        { "include": "#syllable-special" },
+        { "include": "#syllable-control" },
+        { "include": "#translation-text" }
       ]
+    },
+    "translation-text": {
+      "name": "string.unquoted.gabc",
+      "begin": "\\[",
+      "end": "\\]",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.gabc" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.gabc" }
+      }
     },
     "syllable-style": {
       "patterns": [
         {
           "name": "markup.bold.gabc",
-          "begin": "<b>",
-          "end": "</b>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "begin": "(<)(b)(>)",
+          "end": "(</)(b)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
           "name": "markup.italic.gabc",
-          "begin": "<i>",
-          "end": "</i>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "begin": "(<)(i)(>)",
+          "end": "(</)(i)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
           "name": "markup.underline.gabc",
-          "begin": "<ul>",
-          "end": "</ul>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "begin": "(<)(ul)(>)",
+          "end": "(</)(ul)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
-          "name": "markup.heading.gabc",
-          "begin": "<sc>",
-          "end": "</sc>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "name": "meta.tag.sc.gabc",
+          "begin": "(<)(sc)(>)",
+          "end": "(</)(sc)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
-          "name": "markup.raw.gabc",
-          "begin": "<tt>",
-          "end": "</tt>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "name": "meta.tag.tt.gabc",
+          "begin": "(<)(tt)(>)",
+          "end": "(</)(tt)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
-          "name": "markup.underline.link.gabc",
-          "begin": "<c>",
-          "end": "</c>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "name": "meta.tag.c.gabc",
+          "begin": "(<)(c)(>)",
+          "end": "(</)(c)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         }
       ]
     },
     "syllable-special": {
       "patterns": [
         {
-          "name": "string.other.verbatim.gabc",
-          "begin": "<v>",
-          "end": "</v>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "name": "meta.tag.v.gabc",
+          "begin": "(<)(v)(>)",
+          "end": "(</)(v)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          },
+          "contentName": "meta.embedded.block.latex",
+          "patterns": [
+            { "include": "text.tex.latex" }
+          ]
         },
         {
           "name": "string.other.above-lines.gabc",
-          "begin": "<alt>",
-          "end": "</alt>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "begin": "(<)(alt)(>)",
+          "end": "(</)(alt)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         },
         {
           "name": "string.other.special-char.gabc",
-          "begin": "<sp>",
-          "end": "</sp>",
-          "captures": { "0": { "name": "punctuation.definition.tag.gabc" } }
+          "begin": "(<)(sp)(>)",
+          "end": "(</)(sp)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
+        }
+      ]
+    },
+    "syllable-control": {
+      "patterns": [
+        {
+          "name": "meta.tag.clear.gabc",
+          "match": "(<)(clear)(/?>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
+        },
+        {
+          "name": "meta.tag.pr.gabc",
+          "match": "(<)(pr)(:[0-9.]+)?(/?>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "constant.numeric.gabc" },
+            "4": { "name": "punctuation.definition.tag.end.html" }
+          }
+        },
+        {
+          "name": "markup.italic.gabc",
+          "begin": "(<)(e)(>)",
+          "end": "(</)(e)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
+        },
+        {
+          "name": "meta.tag.eu.gabc",
+          "begin": "(<)(eu)(>)",
+          "end": "(</)(eu)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
+        },
+        {
+          "name": "meta.tag.nlba.gabc",
+          "begin": "(<)(nlba)(>)",
+          "end": "(</)(nlba)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.begin.html" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html" },
+            "2": { "name": "entity.name.tag.html" },
+            "3": { "name": "punctuation.definition.tag.end.html" }
+          }
         }
       ]
     },
