@@ -1,8 +1,13 @@
 import typescriptEslint from "typescript-eslint";
 
 export default [{
+    ignores: [
+        "src/**/*.js",
+        "src/**/*.js.map",
+    ],
+
     files: ["**/*.ts"],
-}, {
+
     plugins: {
         "@typescript-eslint": typescriptEslint.plugin,
     },

@@ -317,6 +317,7 @@
     "typescript-eslint": "^8.48.1"
   },
   "dependencies": {
+    "gregolint": "file:../gregolint",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.11"

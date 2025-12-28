@@ -21,8 +21,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { GabcParser } from './parser/gabc-parser';
 import { treeSitterParser } from './parser/tree-sitter-integration';
-import { DocumentValidator } from './validation/validator';
-import { analyzeSemantics } from './validation/semantic-analyzer';
+import { lintGabcText } from 'gregolint';
 import { ParseError } from './parser/types';
 
 // Create LSP connection
@@ -30,9 +29,6 @@ const connection = createConnection(ProposedFeatures.all);
 
 // Create text document manager
 const documents = new TextDocuments(TextDocument);
-
-// Create validator
-const validator = new DocumentValidator();
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -143,63 +139,17 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
   }
 
   const text = textDocument.getText();
-  
-  // Always use TypeScript parser for full document parsing (including syllables and NABC)
-  // This ensures validation rules have access to complete document structure
-  const parser = new GabcParser(text);
-  const parsedDoc = parser.parse();
 
-  // Debug: Log NABC content
-  connection.console.log(`[DEBUG] Validating document with ${parsedDoc.notation.syllables.length} syllables`);
-  let nabcCount = 0;
-  let fusedCount = 0;
-  for (const syllable of parsedDoc.notation.syllables) {
-    for (const note of syllable.notes) {
-      if (note.nabc && note.nabc.length > 0) {
-        nabcCount++;
-        if (note.nabc.some(n => n.includes('!'))) {
-          fusedCount++;
-          connection.console.log(`[DEBUG] Found fused NABC: ${note.nabc.join(', ')}`);
-        }
-      }
-    }
-  }
-  connection.console.log(`[DEBUG] Found ${nabcCount} notes with NABC, ${fusedCount} with fusion (!)`);
-
-  // Validate the document with validation rules
-  const errors = validator.validate(parsedDoc);
-  connection.console.log(`[DEBUG] Validation produced ${errors.length} errors`);
-
-  // Run semantic analysis
-  const semanticErrors = analyzeSemantics(parsedDoc);
-
-  // Combine all errors
-  const allErrors = [...errors, ...semanticErrors];
-
-  // Filter diagnostics based on configuration
-  const filteredErrors = filterDiagnostics(allErrors);
+  const filteredErrors = lintGabcText(text, {
+    minSeverity: lintingConfig.severity,
+    ignoreCodes: lintingConfig.ignoreRules
+  });
 
   // Convert to LSP diagnostics
   const diagnostics: Diagnostic[] = filteredErrors.map(error => convertToDiagnostic(error));
 
   // Send diagnostics to client
   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-}
-
-function filterDiagnostics(errors: ParseError[]): ParseError[] {
-  return errors.filter(error => {
-    // Filter by ignored rules
-    if (error.code && lintingConfig.ignoreRules.includes(error.code)) {
-      return false;
-    }
-    
-    // Filter by severity level
-    const severityOrder = { error: 0, warning: 1, info: 2 };
-    const errorLevel = severityOrder[error.severity] ?? 2;
-    const configLevel = severityOrder[lintingConfig.severity] ?? 1;
-    
-    return errorLevel <= configLevel;
-  });
 }
 
 function convertToDiagnostic(error: ParseError): Diagnostic {

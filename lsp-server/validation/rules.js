@@ -4,7 +4,7 @@
  * Implements error and warning detection based on Gregorio compiler documentation
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.allValidationRules = exports.validateStaffLines = exports.validateQuilismaticConnector = exports.validateVirgaStrataFollowedByHigherPitch = exports.validateQuilismaPesPrecededByHigherPitch = exports.validateQuilismaFollowedByLowerPitch = exports.validateNabcWithoutHeader = exports.validateFirstSyllableClefChange = exports.validateFirstSyllableLineBreak = exports.validateDuplicateHeaders = exports.validateNameHeader = void 0;
+exports.allValidationRules = exports.validateStaffLines = exports.validateVirgaStrataFollowedByHigherPitch = exports.validateQuilismaPesPrecededByHigherPitch = exports.validateQuilismaFollowedByLowerPitch = exports.validateNabcWithoutHeader = exports.validateFirstSyllableClefChange = exports.validateFirstSyllableLineBreak = exports.validateDuplicateHeaders = exports.validateNameHeader = void 0;
 const types_1 = require("../parser/types");
 /**
  * Check if the name header is present
@@ -201,36 +201,6 @@ exports.validateVirgaStrataFollowedByHigherPitch = {
     }
 };
 /**
- * Check for missing connector in quilismatic sequences
- */
-exports.validateQuilismaticConnector = {
-    name: 'quilismatic-connector',
-    severity: 'info',
-    validate: (doc) => {
-        const errors = [];
-        for (const syllable of doc.notation.syllables) {
-            for (const noteGroup of syllable.notes) {
-                if (noteGroup.notes.length >= 3) {
-                    // Check for quilisma in the sequence
-                    const hasQuilisma = noteGroup.notes.some(n => n.shape === types_1.NoteShape.Quilisma);
-                    if (hasQuilisma) {
-                        // Check if connector '!' is present in the GABC string
-                        const hasFusion = noteGroup.gabc.includes('!');
-                        if (!hasFusion) {
-                            errors.push({
-                                message: 'Consider adding connector "!" in quilismatic sequences of 3+ notes',
-                                range: noteGroup.range,
-                                severity: 'info'
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        return errors;
-    }
-};
-/**
  * Check for invalid staff lines
  */
 exports.validateStaffLines = {
@@ -273,7 +243,6 @@ exports.allValidationRules = [
     exports.validateQuilismaFollowedByLowerPitch,
     exports.validateQuilismaPesPrecededByHigherPitch,
     exports.validateVirgaStrataFollowedByHigherPitch,
-    exports.validateQuilismaticConnector,
     exports.validateStaffLines
 ];
 //# sourceMappingURL=rules.js.map
