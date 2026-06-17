@@ -1,0 +1,11 @@
+name: Advanced Chant with <v>\LaTeX{}</v>;
+office-part: Responsory;
+mode: VIII;
+annotation: VIII <v>\textbf{G}</v>;
+commentary: Features <v>\emph{modern}</v> notation;
+initial-style: 2;
+nabc-lines: 2;
+book: Cantatorium;
+transcriber: gregorio.nvim;
+%%
+(c4) Ad(f|vi|1g)vanced(g|pu|2a)no(h|ta|3b)ta(i|cl|4c)tion(j|to|1g|2a).

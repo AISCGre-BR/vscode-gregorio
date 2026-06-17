@@ -1,0 +1,1268 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "GABC",
+	"scopeName": "source.gabc",
+	"fileTypes": [
+		"gabc"
+	],
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#section-separator"
+		},
+		{
+			"include": "#headers"
+		},
+		{
+			"include": "#notation-body"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.percentage.gabc",
+					"match": "^%%.*$",
+					"comment": "Line comment starting with %%"
+				},
+				{
+					"name": "comment.line.percentage.gabc",
+					"match": "^%[^%].*$",
+					"comment": "Line comment starting with single %"
+				},
+				{
+					"name": "comment.line.percentage.gabc",
+					"match": "^%$",
+					"comment": "Single % line"
+				},
+				{
+					"name": "comment.line.percentage.gabc",
+					"match": "(?<=[^%])%.*$",
+					"comment": "Inline comment after content"
+				}
+			]
+		},
+		"section-separator": {
+			"patterns": [
+				{
+					"name": "keyword.control.separator.gabc",
+					"match": "^%%$",
+					"comment": "Header/body separator (exactly %%)"
+				}
+			]
+		},
+		"headers": {
+			"patterns": [
+				{
+					"name": "meta.header.nabc-lines.gabc",
+					"match": "^\\s*(nabc-lines)\\s*(:)\\s*([0-9]+)\\s*(;)\\s*$",
+					"captures": {
+						"1": {
+							"name": "entity.name.tag.header.nabc-lines.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.integer.nabc-lines.gabc"
+						},
+						"4": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"comment": "nabc-lines header with integer value highlighting"
+				},
+				{
+					"name": "meta.header.mode.gabc",
+					"match": "^\\s*(mode)\\s*(:)\\s*([0-9]+)\\s*(;)\\s*$",
+					"captures": {
+						"1": {
+							"name": "entity.name.tag.header.mode.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.integer.mode.gabc"
+						},
+						"4": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"comment": "mode header with integer value (1-8 typical)"
+				},
+				{
+					"name": "meta.header.staff-lines.gabc",
+					"match": "^\\s*(staff-lines)\\s*(:)\\s*([0-9]+)\\s*(;)\\s*$",
+					"captures": {
+						"1": {
+							"name": "entity.name.tag.header.staff-lines.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.integer.staff-lines.gabc"
+						},
+						"4": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"comment": "staff-lines header with integer value (2-5 range)"
+				},
+				{
+					"name": "meta.header.initial-style.gabc",
+					"match": "^\\s*(initial-style)\\s*(:)\\s*([0-9]+)\\s*(;)\\s*$",
+					"captures": {
+						"1": {
+							"name": "entity.name.tag.header.initial-style.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.integer.initial-style.gabc"
+						},
+						"4": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"comment": "initial-style header with integer value"
+				},
+				{
+					"name": "meta.header.def-macro.gabc",
+					"begin": "^\\s*(def-m)([0-9])\\s*(:)\\s*",
+					"end": "(;)\\s*$",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.tag.header.def-macro.gabc"
+						},
+						"2": {
+							"name": "constant.numeric.integer.macro-number.gabc"
+						},
+						"3": {
+							"name": "punctuation.separator.key-value.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#latex-verbatim"
+						},
+						{
+							"include": "#latex-inline-command"
+						},
+						{
+							"include": "text.tex.latex"
+						}
+					],
+					"comment": "def-m# headers (0-9) with LaTeX support and numeric highlight"
+				},
+				{
+					"name": "meta.header.with-latex.gabc",
+					"begin": "^\\s*(name|annotation|commentary|office-part|transcriber|user-notes|bibliography|mode-differentia|mode-modifier)\\s*(:)\\s*",
+					"end": "(;)\\s*$",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.tag.header.key.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#latex-verbatim"
+						},
+						{
+							"include": "#latex-inline-command"
+						},
+						{
+							"name": "string.unquoted.header.value.gabc",
+							"match": "[^;<>\\\\]+"
+						}
+					],
+					"comment": "Headers that support LaTeX commands: name, annotation, commentary, office-part, transcriber, user-notes, bibliography, mode-differentia, mode-modifier"
+				},
+				{
+					"name": "meta.header.standard.gabc",
+					"match": "^\\s*([^%:]+?)\\s*(:)\\s*(.*?)(;)\\s*$",
+					"captures": {
+						"1": {
+							"name": "entity.name.tag.header.key.gabc"
+						},
+						"2": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"3": {
+							"name": "string.unquoted.header.value.gabc"
+						},
+						"4": {
+							"name": "punctuation.terminator.header.gabc"
+						}
+					},
+					"comment": "Standard header key:value;"
+				}
+			]
+		},
+		"latex-verbatim": {
+			"patterns": [
+				{
+					"name": "meta.embedded.latex.gabc",
+					"contentName": "source.tex",
+					"begin": "(<v>)",
+					"end": "(</v>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.latex.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.latex.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "text.tex.latex"
+						}
+					],
+					"comment": "LaTeX verbatim code in <v>...</v> tags with syntax injection from LaTeX extensions"
+				}
+			]
+		},
+		"latex-inline-command": {
+			"patterns": [
+				{
+					"name": "meta.embedded.inline.tex",
+					"contentName": "source.tex",
+					"begin": "(\\\\)([a-zA-Z@]+)",
+					"end": "(?=[^a-zA-Z@{\\s]|;|$)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.backslash.tex"
+						},
+						"2": {
+							"name": "support.function.latex.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "text.tex.latex#braces"
+						}
+					],
+					"comment": "Inline LaTeX commands like \\textbf{text} with syntax injection"
+				}
+			]
+		},
+		"notation-body": {
+			"patterns": [
+				{
+					"include": "#clef"
+				},
+				{
+					"include": "#lyric-centering"
+				},
+				{
+					"include": "#translation"
+				},
+				{
+					"include": "#notation-group"
+				},
+				{
+					"include": "#syllable-text"
+				}
+			]
+		},
+		"clef": {
+			"patterns": [
+				{
+					"name": "meta.clef.gabc",
+					"match": "\\((cb|[cf])([1-5])((@)(cb|[cf])([1-5]))?\\)",
+					"captures": {
+						"1": {
+							"name": "constant.language.clef.letter.gabc"
+						},
+						"2": {
+							"name": "constant.numeric.clef.line.gabc"
+						},
+						"3": {
+							"name": "meta.clef.double.gabc"
+						},
+						"4": {
+							"name": "keyword.operator.logical.clef.gabc"
+						},
+						"5": {
+							"name": "constant.language.clef.letter.gabc"
+						},
+						"6": {
+							"name": "constant.numeric.clef.line.gabc"
+						}
+					},
+					"comment": "Clef notation: (c4), (f3), (cb4), (c4@c2) - @ is logical operator for clef change"
+				}
+			]
+		},
+		"lyric-centering": {
+			"patterns": [
+				{
+					"name": "meta.lyric.centering.gabc",
+					"begin": "\\{",
+					"end": "\\}",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.centering.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.centering.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"name": "string.other.lyric.centered.gabc",
+							"match": "[^}]+"
+						}
+					],
+					"comment": "Lyric centering: {vowel}"
+				}
+			]
+		},
+		"translation": {
+			"patterns": [
+				{
+					"name": "meta.translation.gabc",
+					"begin": "\\[",
+					"end": "\\]",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.translation.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.translation.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"name": "string.other.translation.gabc",
+							"match": "[^\\]]+"
+						}
+					],
+					"comment": "Translation text: [translation]"
+				}
+			]
+		},
+		"notation-group": {
+			"patterns": [
+				{
+					"name": "meta.notation.group.gabc",
+					"begin": "\\(",
+					"end": "\\)",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.notation.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.notation.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#alternating-snippets"
+						},
+						{
+							"include": "#bars"
+						}
+					],
+					"comment": "Notation group containing GABC/NABC alternating snippets"
+				}
+			]
+		},
+		"alternating-snippets": {
+			"patterns": [
+				{
+					"name": "punctuation.separator.pipe.gabc",
+					"match": "\\|"
+				},
+				{
+					"name": "meta.snippet.nabc-prefixed.gabc",
+					"match": "(`+)([^|()]+)",
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.nabc.prefix.gabc"
+						},
+						"2": {
+							"patterns": [
+								{
+									"include": "#nabc-content"
+								}
+							]
+						}
+					},
+					"comment": "NABC snippet with backtick prefix"
+				},
+				{
+					"include": "#snippet-content"
+				}
+			]
+		},
+		"snippet-content": {
+			"patterns": [
+				{
+					"include": "#nabc-neume-pattern"
+				},
+				{
+					"include": "#gabc-snippet"
+				}
+			]
+		},
+		"nabc-neume-pattern": {
+			"patterns": [
+				{
+					"begin": "\\b(vi|pu|ta|gr|cl|pe|po|to|ci|sc|pf|sf|tr|st|ds|ts|tg|bv|tv|pr|pi|vs|or|sa|pq|ql|qi|pt|ni|un|oc)([SGM\\->~][0-9]?|[0-9])?",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.control.neume.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.glyph.nabc.gabc"
+						}
+					},
+					"end": "(?=[\\s|()])",
+					"patterns": [
+						{
+							"include": "#nabc-elements"
+						}
+					],
+					"comment": "NABC neume: 31 St.Gall codes (vi,pu,ta,gr,cl,pe,po,to,ci,sc,pf,sf,tr,st,ds,ts,tg,bv,tv,pr,pi,vs,or,sa,pq,ql,qi,pt,ni) + 2 Laon codes (un,oc) with optional modifiers (S,G,M,-,>,~) optionally followed by variant number"
+				}
+			]
+		},
+		"nabc-elements": {
+			"patterns": [
+				{
+					"name": "meta.pitch-descriptor.with-specifier.nabc.gabc",
+					"match": "(h)([a-z])(?=[a-z])",
+					"captures": {
+						"1": {
+							"name": "entity.name.function.pitch-descriptor.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.pitch-descriptor.specifier.nabc.gabc"
+						}
+					},
+					"comment": "NABC pitch descriptor with specifier: h + letter + lookahead for more content"
+				},
+				{
+					"name": "meta.nabc.subpunctis.gabc",
+					"match": "(su)([tuvwxy])?([0-9]+)",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.subpunctis-descriptor.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.subpunctis-modifier.nabc.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.subpunctis-quantifier.nabc.gabc"
+						}
+					},
+					"comment": "Subpunctis descriptor: su + optional modifier (t=tractulus, u=tractulus+episema, v=tractulus+double episema, w=gravis, x=liquescens stropha, y=gravis+episema) + number"
+				},
+				{
+					"name": "meta.nabc.prepunctis.gabc",
+					"match": "(pp)([tuvwxy])?([0-9]+)",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.prepunctis-descriptor.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.prepunctis-modifier.nabc.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.prepunctis-quantifier.nabc.gabc"
+						}
+					},
+					"comment": "Prepunctis descriptor: pp + optional modifier (t=tractulus, u=tractulus+episema, v=tractulus+double episema, w=gravis, x=liquescens stropha, y=gravis+episema) + number"
+				},
+				{
+					"name": "meta.nabc.significant-letter.gabc",
+					"match": "(ls)(al|am|b|c|cm|co|d|e|eq|equ|f|h|hn|hp|i|im|l|m|md|n|nl|nt|p|r|s|sc|simp|sm|sp|st|t|tw|v|vol|x)([1-9])",
+					"captures": {
+						"1": {
+							"name": "entity.name.function.significant-letter.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.significant-letter.specifier.nabc.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.significant-letter.position.nabc.gabc"
+						}
+					},
+					"comment": "St.Gall significant letters: ls + shorthand (al,am,b,c,cm,co,d,e,eq,f,i,im,l,m,p,r,sc,sm,st,t,tw,v,vol,x) + position (1-9). Laon adds: a,eq-,equ,eq,f,h,hn,hp,md,n,nl,nt,s,simp,sp,st"
+				},
+				{
+					"name": "meta.nabc.tironian.gabc",
+					"match": "(lt)(i|do|dr|dx|ps|qm|sb|se|sj|sl|sn|sp|sr|st|us)([1-9])",
+					"captures": {
+						"1": {
+							"name": "entity.name.function.tironian.nabc.gabc"
+						},
+						"2": {
+							"name": "variable.parameter.tironian.specifier.nabc.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.tironian.position.nabc.gabc"
+						}
+					},
+					"comment": "Laon tironian notes: lt + shorthand (i,do,dr,dx,ps,qm,sb,se,sj,sl,sn,sp,sr,st,us) + position (1-9, except 5)"
+				},
+				{
+					"name": "meta.pitch-descriptor.simple.nabc.gabc",
+					"match": "h([a-np])",
+					"captures": {
+						"0": {
+							"name": "entity.name.function.pitch-descriptor.nabc.gabc"
+						},
+						"1": {
+							"name": "constant.numeric.pitch.nabc.gabc"
+						}
+					},
+					"comment": "NABC pitch descriptor: h + pitch letter (fallback for simple cases)"
+				},
+				{
+					"name": "punctuation.separator.complex-glyph.nabc.gabc",
+					"match": "!",
+					"comment": "Complex glyph delimiter"
+				},
+				{
+					"name": "constant.character.spacing.nabc.gabc",
+					"match": "//+|/|``|`",
+					"comment": "NABC horizontal spacing adjustments: // (nabclargerspace right), / (nabcinterelementspace right), `` (nabclargerspace left), ` (nabcinterelementspace left)"
+				}
+			]
+		},
+		"nabc-content": {
+			"patterns": [
+				{
+					"include": "#nabc-neume-pattern"
+				},
+				{
+					"include": "#nabc-snippet"
+				}
+			]
+		},
+		"gabc-snippet": {
+			"patterns": [
+				{
+					"include": "#gabc-fusions"
+				},
+				{
+					"include": "#gabc-alterations"
+				},
+				{
+					"include": "#gabc-pitch-modifiers"
+				},
+				{
+					"include": "#gabc-pitches"
+				},
+				{
+					"include": "#gabc-modifiers"
+				},
+				{
+					"include": "#gabc-rhythm"
+				},
+				{
+					"include": "#gabc-spacing"
+				},
+				{
+					"include": "#gabc-episema"
+				},
+				{
+					"include": "#gabc-attributes"
+				}
+			]
+		},
+		"gabc-fusions": {
+			"patterns": [
+				{
+					"name": "meta.fusion.collective.gabc",
+					"begin": "@\\[",
+					"end": "\\]",
+					"beginCaptures": {
+						"0": {
+							"name": "entity.name.function.fusion.gabc"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "entity.name.function.fusion.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#gabc-alterations"
+						},
+						{
+							"include": "#gabc-pitch-modifiers"
+						},
+						{
+							"include": "#gabc-pitches"
+						},
+						{
+							"include": "#gabc-modifiers"
+						}
+					],
+					"comment": "Collective fusion: @[fgh] - function-style fusion with bracket group"
+				},
+				{
+					"name": "keyword.operator.logical.fusion.gabc",
+					"match": "@(?!\\[)",
+					"comment": "Individual fusion connector: f@g@h - logical operator between pitches (not before bracket)"
+				}
+			]
+		},
+		"gabc-pitches": {
+			"patterns": [
+				{
+					"name": "constant.character.pitch.lowercase.gabc",
+					"match": "[a-np]",
+					"comment": "Lowercase pitches (punctum quadratum)"
+				},
+				{
+					"name": "constant.character.pitch.uppercase.gabc",
+					"match": "[A-NP]",
+					"comment": "Uppercase pitches (punctum inclinatum)"
+				}
+			]
+		},
+		"gabc-pitch-modifiers": {
+			"comment": "Composite pitch+modifier descriptors. Pitch and modifier receive entity.name.class scope for unified appearance.",
+			"patterns": [
+				{
+					"name": "meta.pitch-modifier.oriscus.gabc",
+					"match": "([a-npA-NP])([oO])([01])?",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.pitch-base.gabc"
+						},
+						"2": {
+							"name": "entity.name.class.modifier.oriscus.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.modifier-suffix.gabc"
+						}
+					},
+					"comment": "Pitch+oriscus: letter + o/O + optional suffix (0/1). Examples: go, ho1, fO0"
+				},
+				{
+					"name": "meta.pitch-modifier.special.gabc",
+					"match": "([a-npA-NP])(r)([0-8])",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.pitch-base.gabc"
+						},
+						"2": {
+							"name": "entity.name.class.modifier.cavum.gabc"
+						},
+						"3": {
+							"name": "constant.numeric.modifier-variant.gabc"
+						}
+					},
+					"comment": "Pitch+special r modifier: letter + r + digit (0-8). Examples: gr1, fr0, hr8"
+				},
+				{
+					"name": "meta.pitch-modifier.simple.gabc",
+					"match": "([a-npA-NP])([qwWvVs~<>=rR.])",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.pitch-base.gabc"
+						},
+						"2": {
+							"name": "entity.name.class.modifier.simple.gabc"
+						}
+					},
+					"comment": "Pitch+simple modifier: letter + single modifier character. Examples: gw (quilisma), fv (virga), h< (liquescent). Must be defined AFTER pitch+oriscus and pitch+special to avoid conflicts."
+				}
+			]
+		},
+		"gabc-modifiers": {
+			"comment": "Standalone modifier characters (fallback patterns when not preceded by pitch)",
+			"patterns": [
+				{
+					"name": "variable.parameter.modifier.oriscus.gabc",
+					"match": "o[01]?",
+					"comment": "Oriscus modifier: o, o0, o1"
+				},
+				{
+					"name": "variable.parameter.modifier.quilisma.gabc",
+					"match": "w",
+					"comment": "Quilisma modifier"
+				},
+				{
+					"name": "variable.parameter.modifier.stropha.gabc",
+					"match": "s",
+					"comment": "Stropha modifier"
+				},
+				{
+					"name": "variable.parameter.modifier.virga.gabc",
+					"match": "[vV]",
+					"comment": "Virga modifiers: v (right), V (left)"
+				},
+				{
+					"name": "variable.parameter.modifier.inclinatum.gabc",
+					"match": "[012]",
+					"comment": "Punctum inclinatum shape: 0=descending, 1=ascending, 2=unison"
+				}
+			]
+		},
+		"gabc-rhythm": {
+			"patterns": [
+				{
+					"name": "entity.name.tag.rhythm.mora.gabc",
+					"match": "\\.+",
+					"comment": "Mora (dot): . or .."
+				},
+				{
+					"name": "entity.name.tag.rhythm.episema.gabc",
+					"match": "'[0]?",
+					"comment": "Vertical episema (ictus): ' or '0"
+				}
+			]
+		},
+		"gabc-episema": {
+			"patterns": [
+				{
+					"name": "entity.name.tag.episema.horizontal.gabc",
+					"match": "_+",
+					"comment": "Horizontal episema: _"
+				}
+			]
+		},
+		"gabc-alterations": {
+			"patterns": [
+				{
+					"name": "string.regexp.alteration.gabc",
+					"match": "[a-np-sA-NP-S][xy#]",
+					"comment": "Alterations with pitch: gx (g+natural), fy (f+sharp), h# (h+sharp) - captures note+accidental together"
+				}
+			]
+		},
+		"gabc-spacing": {
+			"patterns": [
+				{
+					"name": "keyword.operator.logical.line-break.gabc",
+					"match": "[zZ][+\\-0]?",
+					"comment": "Line breaks: z (justified), Z (ragged), with optional suffixes +/- (force/prevent), 0 (zero-width, z only)"
+				},
+				{
+					"name": "keyword.operator.logical.spacing.gabc",
+					"match": "/+|!",
+					"comment": "Horizontal spacing: / (small space), // (larger space), ! (zero space), /! (combined)"
+				}
+			]
+		},
+		"gabc-attributes": {
+			"patterns": [
+				{
+					"name": "meta.attribute.gabc",
+					"begin": "\\[",
+					"end": "\\]",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.attribute.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.attribute.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"name": "meta.attribute-with-value.integer-boolean.gabc",
+							"match": "(ob|ub|ocb|ocba)(:)([01])",
+							"captures": {
+								"1": {
+									"name": "entity.other.attribute-name.gabc"
+								},
+								"2": {
+									"name": "punctuation.separator.key-value.gabc"
+								},
+								"3": {
+									"name": "constant.numeric.integer.gabc constant.character.escape.gabc"
+								}
+							},
+							"comment": "Boolean brace attributes (0 or 1): ob, ub, ocb, ocba. Value highlighted as integer with bracket matching disabled."
+						},
+						{
+							"name": "meta.attribute-with-value.integer-position.gabc",
+							"match": "(oll|ull|oslur|uslur)(:)(\\d+)",
+							"captures": {
+								"1": {
+									"name": "entity.other.attribute-name.gabc"
+								},
+								"2": {
+									"name": "punctuation.separator.key-value.gabc"
+								},
+								"3": {
+									"name": "constant.numeric.integer.gabc constant.character.escape.gabc"
+								}
+							},
+							"comment": "Positional integer attributes: oll, ull, oslur, uslur. Value highlighted as integer with bracket matching disabled."
+						},
+						{
+							"name": "meta.attribute-with-value.float.gabc",
+							"match": "(ll|oh|uh)(:)(-?\\d+\\.?\\d*)",
+							"captures": {
+								"1": {
+									"name": "entity.other.attribute-name.gabc"
+								},
+								"2": {
+									"name": "punctuation.separator.key-value.gabc"
+								},
+								"3": {
+									"name": "constant.numeric.float.gabc constant.character.escape.gabc"
+								}
+							},
+							"comment": "Float adjustment attributes: ll (line length), oh (over height), uh (under height). Supports negative values and decimals with bracket matching disabled."
+						},
+						{
+							"name": "meta.attribute-with-value.latex.gabc",
+							"contentName": "source.tex",
+							"begin": "(nv|gv|ev)(:)",
+							"end": "(?=\\])",
+							"beginCaptures": {
+								"1": {
+									"name": "entity.other.attribute-name.gabc"
+								},
+								"2": {
+									"name": "punctuation.separator.key-value.gabc"
+								}
+							},
+							"patterns": [
+								{
+									"include": "#latex-verbatim"
+								},
+								{
+									"include": "#latex-inline-command"
+								},
+								{
+									"include": "text.tex.latex"
+								}
+							],
+							"comment": "LaTeX content attributes: nv (note voice), gv (gabc voice), ev (extra voice). Value should be highlighted with LaTeX syntax injection."
+						},
+						{
+							"name": "meta.attribute-with-value.gabc",
+							"match": "([a-z]+)(:)([^\\]]*)",
+							"captures": {
+								"1": {
+									"name": "entity.other.attribute-name.gabc"
+								},
+								"2": {
+									"name": "punctuation.separator.key-value.gabc"
+								},
+								"3": {
+									"name": "string.unquoted.attribute-value.gabc constant.character.escape.gabc"
+								}
+							},
+							"comment": "Generic attribute with value: name:value (fallback). Attribute name as entity (like XML), colon as separator, value uses constant.character.escape to disable bracket matching while maintaining appropriate color"
+						},
+						{
+							"name": "entity.other.attribute-name.gabc",
+							"match": "[a-z]+",
+							"comment": "Attribute without value (e.g., [nocustos])"
+						}
+					],
+					"comment": "GABC attributes: [name:value] or [name]. XML-like highlighting with disabled paren matching in values."
+				}
+			]
+		},
+		"bars": {
+			"patterns": [
+				{
+					"name": "keyword.control.bar.gabc",
+					"match": "::?|;|,|`",
+					"comment": "Separation bars: , ; : :: `"
+				}
+			]
+		},
+		"nabc-snippet": {
+			"patterns": [
+				{
+					"include": "#nabc-neumes"
+				},
+				{
+					"include": "#nabc-modifiers"
+				},
+				{
+					"include": "#nabc-pitch-descriptor"
+				},
+				{
+					"include": "#nabc-spacing"
+				},
+				{
+					"include": "#nabc-complex-delimiter"
+				},
+				{
+					"include": "#nabc-subprepunctis"
+				},
+				{
+					"include": "#nabc-tironian"
+				}
+			]
+		},
+		"nabc-neumes": {
+			"patterns": [
+				{
+					"name": "keyword.control.neume.stgall.gabc",
+					"match": "\\b(vi|pu|ta|gr|cl|pe|po|to|ci|sc|pf|sf|tr|st|ds|ts|tg|bv|tv|pq|pr|pi|vs|or|sa|ql|qi|pt|ni)\\b",
+					"comment": "St. Gall neume codes"
+				},
+				{
+					"name": "keyword.control.neume.laon.gabc",
+					"match": "\\b(oc|un)\\b",
+					"comment": "Laon-specific neume codes"
+				}
+			]
+		},
+		"nabc-modifiers": {
+			"patterns": [
+				{
+					"name": "constant.character.escape.modifier.nabc.gabc",
+					"match": "[SGM\\->~][1-9]?",
+					"comment": "NABC glyph modifiers with optional numbers"
+				}
+			]
+		},
+		"nabc-pitch-descriptor": {
+			"patterns": [
+				{
+					"name": "meta.pitch-descriptor.nabc.gabc",
+					"match": "h([a-np])",
+					"captures": {
+						"0": {
+							"name": "entity.name.tag.pitch-descriptor.gabc"
+						},
+						"1": {
+							"name": "constant.numeric.pitch.nabc.gabc"
+						}
+					},
+					"comment": "NABC pitch descriptor: h + pitch letter"
+				}
+			]
+		},
+		"nabc-spacing": {
+			"patterns": [
+				{
+					"name": "constant.character.spacing.nabc.gabc",
+					"match": "//+|/|``|`",
+					"comment": "NABC horizontal spacing adjustments"
+				}
+			]
+		},
+		"nabc-complex-delimiter": {
+			"patterns": [
+				{
+					"name": "punctuation.separator.complex-glyph.nabc.gabc",
+					"match": "!",
+					"comment": "Complex glyph delimiter"
+				}
+			]
+		},
+		"nabc-subprepunctis": {
+			"patterns": [
+				{
+					"name": "entity.name.class.subprepunctis.nabc.gabc",
+					"match": "\\[[1-4]\\]",
+					"comment": "Subpunctis/prepunctis descriptors: [1] [2] [3] [4]"
+				}
+			]
+		},
+		"nabc-tironian": {
+			"patterns": [
+				{
+					"name": "entity.name.tag.tironian.nabc.gabc",
+					"match": "\\{[a-np]\\}",
+					"comment": "Tironian letters: {a} {b} etc."
+				}
+			]
+		},
+		"syllable-text": {
+			"patterns": [
+				{
+					"include": "#text-markup"
+				},
+				{
+					"include": "#special-characters"
+				}
+			]
+		},
+		"text-markup": {
+			"patterns": [
+				{
+					"name": "markup.bold.gabc",
+					"begin": "(<)(b)(>)",
+					"end": "(</)(b)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.bold.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.bold.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#text-markup"
+						}
+					],
+					"comment": "Bold text: <b>...</b> - tag name highlighted separately"
+				},
+				{
+					"name": "markup.italic.gabc",
+					"begin": "(<)(i)(>)",
+					"end": "(</)(i)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.italic.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.italic.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#text-markup"
+						}
+					],
+					"comment": "Italic text: <i>...</i> - tag name highlighted separately"
+				},
+				{
+					"name": "markup.underline.gabc",
+					"begin": "(<)(ul)(>)",
+					"end": "(</)(ul)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.underline.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.underline.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#text-markup"
+						}
+					],
+					"comment": "Underline text: <ul>...</ul> - tag name highlighted separately"
+				},
+				{
+					"name": "markup.other.smallcaps.gabc",
+					"begin": "(<)(sc)(>)",
+					"end": "(</)(sc)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.smallcaps.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.smallcaps.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#text-markup"
+						}
+					],
+					"comment": "Small caps text: <sc>...</sc> - tag name highlighted separately"
+				},
+				{
+					"name": "markup.other.colored.gabc",
+					"begin": "(<)(c)(>)",
+					"end": "(</)(c)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.colored.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.colored.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#text-markup"
+						}
+					],
+					"comment": "Colored text: <c>...</c> - tag name highlighted separately"
+				}
+			]
+		},
+		"special-characters": {
+			"patterns": [
+				{
+					"name": "meta.protrusion-tag.gabc",
+					"begin": "(<)(pr)(:)(-?\\d+\\.?\\d*)(>)",
+					"end": "(</)(pr)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.gabc"
+						},
+						"3": {
+							"name": "punctuation.separator.key-value.gabc"
+						},
+						"4": {
+							"name": "constant.numeric.float.gabc"
+						},
+						"5": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"name": "string.unquoted.protrusion-content.gabc",
+							"match": "[^<]+",
+							"comment": "Content between <pr:> tags"
+						}
+					],
+					"comment": "Protrusion control: <pr:0.5>text</pr> - numeric value as constant.numeric.float"
+				},
+				{
+					"name": "meta.special-character.gabc",
+					"begin": "(<)(sp)(>)",
+					"end": "(</)(sp)(>)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.begin.gabc"
+						}
+					},
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.tag.end.gabc"
+						},
+						"2": {
+							"name": "entity.name.tag.gabc"
+						},
+						"3": {
+							"name": "punctuation.definition.tag.end.gabc"
+						}
+					},
+					"patterns": [
+						{
+							"name": "string.unquoted.special-character.gabc",
+							"match": "[^<]+",
+							"comment": "Content between <sp> tags (string.unquoted) - non-greedy, stops at <"
+						}
+					],
+					"comment": "Special characters: <sp>R/</sp>, <sp>'ae</sp> - content as string.unquoted"
+				}
+			]
+		}
+	}
+}

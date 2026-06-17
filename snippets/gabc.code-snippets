@@ -1,0 +1,126 @@
+{
+  "GABC Header": {
+    "prefix": "gabcheader",
+    "body": [
+      "name: ${1:Chant Name};",
+      "office-part: ${2:antiphona};",
+      "mode: ${3:1};",
+      "annotation: ${4:I};",
+      "book: ${5:Graduale Romanum};",
+      "transcriber: ${6:Transcriber Name};",
+      "%%",
+      "(${7:c4}) $0"
+    ],
+    "description": "Basic GABC header and body separator"
+  },
+  "GABC Header with NABC": {
+    "prefix": "nabcheader",
+    "body": [
+      "name: ${1:Chant Name};",
+      "office-part: ${2:antiphona};",
+      "mode: ${3:1};",
+      "annotation: ${4:I};",
+      "nabc-lines: ${5:1};",
+      "book: ${6:St. Gall Manuscripts};",
+      "transcriber: ${7:Transcriber Name};",
+      "%%",
+      "(${8:c4}) $0"
+    ],
+    "description": "GABC header with NABC extension (nabc-lines)"
+  },
+  "Notes group": {
+    "prefix": "notes",
+    "body": ["(${1})$0"],
+    "description": "Empty note group"
+  },
+  "Clef": {
+    "prefix": "clef",
+    "body": ["(${1|c,f,cb,fb|}${2|1,2,3,4|})$0"],
+    "description": "Clef"
+  },
+  "Divisio finalis": {
+    "prefix": "finalis",
+    "body": ["(::)$0"],
+    "description": "Divisio finalis (double bar)"
+  },
+  "Divisio maior": {
+    "prefix": "divisio",
+    "body": ["(${1|:,;,,,`|})$0"],
+    "description": "Divisio bar"
+  },
+  "Bold markup": {
+    "prefix": "bold",
+    "body": ["<b>${1}</b>$0"],
+    "description": "Bold markup"
+  },
+  "Italic markup": {
+    "prefix": "italic",
+    "body": ["<i>${1}</i>$0"],
+    "description": "Italic markup"
+  },
+  "Color markup": {
+    "prefix": "color",
+    "body": ["<c>${1}</c>$0"],
+    "description": "Color markup"
+  },
+  "Small caps markup": {
+    "prefix": "smallcaps",
+    "body": ["<sc>${1}</sc>$0"],
+    "description": "Small caps markup"
+  },
+  "Underline markup": {
+    "prefix": "underline",
+    "body": ["<ul>${1}</ul>$0"],
+    "description": "Underline markup"
+  },
+  "Teletype markup": {
+    "prefix": "teletype",
+    "body": ["<tt>${1}</tt>$0"],
+    "description": "Teletype markup"
+  },
+  "Special character": {
+    "prefix": "special",
+    "body": ["<sp>${1}</sp>$0"],
+    "description": "Special character tag"
+  },
+  "Verbatim (LaTeX)": {
+    "prefix": "verbatim",
+    "body": ["<v>${1}</v>$0"],
+    "description": "Verbatim TeX/LaTeX tag"
+  },
+  "Above lines text": {
+    "prefix": "alt",
+    "body": ["<alt>${1}</alt>$0"],
+    "description": "Above lines text tag"
+  },
+  "Euouae": {
+    "prefix": "euouae",
+    "body": ["<eu>${1}</eu>$0"],
+    "description": "EUOUAE (psalm tone differentia) tag"
+  },
+  "Elision": {
+    "prefix": "elision",
+    "body": ["<e>${1}</e>$0"],
+    "description": "Elision tag"
+  },
+  "Translation": {
+    "prefix": "trans",
+    "body": ["[${1}]$0"],
+    "description": "Translation text below the staff"
+  },
+  "Antiphon response": {
+    "prefix": "a/.",
+    "body": ["<sp>A/</sp>."],
+    "description": "Antiphon response marking"
+  },
+  "Responsory response": {
+    "prefix": "r/.",
+    "body": ["<sp>R/</sp>."],
+    "description": "Responsory response marking"
+  },
+  "Verse": {
+    "prefix": "v/.",
+    "body": ["<sp>V/</sp>."],
+    "description": "Verse marking"
+  }
+}

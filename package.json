@@ -1,0 +1,210 @@
+{
+  "name": "vscode-gregorio",
+  "displayName": "Gregorio (GABC/NABC)",
+  "description": "Support for GABC/NABC Gregorian chant notation: tree-sitter-gregorio syntax highlighting (with nabc-lines-aware GABC/NABC alternation), gregorio-lsp diagnostics and formatting, note shifting, and empty-parentheses filling.",
+  "version": "0.1.0",
+  "publisher": "AISCGre-BR",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "author": {
+    "name": "AISCGre Brasil"
+  },
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AISCGre-BR/vscode-gregorio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AISCGre-BR/vscode-gregorio/issues"
+  },
+  "homepage": "https://github.com/AISCGre-BR/vscode-gregorio#readme",
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "gabc",
+    "nabc",
+    "gregorian chant",
+    "gregorio",
+    "tree-sitter"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:gabc"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "gabc",
+        "aliases": [
+          "GABC",
+          "gabc"
+        ],
+        "extensions": [
+          ".gabc"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/icon.png",
+          "dark": "./images/icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gabc",
+        "scopeName": "source.gabc",
+        "path": "./syntaxes/gabc.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.latex.gabc": "latex",
+          "meta.embedded.inline.tex": "latex"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "gabc",
+        "path": "./snippets/gabc.code-snippets"
+      }
+    ],
+    "commands": [
+      {
+        "command": "gabc.noteShiftUp",
+        "title": "Gregorio: Shift Notes Up",
+        "category": "Gregorio"
+      },
+      {
+        "command": "gabc.noteShiftDown",
+        "title": "Gregorio: Shift Notes Down",
+        "category": "Gregorio"
+      },
+      {
+        "command": "gabc.fillParens",
+        "title": "Gregorio: Fill Empty Note Groups",
+        "category": "Gregorio"
+      },
+      {
+        "command": "gabc.convertLigaturesToTags",
+        "title": "Gregorio: Convert Ligatures to <sp> Tags",
+        "category": "Gregorio"
+      },
+      {
+        "command": "gabc.convertTagsToLigatures",
+        "title": "Gregorio: Convert <sp> Tags to Ligatures",
+        "category": "Gregorio"
+      },
+      {
+        "command": "gabc.restartLanguageServer",
+        "title": "Gregorio: Restart Language Server",
+        "category": "Gregorio"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gabc.noteShiftUp",
+        "key": "ctrl+alt+up",
+        "when": "editorTextFocus && editorLangId == gabc"
+      },
+      {
+        "command": "gabc.noteShiftDown",
+        "key": "ctrl+alt+down",
+        "when": "editorTextFocus && editorLangId == gabc"
+      },
+      {
+        "command": "gabc.fillParens",
+        "key": "ctrl+alt+l",
+        "when": "editorTextFocus && editorLangId == gabc"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorLangId == gabc",
+          "command": "gabc.noteShiftUp",
+          "group": "1_modification@1"
+        },
+        {
+          "when": "editorLangId == gabc",
+          "command": "gabc.noteShiftDown",
+          "group": "1_modification@2"
+        },
+        {
+          "when": "editorLangId == gabc",
+          "command": "gabc.fillParens",
+          "group": "1_modification@3"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Gregorio",
+      "properties": {
+        "gregorio.languageServer.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the gregorio-lsp language server (diagnostics, hover, completion, document symbols, formatting)."
+        },
+        "gregorio.languageServer.path": {
+          "type": "string",
+          "default": "gregorio-lsp",
+          "description": "Path to the gregorio-lsp executable. If only a name is given, it is resolved from PATH."
+        },
+        "gregorio.languageServer.formatting": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Options forwarded to gregorio-lsp's formatter (grefmt) via workspace configuration.",
+          "properties": {
+            "maxLineWidth": {
+              "type": "integer",
+              "default": 80,
+              "description": "Maximum characters per notation line."
+            },
+            "breakAfterClef": {
+              "type": "boolean",
+              "default": false,
+              "description": "Insert a line break after each clef token."
+            },
+            "breakAfterBar": {
+              "type": "boolean",
+              "default": false,
+              "description": "Insert a line break after each bar token."
+            }
+          }
+        },
+        "gregorio.semanticHighlighting.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable tree-sitter-gregorio semantic highlighting, including nabc-lines-aware GABC/NABC block alternation. Falls back to the built-in tokenizer when the tree-sitter grammar (WASM) is unavailable."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "compile": "tsc --noEmit -p ./",
+    "lint": "tsc --noEmit -p ./",
+    "build:wasm": "bash scripts/build-wasm.sh",
+    "package": "vsce package --no-dependencies",
+    "test": "node --test test/transform.test.ts"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "web-tree-sitter": "^0.25.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  },
+  "allowScripts": {
+    "esbuild@0.24.2": true,
+    "@vscode/vsce-sign@2.0.9": true
+  }
+}
