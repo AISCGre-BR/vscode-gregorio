@@ -193,7 +193,7 @@
     "test": "node --test test/transform.test.ts"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
+    "vscode-languageclient": "^10.0.0",
     "web-tree-sitter": "^0.25.3"
   },
   "devDependencies": {
