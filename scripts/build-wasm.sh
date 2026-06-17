@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # Builds the tree-sitter-gregorio WASM grammar used by the semantic-highlighting
-# layer, and copies it (plus the web-tree-sitter runtime) into ./parser.
+# layer, and copies it (plus the web-tree-sitter runtime) into ./parser/.
 #
 # Requirements:
-#   - tree-sitter CLI (npm i -g tree-sitter-cli) and either Docker or Emscripten
-#   - the project's npm dependencies installed (for web-tree-sitter's runtime wasm)
+#   - tree-sitter CLI  (npm install -g tree-sitter-cli)
+#   - internet access on first run (tree-sitter downloads wasi-sdk automatically
+#     into ~/.cache/tree-sitter/wasi-sdk; cached on subsequent runs)
+#   - npm dependencies installed (for the web-tree-sitter runtime WASM)
 #
-# The grammar version is pinned to match zed-gregorio / gregorio.nvim.
+# Grammar version pinned to match zed-gregorio / gregorio.nvim.
 set -euo pipefail
 
 GRAMMAR_REPO="https://github.com/AISCGre-BR/tree-sitter-gregorio"
-GRAMMAR_REV="c9034de8f8c1c1605e9ccde29500f08e72ea51ff" # v0.5.2
+GRAMMAR_REV="c9034de8f8c1c1605e9ccde29500f08e72ea51ff"  # v0.5.2
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PARSER_DIR="$ROOT/parser"
@@ -23,13 +25,8 @@ echo "==> Cloning tree-sitter-gregorio @ ${GRAMMAR_REV:0:8}"
 git clone --quiet "$GRAMMAR_REPO" "$WORK/grammar"
 git -C "$WORK/grammar" checkout --quiet "$GRAMMAR_REV"
 
-echo "==> Generating parser"
-( cd "$WORK/grammar" && tree-sitter generate )
-
-echo "==> Building WASM grammar"
-( cd "$WORK/grammar" && tree-sitter build --wasm )
-
-cp "$WORK/grammar"/tree-sitter-gregorio.wasm "$PARSER_DIR/tree-sitter-gregorio.wasm"
+echo "==> Building WASM grammar (downloads wasi-sdk to ~/.cache on first run)"
+tree-sitter build --wasm "$WORK/grammar" -o "$PARSER_DIR/tree-sitter-gregorio.wasm"
 
 echo "==> Copying web-tree-sitter runtime"
 RUNTIME="$ROOT/node_modules/web-tree-sitter/tree-sitter.wasm"
@@ -40,4 +37,4 @@ else
 fi
 
 echo "==> Done. Artifacts in $PARSER_DIR:"
-ls -l "$PARSER_DIR"
+ls -lh "$PARSER_DIR"
