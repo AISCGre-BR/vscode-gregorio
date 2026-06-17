@@ -713,7 +713,7 @@
               "name": "entity.name.type.pitch.gabc"
             },
             "2": {
-              "name": "entity.name.class.modifier.oriscus.gabc"
+              "name": "variable.parameter.modifier.oriscus.gabc"
             },
             "3": {
               "name": "constant.numeric.modifier-suffix.gabc"
@@ -729,7 +729,7 @@
               "name": "entity.name.type.pitch.gabc"
             },
             "2": {
-              "name": "entity.name.class.modifier.cavum.gabc"
+              "name": "variable.parameter.modifier.cavum.gabc"
             },
             "3": {
               "name": "constant.numeric.modifier-variant.gabc"
@@ -745,7 +745,7 @@
               "name": "entity.name.type.pitch.gabc"
             },
             "2": {
-              "name": "entity.name.class.modifier.simple.gabc"
+              "name": "variable.parameter.modifier.simple.gabc"
             }
           },
           "comment": "Pitch+simple modifier: letter + single modifier character. Examples: gw (quilisma), fv (virga), h< (liquescent). Must be defined AFTER pitch+oriscus and pitch+special to avoid conflicts."
