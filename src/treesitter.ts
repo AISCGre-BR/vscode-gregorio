@@ -132,10 +132,19 @@ export class TreeSitterHighlighter {
           continue;
         }
         // Semantic tokens cannot span multiple lines.
-        if (node.startPosition.row !== node.endPosition.row) {
-          continue;
+        // Some nodes (e.g. comments) include the trailing newline, ending at
+        // column 0 of the next row.  Clamp those to the end of the start row.
+        let endRow = node.endPosition.row;
+        let endCol = node.endPosition.column;
+        if (endRow !== node.startPosition.row) {
+          if (endRow === node.startPosition.row + 1 && endCol === 0) {
+            endRow = node.startPosition.row;
+            endCol = document.lineAt(endRow).text.length;
+          } else {
+            continue; // genuinely multi-line — skip
+          }
         }
-        const length = node.endPosition.column - node.startPosition.column;
+        const length = endCol - node.startPosition.column;
         if (length > 0) {
           builder.push(node.startPosition.row, node.startPosition.column, length, idx);
         }
