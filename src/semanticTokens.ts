@@ -59,9 +59,9 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     for (let line = 0; line < document.lineCount; line++) {
       const text = document.lineAt(line).text;
 
-      // Section separator (%% on its own line).
-      if (/^%+\s*$/.test(text)) {
-        builder.push(line, 0, text.trimEnd().length, ti("operator"));
+      // Section separator (%% — only the first one, while still in the header).
+      if (!inBody && /^%%\s*$/.test(text)) {
+        builder.push(line, 0, text.trimEnd().length, ti("keyword"));
         inBody = true;
         continue;
       }
@@ -110,6 +110,17 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       trimmed.trimEnd().length,
       isNumeric ? ti("number") : ti("string"),
     );
+
+    // Inline % comment after the header's closing semicolon: `key: value; % comment`
+    const semiIdx = text.lastIndexOf(";");
+    if (semiIdx > colonIndex) {
+      const tail = text.slice(semiIdx + 1);
+      const pctMatch = tail.match(/^(\s*)(%.*)/);
+      if (pctMatch) {
+        const commentStart = semiIdx + 1 + pctMatch[1].length;
+        builder.push(line, commentStart, pctMatch[2].length, ti("comment"));
+      }
+    }
   }
 
   private tokenizeBodyLine(

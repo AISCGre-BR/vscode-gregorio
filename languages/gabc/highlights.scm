@@ -42,7 +42,7 @@
 (header_tex_mode_differentia terminator: _ @punctuation.delimiter)
 (header_tex_def_macro        terminator: _ @punctuation.delimiter)
 
-(section_separator) @punctuation.special
+(section_separator) @keyword.control
 
 ; ============================================================================
 ; GABC NOTATION - PITCHES
