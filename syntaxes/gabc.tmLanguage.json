@@ -248,7 +248,45 @@
           "comment": "LaTeX verbatim code in <v>...</v> tags",
           "patterns": [
             {
-              "include": "text.tex.latex"
+              "match": "(\\\\)(begin|end)(?=\\{)",
+              "captures": {
+                "1": { "name": "punctuation.definition.function.latex" },
+                "2": { "name": "keyword.control.latex" }
+              }
+            },
+            {
+              "match": "(\\\\)([a-zA-Z@:*]+\\*?)",
+              "captures": {
+                "1": { "name": "punctuation.definition.function.latex" },
+                "2": { "name": "support.function.latex" }
+              }
+            },
+            {
+              "name": "constant.character.escape.latex",
+              "match": "(\\\\)(.)",
+              "captures": {
+                "1": { "name": "punctuation.definition.escape.latex" }
+              }
+            },
+            {
+              "name": "string.other.math.latex",
+              "begin": "\\$",
+              "end": "\\$"
+            },
+            {
+              "name": "punctuation.definition.group.begin.latex",
+              "match": "\\{"
+            },
+            {
+              "name": "punctuation.definition.group.end.latex",
+              "match": "\\}"
+            },
+            {
+              "name": "meta.group.brackets.latex",
+              "begin": "\\[",
+              "end": "\\]",
+              "beginCaptures": { "0": { "name": "punctuation.definition.group.begin.latex" } },
+              "endCaptures": { "0": { "name": "punctuation.definition.group.end.latex" } }
             }
           ]
         }
