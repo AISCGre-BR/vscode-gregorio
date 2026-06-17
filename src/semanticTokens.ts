@@ -8,11 +8,11 @@ import { getNabcLines } from "./transform";
 export const TOKEN_TYPES = [
   "keyword", // header names, clefs
   "string", // header values
-  "number", // numeric header values, GABC pitch letters
+  "number", // numeric header values (mode, staff-lines, …)
   "comment", // % comments
   "operator", // %% separator, "|" segment separator, bars, parentheses
   "function", // NABC neume segments
-  "variable", // NABC significant / Tironian letters
+  "variable", // GABC pitch letters; NABC significant / Tironian letters
   "property", // misc GABC structure
 ] as const;
 
@@ -184,7 +184,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       } else if (inBrackets) {
         continue;
       } else if (PITCH.test(c)) {
-        builder.push(line, segStart + i, 1, ti("number"));
+        builder.push(line, segStart + i, 1, ti("variable"));
       } else if (BAR.test(c)) {
         builder.push(line, segStart + i, 1, ti("operator"));
       }
