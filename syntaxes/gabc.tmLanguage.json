@@ -591,7 +591,7 @@
               "name": "entity.name.function.pitch-descriptor.nabc.gabc"
             },
             "1": {
-              "name": "constant.numeric"
+              "name": "variable"
             }
           },
           "comment": "NABC pitch descriptor: h + pitch letter (fallback for simple cases)"
@@ -691,12 +691,12 @@
     "gabc-pitches": {
       "patterns": [
         {
-          "name": "constant.numeric",
+          "name": "variable",
           "match": "[a-np]",
           "comment": "Lowercase pitches (punctum quadratum)"
         },
         {
-          "name": "constant.numeric",
+          "name": "variable",
           "match": "[A-NP]",
           "comment": "Uppercase pitches (punctum inclinatum)"
         }
@@ -710,7 +710,7 @@
           "match": "([a-npA-NP])([oO])([01])?",
           "captures": {
             "1": {
-              "name": "entity.name.class.pitch-base.gabc"
+              "name": "variable"
             },
             "2": {
               "name": "entity.name.class.modifier.oriscus.gabc"
@@ -726,7 +726,7 @@
           "match": "([a-npA-NP])(r)([0-8])",
           "captures": {
             "1": {
-              "name": "entity.name.class.pitch-base.gabc"
+              "name": "variable"
             },
             "2": {
               "name": "entity.name.class.modifier.cavum.gabc"
@@ -742,7 +742,7 @@
           "match": "([a-npA-NP])([qwWvVs~<>=rR.])",
           "captures": {
             "1": {
-              "name": "entity.name.class.pitch-base.gabc"
+              "name": "variable"
             },
             "2": {
               "name": "entity.name.class.modifier.simple.gabc"
@@ -1012,7 +1012,7 @@
               "name": "entity.name.tag.pitch-descriptor.gabc"
             },
             "1": {
-              "name": "constant.numeric"
+              "name": "variable"
             }
           },
           "comment": "NABC pitch descriptor: h + pitch letter"
