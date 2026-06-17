@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-17
+
+### Fixed
+
+- LaTeX syntax highlighting inside `<v>…</v>` verbatim tags now works correctly
+  by using proper VS Code embedded language scopes and correct pattern hierarchy.
+- The tag name `v` in `<v>…</v>` is now colored like HTML/XML tags.
+- LaTeX Workshop extension now properly highlights code inside verbatim tags
+  using the `source.tex.latex` embedded language scope.
+- Pitch letters and GABC notation elements now display with correct theme colors
+  across all VS Code themes by normalizing to standard scope names.
+
 ## [0.1.0] - 2026-06-17
 
 ### Added

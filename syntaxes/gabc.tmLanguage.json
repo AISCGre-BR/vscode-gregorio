@@ -219,26 +219,38 @@
     "latex-verbatim": {
       "patterns": [
         {
-          "name": "meta.embedded.latex.gabc",
-          "contentName": "text.tex.latex",
-          "begin": "(<v>)",
-          "end": "(</v>)",
+          "name": "meta.embedded.block.latex",
+          "begin": "(<)(v)(>)",
+          "end": "(</)(v)(>)",
           "beginCaptures": {
             "1": {
               "name": "punctuation.definition.tag.begin.latex.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.verbatim.latex.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.latex.gabc"
             }
           },
           "endCaptures": {
             "1": {
+              "name": "punctuation.definition.tag.begin.latex.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.verbatim.latex.gabc"
+            },
+            "3": {
               "name": "punctuation.definition.tag.end.latex.gabc"
             }
           },
+          "contentName": "meta.embedded.block.latex",
+          "comment": "LaTeX verbatim code in <v>...</v> tags",
           "patterns": [
             {
               "include": "text.tex.latex"
             }
-          ],
-          "comment": "LaTeX verbatim code in <v>...</v> tags with syntax injection from LaTeX extensions"
+          ]
         }
       ]
     },
@@ -1007,6 +1019,9 @@
     },
     "syllable-text": {
       "patterns": [
+        {
+          "include": "#latex-verbatim"
+        },
         {
           "include": "#text-markup"
         },
