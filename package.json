@@ -6,6 +6,10 @@
   "publisher": "AISCGre-BR",
   "license": "MIT",
   "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e3a2f",
+    "theme": "dark"
+  },
   "author": {
     "name": "AISCGre Brasil"
   },

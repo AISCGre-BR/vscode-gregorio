@@ -11,13 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- LaTeX syntax highlighting inside `<v>…</v>` verbatim tags now works correctly
-  by using proper VS Code embedded language scopes and correct pattern hierarchy.
-- The tag name `v` in `<v>…</v>` is now colored like HTML/XML tags.
-- LaTeX Workshop extension now properly highlights code inside verbatim tags
-  using the `source.tex.latex` embedded language scope.
-- Pitch letters and GABC notation elements now display with correct theme colors
-  across all VS Code themes by normalizing to standard scope names.
+- **LaTeX embedding** — `<v>…</v>` verbatim tags now use inline TextMate
+  patterns instead of a full grammar include, so `\command{}` macros, math
+  (`$…$`), and brace groups are highlighted correctly without requiring
+  LaTeX Workshop.
+- **Pitch colors** — pitch letters (e.g. `f`, `g`, `h`) now use the
+  `entity.name.type` TextMate scope and the `type` semantic token, rendering
+  teal (`#4ec9b0`) in Dark+ and equivalent colors in other themes.
+- **Modifier colors** — quilisma (`w`), oriscus (`o`), and cavum (`r`)
+  now use `variable.parameter.modifier.*` scopes, rendering in a distinct
+  light blue so they are visually separable from pitch letters.
+- **Section separator (`%%`)** — now rendered with `keyword` color (blue)
+  instead of the default operator color, making the header/body boundary
+  immediately visible.
+- **Comment highlighting** — multiple fixes:
+  - Bare `%` lines and `%%%` lines are now correctly highlighted as
+    comments (the built-in tokenizer's section-separator regex was too
+    broad and matched any `%+` sequence).
+  - Inline comments after a header's closing `;` (e.g.
+    `commentary: MR 1156; % note`) are now highlighted as comments in
+    both the built-in tokenizer and the TextMate grammar.
+  - The TextMate `begin`/`end` block for latex-capable headers now
+    closes at `;` even when followed by an inline `%` comment, preventing
+    subsequent lines from being miscolored as string values.
+  - The TextMate comment pattern now covers `%` alone, `% text`, `%%%`,
+    etc. with a single rule that correctly excludes the `%%` separator.
+  - The tree-sitter path collects all tokens into a sorted list and
+    deduplicates overlapping spans before building the semantic token
+    stream, preventing malformed output for lines with nested tree-sitter
+    nodes.
 
 ## [0.1.0] - 2026-06-17
 
