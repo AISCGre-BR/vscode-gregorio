@@ -12,8 +12,9 @@ export const TOKEN_TYPES = [
   "comment", // % comments
   "operator", // %% separator, "|" segment separator, bars, parentheses
   "function", // NABC neume segments
-  "variable", // GABC pitch letters; NABC significant / Tironian letters
+  "variable", // NABC significant / Tironian letters (tree-sitter path)
   "property", // misc GABC structure
+  "type", // GABC pitch letters — maps to entity.name.type → teal in most themes
 ] as const;
 
 export const LEGEND = new vscode.SemanticTokensLegend(TOKEN_TYPES as unknown as string[]);
@@ -120,9 +121,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     // Inline comment.
     const commentAt = text.search(/(?<!%)%(?!%)/);
     const limit = commentAt >= 0 ? commentAt : text.length;
-    if (commentAt >= 0) {
-      builder.push(line, commentAt, text.length - commentAt, ti("comment"));
-    }
 
     const groupRe = /\(([^)]*)\)/g;
     let m: RegExpExecArray | null;
@@ -132,6 +130,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
       const contentStart = m.index + 1;
       this.tokenizeGroup(builder, line, m[1], contentStart, nabcLines);
+    }
+
+    // Push the inline comment token AFTER all group tokens so the builder
+    // receives tokens in ascending column order (required by SemanticTokensBuilder).
+    if (commentAt >= 0) {
+      builder.push(line, commentAt, text.length - commentAt, ti("comment"));
     }
   }
 
@@ -184,7 +188,7 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       } else if (inBrackets) {
         continue;
       } else if (PITCH.test(c)) {
-        builder.push(line, segStart + i, 1, ti("variable"));
+        builder.push(line, segStart + i, 1, ti("type"));
       } else if (BAR.test(c)) {
         builder.push(line, segStart + i, 1, ti("operator"));
       }

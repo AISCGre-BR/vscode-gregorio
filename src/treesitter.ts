@@ -6,7 +6,7 @@ import * as path from "path";
 // languages/gabc/highlights.scm) to the standard semantic token types declared
 // in semanticTokens.ts. Longer (dotted) capture names are matched first.
 const CAPTURE_TO_TOKEN: Array<[string, string]> = [
-  ["constant.builtin", "number"], // GABC pitch letters
+  ["constant.builtin", "type"], // GABC pitch letters
   ["variable.special", "variable"], // NABC significant / Tironian letters
   ["string.special", "string"],
   ["string.escape", "string"],

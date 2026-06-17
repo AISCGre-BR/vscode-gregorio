@@ -514,7 +514,7 @@
               "name": "entity.name.function.pitch-descriptor.nabc.gabc"
             },
             "2": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             }
           },
           "comment": "NABC pitch descriptor with specifier: h + letter + lookahead for more content"
@@ -591,7 +591,7 @@
               "name": "entity.name.function.pitch-descriptor.nabc.gabc"
             },
             "1": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             }
           },
           "comment": "NABC pitch descriptor: h + pitch letter (fallback for simple cases)"
@@ -691,12 +691,12 @@
     "gabc-pitches": {
       "patterns": [
         {
-          "name": "variable",
+          "name": "entity.name.type.pitch.gabc",
           "match": "[a-np]",
           "comment": "Lowercase pitches (punctum quadratum)"
         },
         {
-          "name": "variable",
+          "name": "entity.name.type.pitch.gabc",
           "match": "[A-NP]",
           "comment": "Uppercase pitches (punctum inclinatum)"
         }
@@ -710,7 +710,7 @@
           "match": "([a-npA-NP])([oO])([01])?",
           "captures": {
             "1": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             },
             "2": {
               "name": "entity.name.class.modifier.oriscus.gabc"
@@ -726,7 +726,7 @@
           "match": "([a-npA-NP])(r)([0-8])",
           "captures": {
             "1": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             },
             "2": {
               "name": "entity.name.class.modifier.cavum.gabc"
@@ -742,7 +742,7 @@
           "match": "([a-npA-NP])([qwWvVs~<>=rR.])",
           "captures": {
             "1": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             },
             "2": {
               "name": "entity.name.class.modifier.simple.gabc"
@@ -1012,7 +1012,7 @@
               "name": "entity.name.tag.pitch-descriptor.gabc"
             },
             "1": {
-              "name": "variable"
+              "name": "entity.name.type.pitch.gabc"
             }
           },
           "comment": "NABC pitch descriptor: h + pitch letter"
