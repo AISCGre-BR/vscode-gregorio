@@ -12,7 +12,7 @@ jobs:
       contents: write # needed to upload VSIX to GitHub Release
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # gregorio-lsp must live next to vscode-gregorio so that
       # scripts/build-lsp-wasm.sh can find ../gregorio-lsp/crates/gregorio-wasm
