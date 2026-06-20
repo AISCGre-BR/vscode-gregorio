@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-20
+
+### Added
+- **Built-in WASM engine** (default mode): `gregorio-core` compiled to
+  `wasm32-unknown-unknown` via `wasm-bindgen` / `wasm-pack` is bundled
+  inside the extension. No external installation required. Provides
+  diagnostics, document formatting, and quick-fix code actions in-process.
+- **Optional external LSP mode**: set `gregorio.languageServer.path` to a
+  `gregorio-lsp` binary path (or bare name resolved from PATH) to use the
+  full tower-lsp server instead. Provides all built-in features plus hover,
+  completion, and document symbols. Changing the setting switches modes
+  automatically without restarting VS Code.
+- New settings:
+  - `gregorio.languageServer.enabled` — enable/disable language features.
+  - `gregorio.languageServer.path` — empty (default) = WASM; path = external.
+  - `gregorio.languageServer.formatting` — `maxLineWidth`, `breakAfterClef`,
+    `breakAfterBar`.
+  - `gregorio.linting.severity` — minimum severity level (`error`, `warning`,
+    `info`).
+  - `gregorio.linting.ignoreCodes` — list of diagnostic codes to suppress.
+- `gabc.restartLanguageServer` command: restarts the external LSP process
+  (no-op in WASM mode).
+- All editing commands (shift notes, fill empty groups, ligature conversion)
+  now call `gregorio-core` WASM directly instead of TypeScript implementations.
+
+### Changed
+- `gregorio-lsp` client dependency (`vscode-languageclient`) is restored and
+  used only in external mode; it is not activated when running in WASM mode.
+- `src/transform.ts` removed; all text-transformation logic lives in Rust.
+- Bundle now includes `dist/wasm/gregorio_core/` (WASM module and `.wasm`
+  binary); the WASM source artifacts (`wasm/`) are excluded from the `.vsix`.
+
+### Fixed
+- Semantic highlighting `nabc_lines` count now comes from `gregorio-core` WASM
+  (exact parser) with a pure-TS fallback; previously used a regex from
+  `transform.ts`.
+
 ## [0.1.1] - 2026-06-17
 
 ### Fixed

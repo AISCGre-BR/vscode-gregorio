@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { TreeSitterHighlighter } from "./treesitter";
-import { getNabcLines } from "./transform";
+import { getCore } from "./core-wasm";
 
 // Standard semantic token types. Themes that support semantic highlighting map
 // these to colors automatically. GABC pitches use `number` and NABC blocks use
@@ -47,13 +47,20 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     if (fromTreeSitter) {
       return fromTreeSitter;
     }
-    return this.builtinTokens(document);
+    // Fallback: use nabc_lines from WASM if available, otherwise parse locally.
+    let nabcLines = 0;
+    try {
+      const core = await getCore();
+      nabcLines = core.nabc_lines(document.getText());
+    } catch {
+      nabcLines = parseNabcLinesLocal(document.getText());
+    }
+    return this.builtinTokens(document, nabcLines);
   }
 
   /** nabc-lines-aware fallback tokenizer (no tree-sitter dependency). */
-  private builtinTokens(document: vscode.TextDocument): vscode.SemanticTokens {
+  private builtinTokens(document: vscode.TextDocument, nabcLines: number): vscode.SemanticTokens {
     const builder = new vscode.SemanticTokensBuilder(LEGEND);
-    const nabcLines = getNabcLines(document.getText());
     let inBody = false;
 
     for (let line = 0; line < document.lineCount; line++) {
@@ -205,4 +212,14 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
     }
   }
+}
+
+// Pure-TS fallback for nabc-lines parsing (used when WASM is not yet available).
+function parseNabcLinesLocal(text: string): number {
+  for (const line of text.split("\n")) {
+    if (/^%+\s*$/.test(line)) break;
+    const match = line.match(/^nabc-lines\s*:\s*(\d+)/);
+    if (match) return Number.parseInt(match[1], 10);
+  }
+  return 0;
 }

@@ -11,3 +11,5 @@ tsconfig.json
 .gitignore
 AGENTS.md
 **/.DS_Store
+# wasm/ contains source artifacts; only dist/wasm/ is packaged
+wasm/**
