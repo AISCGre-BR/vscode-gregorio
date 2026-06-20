@@ -2,7 +2,7 @@
   "name": "vscode-gregorio",
   "displayName": "Gregorio (GABC/NABC)",
   "description": "Support for GABC/NABC Gregorian chant notation: tree-sitter-gregorio syntax highlighting, in-process diagnostics, formatting, note shifting, and empty-parentheses filling (via gregorio-core WASM).",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "AISCGre-BR",
   "license": "MIT",
   "icon": "images/icon.png",
