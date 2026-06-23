@@ -1,0 +1,48 @@
+% Demonstrates all line-break codes.
+%
+% Line-break codes appear inside parentheses (within the note section):
+%   (z)   = justified line break (custos per \greseteolcustos config)
+%   (z+)  = justified line break, forced automatic custos
+%   (z-)  = justified line break, no custos
+%   (Z)   = ragged line break (custos per \greseteolcustos config)
+%   (Z+)  = ragged line break, forced automatic custos
+%   (Z-)  = ragged line break, no custos
+%
+%   They may also be appended to a note within the same group:
+%   (fghz) = notes f,g,h then justified line break
+%
+% Text markup for no-line-break areas:
+%   <nlba>text(notes)...</nlba> = no line break allowed within
+%
+% Standalone [nocustos] tag (must appear before a space at the break point):
+%   note[nocustos](notes) bar = suppress custos if a break occurs here
+%
+% Note: whether the *last* line is justified or ragged is controlled by
+% \gresetlastline in LaTeX, not by gabc codes.
+name: Exemplum: Interruptiones Linearum;
+%%
+% Justified break as a standalone note group (z):
+(c4) Pri(f)ma(g) li(h)ne(i)a(h) can(g)tus(f) lon(g)gi(h) or(i)di(h)nis:(g.) (z)
+con(h)ti(i)nu(h)a(g)tur(f) hic.(g.) (::)
+% Justified break appended to a note group (fghijz):
+Se(f)cun(g)da(h) li(i)ne(h)a(g) fine(fghiz) ter(h)tia(i) se(h)qui(g)tur.(f.) (::)
+% Justified break with forced custos (z+):
+Ter(f)tia(g) li(h)ne(i)a:(h.) (z+)
+quar(g)ta(h) se(i)qui(h)tur(g) post(f) cus(g)to(h)dem.(i.) (::)
+% Justified break without custos (z-):
+Quar(f)ta(g) li(h)ne(i)a(h) si(g)ne(f) cus(g)to(h)de:(i.) (z-)
+quin(g)ta(h) se(i)qui(h)tur.(g.) (::)
+% Ragged break (Z):
+Rag(f)ged(g) li(h)ne(i)a(h) ini(g)tur:(f.) (Z)
+seq(h)ui(i)tur(h) dex(g)trum(f) ali(g)gnans.(h.) (::)
+% Ragged break with forced custos (Z+):
+Rag(f)ged(g) cum(h) cus(i)to(h)de(g) for(f)ci(g)to:(h.) (Z+)
+ul(i)ti(h)ma(g) li(f)ne(g)a.(h.) (::)
+% Ragged break without custos (Z-):
+Rag(f)ged(g) si(h)ne(i) cus(h)to(g)de:(f.) (Z-)
+ul(h)ti(i)ma(h) li(g)ne(f)a.(g.) (::)
+% No-line-break area — line break is forbidden inside:
+<nlba>Non(f) in(g)ter(h)rum(i)pi(h)tur(g) hic(f) can(g)tus.(h.)</nlba> (::)
+% Suppress custos at a specific potential break point:
+Cus[nocustos](f) tos(g) sup(h)pres(i)sus(h) post(g) virgulam(f.) (,)
+re(g)li(h)qua(i) can(h)tan(g)tur.(f.) (::)

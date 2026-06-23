@@ -1,0 +1,36 @@
+% Complete realistic chant combining many GABC features:
+%   - Full header block (name, mode, annotation, office-part, etc.)
+%   - Style tags in lyrics (<i>, <v>)
+%   - Predefined special characters (<sp>V/</sp>, <sp>*</sp>)
+%   - Translation text [...] with centering [/]
+%   - Multiple bar types (virgula, divisio minor/maior/finalis)
+%   - Complex neumes (pes, clivis, torculus, porrectus, scandicus, climacus)
+%   - Oriscus, quilisma, virga
+%   - Punctum mora and ictus
+%   - Horizontal episema
+%   - Line breaks (z) with automatic custos
+%   - Special characters (asterisk *, dagger †)
+%   - Lyric centering with {}
+%   - Macro invocation ([em0])
+% Based on the Introit "Ad te levavi" (Dominica I Adventus, Graduale Romanum 1974).
+name: Ad te levavi;
+gabc-copyright: CC0 Public Domain;
+score-copyright: Graduale Romanum 1974;
+office-part: introitus;
+occasion: Dominica I Adventus;
+mode: 8;
+annotation: INT.;
+annotation: VIII;
+language: latin;
+book: Graduale Romanum, 1974;
+commentary: Ps 24,1-3;
+transcriber: AISCGre-BR;
+def-m0: \GreStar{};
+%%
+(c4) <sp>A/</sp>D(f) te(g) le(h){vá}(i)vi(h.) *() á(g)ni(h)mam(g) me(f)am.(g.) (:)
+De(f)us(g) me(h)us,(i.) (`) in(h) te(g) con(h)fí(g)do,(f.) (;) non(g) e(h)rú(i)be(h)scam:(g.) (::)
+ne(f)que(g) ir(h)rí(i)de(h)ant(g) me(f) i(g)ni(h)mí(g)ci(f) me(g.)i:(h.) (;)
+é(gx)te(h)nim(i) u(h)ni(g)vér(h)si(g) qui(f) te(g) ex(h)spéc(i)tant(h.) (`) non(i) con(h)fun(g)dén(h.)tur.(g.) (::)
+<i>Ps.</i>(::) <sp>V/</sp>.(::) Vi(f)as[thy ways](gh) tu(h)as[/](g) Dó(f)mi(g)ne[Lord](h.) *() de(g)món(h)stra[show](g) mi(f)hi:(g.) (:)
+et(f) sé(g)mi(h)tas(g.) tu(f)as(g) é(h)do(i)ce(h) me.(g.) (::)
+Gló(f)ri(g)a[em0](h.) Pa(i)tri(h) et(g) Fí(h)li(g)o(f.) (:) et(g) Spi(h)rí(i)tu(h)i(g) Sanc(h)to.(g.) (::)

@@ -1,0 +1,46 @@
+% Demonstrates above-lines text within notes, verbatim TeX insertion
+% at different levels, and macros.
+%
+% Above-lines text in notes (better positioning than <alt> in text):
+%   [alt:text]   = text above the staff lines, positioned with the note
+%
+% Verbatim TeX in notes (advanced — for tweaks and special effects):
+%   [nv:code]   = TeX code at note level
+%   [gv:code]   = TeX code at glyph level
+%   [ev:code]   = TeX code at element level
+%
+% Macros (defined in headers with def-m0 through def-m9):
+%   [nm0]...[nm9]   = invoke macro at note level
+%   [gm0]...[gm9]   = invoke macro at glyph level
+%   [em0]...[em9]   = invoke macro at element level
+%   [altm0]...[altm9] = legacy form (element level, backward compat)
+%
+% H-episema tuning (within notes):
+%   [oh:p]       = adjust over-note h-episema position
+%   [uh:p]       = adjust under-note h-episema position
+%   p = position specifier: m, l, h, ol, oh, ul, uh; optional ±nudge
+%   [oh:{]...[oh}] = block form for consistent positioning
+name: Exemplum: Textus in Notis et Macra;
+% Macro definitions in header:
+def-m0: \GreStar{};
+def-m1: \textbf{bis};
+def-m2: \GreDagger{};
+%%
+% Above-lines text within notes:
+(c4) Rex(f[alt:Ant.]) glo(g[alt:II])ri(h[alt:*])ae. (::)
+% Verbatim TeX at note level:
+No(f[nv:\relax]g)ta(h) ni(g)vel.(f.) (::)
+% Verbatim TeX at glyph level:
+Glyph(f[gv:\relax]g) ni(h)vel.(g.) (::)
+% Verbatim TeX at element level:
+Ele(f[ev:\relax]g)ment(h) ni(g)vel.(f.) (::)
+% Macros at element level:
+Al(f)le(g)lú(h)ia[em0] (,) bis[em1] can(h)tan(g)dum.(f.) (::)
+% Macro at note level:
+Rex[nm2](fgh) in(h) ae(g)ter(f)num.(g.) (::)
+% Macro via legacy altm form (element level):
+Glo(f)ri(g)a[altm0] Pa(h)tri(g) et(f) Fi(g)li(h)o.(i.) (::)
+% H-episema tuning:
+Tun(h_[oh:m])ing(g_[oh:l]) e(f_[oh:h])pi(g_[oh:+1pt])se(h_[oh:-1pt])ma. (::)
+% H-episema tuning block form:
+Tu(h_[oh:{]g)ning(f_[oh}]g) block(h) form.(g.) (::)

@@ -1,0 +1,88 @@
+% Demonstrates NABC (adiastematic notation) with St. Gall neumes.
+%
+% NABC is activated with: nabc-lines: 1;
+% The | character separates gabc snippets from nabc snippets.
+%
+% Basic glyph descriptors (St. Gall — gresgmodern / gregall font):
+%   vi=virga  pu=punctum  ta=tractulus  gr=gravis  cl=clivis
+%   pe=pes    po=porrectus  to=torculus  ci=climacus  sc=scandicus
+%   pf=porrectus flexus  sf=scandicus flexus  tr=torculus resupinus
+%   st=stropha  ds=distropha  ts=tristropha  tg=trigonus
+%   bv=bivirga  tv=trivirga  pr=pressus maior  pi=pressus minor
+%   vs=virga strata  or=oriscus  sa=scandicus  pq=pes quassus
+%   ql=quilisma (3 loops)  qi=quilisma (2 loops)  pt=pes stratus
+%   ni=nihil (artificial empty glyph)
+%
+% Glyph modifiers (appended to basic glyph):
+%   S  = modification of the mark
+%   G  = grouping modification (neumatic break)
+%   M  = melodic modification
+%   -  = addition of episema
+%   >  = augmentive liquescence
+%   ~  = diminutive liquescence
+%   (+ optional digit for variants, e.g. cl>1 = first variant of augmentive clivis)
+%
+% Pitch descriptor: h followed by pitch letter (e.g., hf = pitch f)
+%   Default is hf; each basic glyph in a complex glyph may have its own pitch.
+%
+% Subpunctis (su) and Prepunctis (pp) + modifier letter + count:
+%   su1    = 1 punctum subpunctis
+%   sut1   = 1 tractulus subpunctis
+%   suu1   = 1 tractulus with episema
+%   suv1   = 1 tractulus with double episema
+%   suw1   = 1 gravis subpunctis
+%   sux1   = 1 liquescens stropha
+%   suy1   = 1 gravis with episema
+%   pp1    = 1 punctum prepunctis
+%   ppt1   = 1 tractulus prepunctis
+%
+% Significant letter descriptors: ls + shorthand + position (1–9)
+%   lsb2   = "bene" above the neume
+%   lsc3   = "celeriter" in the upper right corner
+%   lse1   = "equaliter" in the upper left corner
+%   lsi8   = "iusum" below the neume
+%   lsl6   = "levare" to the right
+%   lsm2   = "mediocriter" above
+%   lss4   = "sursum" to the left
+%   lst2   = "tenere" above
+%   lsv2   = "valde" above
+%   (see spec for full list of shorthands)
+%
+% Complex glyph: basic glyphs joined with ! (e.g. ql!vs = quilisma fused with virga strata)
+%
+% Horizontal spacing in NABC:
+%   /    = move right by nabcinterelementspace
+%   //   = move right by nabclargerspace
+%   `    = move left by nabcinterelementspace
+%   ``   = move left by nabclargerspace
+name: Exemplum: NABC Cantus Sancti Galli;
+nabc-lines: 1;
+%%
+% Basic single-glyph neumes:
+(c4) AL(ef~|vi)le(fg|pe)lú(gh|to)ia.(h.|ta-) (,)
+% Neume with modifier (episema):
+Su(ef|vi-)blé(fg|pe-)vis(gh|ta-) e(h.|ta-) pis(g|vi-)tè(fh|pe-)ma. (,)
+% Augmentive liquescence:
+Li(ef|vi>)ques(fg|pe>)cens(gh|cl>) au(h.|cl>)gment. (,)
+% Diminutive liquescence:
+Li(ef|vi~)ques(fg|pe~)cens(gh|ta~) di(h.|ta~)mi. (;)
+% Melodic modification (M):
+Mel(ef|viM)o(fg|peM)dic(gh|toM) mod(h.|viM)if. (,)
+% Grouping modification (G):
+Grou(ef|viG)ping(fg|peG) mod(gh|toG) break.(h.) (,)
+% Pitch descriptor (hf, hg, hh, hi):
+Dif(efg|pohf!clhg)ferent(fgh|vshf!vshg) pitch(gh|pehh!tahi) des(h.|vihi)crip(g|vihe)tor.(f.) (;)
+% Subpunctis:
+Sub(efg|scsu3)punc(fgh|cisut2)tis(gh|cisuu1) ex(h.|cisu1sut1)am(g|cisuv1)ple.(f.) (,)
+% Prepunctis:
+Pre(efg|vippt3)punc(fgh|clippt2) tis(gh|peppt1) ex(h.|vipp2)am(g|clpp1)ple.(f.) (;)
+% Significant letters:
+Sig(ef|vilsb2)nif(fg|pelse2)i(gh|tolsm2)cant(h.|vilsl6) let(g|vilsc3)ters.(f.) (,)
+% Significant letters — all positions (1=UL, 2=above, 3=UR, 4=left, 6=right, 7=LL, 8=below, 9=LR):
+Pos(ef|vilsal1)i(fg|vilsal2)tions(gh|vilsal3) a(h|vilsal7)ll(g|vilsal8) sur(f|vilsal9)sum(e|vilsal6) de(f|vilsal4)or(g|vilsal1)sum.(h.) (;)
+% Nihil (empty anchor for significant letters):
+Ni(ef|nilsc3)hil(fg|nilsl1) with(gh|nilsm2) let(h.|niG)ters.(g.) (,)
+% Complex glyph with ! (fusion):
+Qui(efg|qlhh!vshhppt1sut2)lisma(fgh|pe!cl) fu(gh|ql!vs)sion.(h.) (;)
+% Negative horizontal spacing:
+Neg(efg|``posu2/pe>2lse7lsl3)a(fgh|vi//pu)tive(gh|`vi/pu) spac(h|to)ing.(g.) (::)

@@ -1,0 +1,52 @@
+% Demonstrates complex multi-note neumes, special compound shapes,
+% and neume fusion.
+%
+% Compound neume modifiers (placed before or after the pitch):
+%   -pc   = initio debilis (weak initial note)
+%   pcO   = oriscus scapus (oriscus with connecting stem)
+%   pcq   = quadratum (square pes/podatus shape)
+%   pcW   = quilisma quadratum (square quilisma)
+%   pcss  = distropha
+%   pcsss = tristropha
+%   pcvv  = bivirga
+%   pcvvv = trivirga
+%
+% Neume fusion:
+%   pc@pc  = fuse two notes using fusion rules
+%   @[...] = automatic fusion of a sequence of notes
+name: Exemplum: Neumata Complexa;
+%%
+% Simple two-note ascending (pes/podatus):
+(c4) Pes(fg) as(gh)cen(hi)dens. (::)
+% Clivis (two-note descending):
+Cli(hg)vis(gf) des(ih)cen(hg)dens. (::)
+% Porrectus (three notes: down-up):
+Por(hfh)rec(geg)tus. (::)
+% Torculus (three notes: up-down):
+Tor(fhg)cu(gih)lus. (::)
+% Scandicus (three ascending notes):
+Scan(fgh)di(ghi)cus. (::)
+% Climacus (descending notes with diamonds):
+Cli(iHGF)ma(hGF)cus. (::)
+% Initio debilis (weak first note):
+Ini(f-gh)tio(e-fg) de(f-g)bi(g-h)lis. (::)
+% Oriscus scapus (connecting the oriscus to a prior note):
+O(ghO)ris(fgO)cus(hiO) sca(ghO)pus. (::)
+% Quadratum pes (square shape):
+Pes(fq)g qua(gq)h dra(hq)i tum. (::)
+% Quilisma quadratum:
+Qui(fW)g lis(gW)h ma(hW)i qua(gW)h dra(fW)g tum. (::)
+% Distropha:
+Dis(fss)tro(gss)pha. (::)
+% Tristropha:
+Tris(fsss)tro(gsss)pha. (::)
+% Bivirga:
+Bi(fvv)vir(gvv)ga. (::)
+% Trivirga:
+Tri(fvvv)vir(gvvv)ga. (::)
+% Neume fusion with @:
+Fu(f@g)si(g@h)o. (::)
+% Suppress stem with @:
+Stem(@f@g)sup(g@h)press. (::)
+% Automatic fusion block @[...]:
+Au(f@[gh]i)to(g@[hi]j)fu(h@[ij]k)si(g@[hi]j)o.(h.) (::)

@@ -1,0 +1,77 @@
+% Demonstrates all text features: style tags, syllable control tags,
+% predefined special characters, lyric centering, and translation text.
+%
+% Style tags (HTML-like markup in lyric text):
+%   <b>...</b>   = bold
+%   <c>...</c>   = colored (uses gregoriocolor)
+%   <i>...</i>   = italic
+%   <sc>...</sc> = small capitals
+%   <tt>...</tt> = teletype (monospace)
+%   <ul>...</ul> = underlined
+%
+% Syllable control tags:
+%   <clear> or <clear/> = syllable may not extend into prior notation
+%   <e>...</e>          = elision (italic by default)
+%   <eu>...</eu>        = "euouae" text for differentia marking
+%   <nlba>...</nlba>    = no line break area
+%   <pr> or <pr:.5>     = protrusion (may push into margin)
+%
+% Other tags:
+%   <alt>...</alt>  = text above the staff lines
+%   <sp>...</sp>    = special character (defined by \gresetspecial)
+%   <v>...</v>      = verbatim TeX (not preprocessed as gabc text)
+%
+% Lyric centering modes (force centering with { }):
+%   a{b}c  = center notes over the letter b
+%
+% Escape character:
+%   $( = literal open parenthesis in text
+%   $) = literal close parenthesis (rare; usually ) is safe)
+%   $$ = literal dollar sign
+%
+% Predefined special characters via <sp>:
+%   <sp>ae</sp>   = æ       <sp>'ae</sp>  = ǽ
+%   <sp>oe</sp>   = œ       <sp>'oe</sp>  = œ́
+%   <sp>A/</sp>   = Ā (antiphon)
+%   <sp>R/</sp>   = R̄ (response)
+%   <sp>V/</sp>   = V̄ (verse)
+%   <sp>*</sp>    = ✠ (star/cross)
+%   <sp>+</sp>    = † (dagger)
+%   <sp>-</sp>    = zero-width hyphen
+%   <sp>\</sp>    = backslash
+%   <sp>&</sp>    = ampersand
+%   <sp>#</sp>    = hash
+%   <sp>_</sp>    = underscore
+%   <sp>~</sp>    = centered tilde
+%
+% Translation text:
+%   [translation]  = appears below lyrics
+%   [/]            = center translation between two syllables
+name: Exemplum: Textus et Figurae Textus;
+%%
+% Style tags:
+(c4) <b>Bol</b>(f)d<b>e</b>(g) tex(h)tus. (::)
+<c>Co</c>(f)lo(g)red(h) tex(i)tus. (::)
+<i>I</i>(f)ta(g)<i>lic</i>(h) tex(i)tus. (::)
+<sc>Smal</sc>(f)l<sc>caps</sc>(g) tex(h)tus. (::)
+<ul>Un</ul>(f)der(g)<ul>lined</ul>(h) tex(i)tus. (::)
+% Syllable controls:
+<clear>Cla(f)ra(g) syl(h.)la(g)ba.</clear>(::)
+ma<e>r</e>(f)mor(g) e(h)li(g.)sio(f.) (::)
+<eu>E u o u a e</eu>(fghgf.) (::)
+<pr>Pro(f)tru(g)di(h)tur</pr>(f.) (::)
+% Special characters:
+<sp>V/</sp>.(f) <sp>R/</sp>.(g) <sp>A/</sp>.(h) Al(i)le(h)lú(g)ia. (::)
+<sp>*</sp>(f) <sp>+</sp>(g) Spe(h)ci(g)a(f.)lia. (::)
+% Ligatures / predefined characters:
+C<sp>ae</sp>(f)lum(g) et(h) gau(g)di(f)um(g.) <sp>oe</sp>(h.) (::)
+% Lyric centering — force centering over vowel with { }:
+a{l}(f)le(g) lú(h){ia}(i).(h.) (::)
+% Verbatim TeX in lyrics:
+<v>\textit{Kyrie}</v>(fgh) e(h)lé(g)i(f)son.(g.) (::)
+% Alt text (above staff):
+<alt>R</alt>(f) <alt>i</alt>(g) de(h) tur(g) al(f)ta.(g.) (::)
+% Translation text below lyric:
+Al[Allelúia](fghg.) le[/](gh) lú[praise](hi) ia.(h.) (::)
+% Escape — literal parenthesis in text:
+$((f) tex(g)tus(h) $()(g) in(f) pa(g)ren(h.)the(g)si. (::)

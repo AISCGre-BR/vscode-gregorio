@@ -1,0 +1,61 @@
+% Demonstrates rhythmic and expressive signs:
+%   pc.    = punctum mora (augmentation dot)
+%   pc.0   = punctum mora forced below line
+%   pc.1   = punctum mora forced above line
+%   pc..   = double punctum mora
+%   pc'    = ictus / vertical episema (auto placement)
+%   pc'0   = ictus forced below
+%   pc'1   = ictus forced above
+%   pc_    = horizontal episema (auto placement)
+%   pc_0   = h-episema below
+%   pc_1   = h-episema above
+%   pc_2   = h-episema, disable bridging
+%   pc_3   = small episema aligned left
+%   pc_4   = small episema aligned center
+%   pc_5   = small episema aligned right
+%   pc_01  = combine modifiers
+%   Above-staff marks (r1-r8):
+%   pcr1   = accent above staff
+%   pcr2   = grave accent above staff
+%   pcr3   = circle above staff
+%   pcr4   = lower semicircle above staff
+%   pcr5   = upper semicircle above staff
+%   pcr6   = musica ficta flat above staff
+%   pcr7   = musica ficta natural above staff
+%   pcr8   = musica ficta sharp above staff
+%   Shape hint:
+%   [shape:stroke] = render clivis as a stroke
+name: Exemplum: Signa Rhythmica;
+%%
+% Punctum mora:
+(c4) Punc(h.)tum(g.) mo(f.)ra. (::)
+% Punctum mora forced position:
+Punc(h.0)tum(g.1) mo(f.0)ra(g.1) po(h.0)si(g.1)tum. (::)
+% Double punctum mora:
+Dou(h..)ble(g..) mo(f..)ra. (::)
+% Ictus (vertical episema):
+Ic(h')tus(g') au(f')to(g') pla(h')ce(g)ment. (::)
+% Ictus forced position:
+Ic(h'0)tus(g'1) for(f'0)ced(g'1) po(h'0)si(g'1)tion. (::)
+% Horizontal episema:
+Ho(h_)ri(g_)zon(f_)tal(g_) e(h_)pi(g_)se(f_)ma. (::)
+% H-episema above:
+Ho(h_1)ri(g_1)zon(f_1)tal(g_1) su(h_1)pra. (::)
+% H-episema below:
+Ho(h_0)ri(g_0)zon(f_0)tal(g_0) in(h_0)fra. (::)
+% H-episema, no bridging:
+No(h_2) brid(g_2)ging(f_2) ep(g_2.)i(h_2)se(g_2)ma. (::)
+% Small episema aligned left/center/right:
+Small(h_3) e(g_4)pi(h_5)se(g_3)ma. (::)
+% Combined modifiers:
+Com(h_01)bi(g_12)ned(f_01) mod(g_12.)i(h_01)fi(g_01)ers. (::)
+% Above-staff marks:
+(c4) Ac(hr1)cent(gr2) a(hr3)bove(gr4) staff(hr5.) marks. (::)
+% Musica ficta marks:
+Mu(hr6)si(gr7)ca(hr8) fic(g.)ta. (::)
+% Ictus on a bar:
+Bar(f) with(g) ic(h,')tus(g) on(f) bar. (::)
+% Bar brace:
+Bar(f) with(g) brace(h:_) e(g)xe(f)mp(g)lum. (::)
+% Shape hint — clivis rendered as stroke:
+(c4) Stro(hg[shape:stroke])ke(ih[shape:stroke]) cli(hg[shape:stroke])vis. (::)

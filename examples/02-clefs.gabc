@@ -1,0 +1,22 @@
+% Demonstrates all clef types: C-clefs (c1-c4), F-clefs (f1-f4),
+% C-clefs with flat (cb1-cb4), double clefs (@), and mid-piece clef changes.
+name: Exemplum: Claves;
+%%
+% C-clef on line 4 (most common in chant):
+(c4) Do(f)mi(g)nus(h.) (::)
+% Mid-piece: clef change to c3:
+(c3) vo(g)bis(h)cum.(i.) (::)
+% C-clef on line 2:
+(c2) Et(h) cum(i) spi(j)ri(i)tu(h.) (::)
+% C-clef on line 1 (rare):
+(c1) tu(j) o(k.) (::)
+% F-clef on line 3 (common for low-register chants):
+(f3) Ky(d)ri(e)e(f.) (::)
+% F-clef on line 4:
+(f4) e(c)lé(d)i(e)son.(f.) (::)
+% C-clef with flat on line 3 (transposes all B to B-flat):
+(cb3) Al(g)le(h)lú(i)ia.(h.) (::)
+% C-clef with flat on line 4:
+(cb4) Al(f)le(g)lú(h)ia.(g.) (::)
+% Double clef — c4 over f3 (typeset without collision):
+(c4@f3) A(f)men.(g.) (::)

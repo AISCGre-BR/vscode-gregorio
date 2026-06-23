@@ -1,0 +1,44 @@
+{
+  "name": "vscode-gregorio",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "features": {
+    // Node.js LTS for building the extension
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    // TeX Live (minimal scheme + packages required by GregorioTeX)
+    "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {
+      "scheme": "minimal",
+      "packages": "latex-bin luatexbase luaotfload luacolor luamplib fontspec l3packages microtype geometry"
+    },
+    // Gregorio chant engraver (latest release, built from source)
+    "ghcr.io/aiscgre-br/devcontainer-features/gregorio:1": {
+      "ref": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Extension under development — loaded via F5 / launch.json, not installed here.
+        // Recommended development tools:
+        "ms-vscode.extension-test-runner"
+      ],
+      "settings": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "[gabc]": {
+          "editor.rulers": [80],
+          "editor.wordWrap": "off"
+        }
+      }
+    }
+  },
+
+  // Install npm dependencies after the container is created
+  "postCreateCommand": "npm install",
+
+  "remoteUser": "vscode"
+}
