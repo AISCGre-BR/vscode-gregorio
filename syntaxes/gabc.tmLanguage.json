@@ -312,9 +312,6 @@
           "include": "#clef"
         },
         {
-          "include": "#lyric-centering"
-        },
-        {
           "include": "#translation"
         },
         {
@@ -351,32 +348,6 @@
             }
           },
           "comment": "Clef notation: (c4), (f3), (cb4), (c4@c2) - @ is logical operator for clef change"
-        }
-      ]
-    },
-    "lyric-centering": {
-      "patterns": [
-        {
-          "name": "meta.lyric.centering.gabc",
-          "begin": "\\{",
-          "end": "\\}",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.centering.begin.gabc"
-            }
-          },
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.centering.end.gabc"
-            }
-          },
-          "patterns": [
-            {
-              "name": "string.other.lyric.centered.gabc",
-              "match": "[^}]+"
-            }
-          ],
-          "comment": "Lyric centering: {vowel}"
         }
       ]
     },
