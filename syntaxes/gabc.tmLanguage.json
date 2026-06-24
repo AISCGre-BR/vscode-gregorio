@@ -309,6 +309,9 @@
     "notation-body": {
       "patterns": [
         {
+          "include": "#escape-chars"
+        },
+        {
           "include": "#clef"
         },
         {
@@ -1019,6 +1022,9 @@
     "syllable-text": {
       "patterns": [
         {
+          "include": "#escape-chars"
+        },
+        {
           "include": "#latex-verbatim"
         },
         {
@@ -1026,6 +1032,23 @@
         },
         {
           "include": "#special-characters"
+        }
+      ]
+    },
+    "escape-chars": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.gabc",
+          "match": "(\\$)([()\\[\\]{}$])",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.escape.gabc"
+            },
+            "2": {
+              "name": "string.other.escape.gabc"
+            }
+          },
+          "comment": "Escaped literal delimiters: $( $) $[ $] ${ $} $$ — string.other on the char prevents VS Code bracket-pair matching"
         }
       ]
     },
