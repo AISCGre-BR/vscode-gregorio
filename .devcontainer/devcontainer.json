@@ -8,12 +8,12 @@
       "version": "lts"
     },
     // TeX Live (minimal scheme + packages required by GregorioTeX)
-    "ghcr.io/aiscgre-br/devcontainer-features/texlive:1": {
+    "ghcr.io/aiscgre-br/devcontainer-features/texlive:2": {
       "scheme": "minimal",
       "packages": "latex-bin luatexbase luaotfload luacolor luamplib fontspec l3packages microtype geometry"
     },
     // Gregorio chant engraver (latest release, built from source)
-    "ghcr.io/aiscgre-br/devcontainer-features/gregorio:1": {
+    "ghcr.io/aiscgre-br/devcontainer-features/gregorio:2": {
       "ref": "latest"
     }
   },

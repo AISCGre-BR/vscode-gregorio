@@ -58,10 +58,10 @@ name: Exemplum: Textus et Figurae Textus;
 % Syllable controls:
 <clear>Cla(f)ra(g) syl(h.)la(g)ba.</clear>(::)
 ma<e>r</e>(f)mor(g) e(h)li(g.)sio(f.) (::)
-<eu>E u o u a e</eu>(fghgf.) (::)
-<pr>Pro(f)tru(g)di(h)tur</pr>(f.) (::)
+<eu>E(f) u(g) o(h) u(g) a(f) e</eu>(f.) (::)
+<pr:0.5>Pro(f)tru(g)di(h)tur(f.) (::)
 % Special characters:
-<sp>V/</sp>.(f) <sp>R/</sp>.(g) <sp>A/</sp>.(h) Al(i)le(h)lú(g)ia. (::)
+<sp>V/</sp>.(f) <c><sp>R/</sp>.</c>(g) <sp>A/</sp>.(h) Al(i)le(h)lú(g)ia. (::)
 <sp>*</sp>(f) <sp>+</sp>(g) Spe(h)ci(g)a(f.)lia. (::)
 % Ligatures / predefined characters:
 C<sp>ae</sp>(f)lum(g) et(h) gau(g)di(f)um(g.) <sp>oe</sp>(h.) (::)
@@ -74,4 +74,4 @@ a{l}(f)le(g) lú(h){ia}(i).(h.) (::)
 % Translation text below lyric:
 Al[Allelúia](fghg.) le[/](gh) lú[praise](hi) ia.(h.) (::)
 % Escape — literal parenthesis in text:
-$((f) tex(g)tus(h) $()(g) in(f) pa(g)ren(h.)the(g)si. (::)
+$((f) tex(g)tus(h) $)(g) in(f) pa(g)ren(h.)the(g)si. (::)
