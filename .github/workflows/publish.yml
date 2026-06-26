@@ -22,7 +22,7 @@ jobs:
             https://github.com/AISCGre-BR/gregorio-lsp.git \
             "$(dirname "$GITHUB_WORKSPACE")/gregorio-lsp"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
