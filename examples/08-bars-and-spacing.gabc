@@ -1,0 +1,45 @@
+% Demonstrates all bar (divisio) types and all neume spacing options.
+%
+% Bars (separation markers):
+%   `    = virgula
+%   `0   = virgula on ledger line above staff
+%   ^    = divisio minimis (eighth bar)
+%   ^0   = divisio minimis (same as ^)
+%   ,    = divisio minima (quarter bar)
+%   ,0   = divisio minima on ledger line above staff
+%   ;    = divisio minor (half bar)
+%   :    = divisio maior (full bar)
+%   :?   = dotted divisio maior
+%   ::   = divisio finalis (double bar)
+%   ;1-;8 = Dominican bars (position 1–8)
+%
+% Neume spacing:
+%   /0   = half space (part of same neume)
+%   /!   = small separation (part of same neume)
+%   /    = small separation between neumes
+%   //   = medium separation between neumes
+%   (space) = large separation between neumes
+%   /[factor] = scaled space (factor may be negative)
+%   !    = zero-width space (force break in chain)
+%   ! (space) = non-breaking space
+name: Exemplum: Divisiones et Spatia;
+%%
+% All bar types:
+(c4) Vir(f)gu(g)la(h`) (f)Vir(g)gu(h)la(i`0) su(h)pra:(g.) (::)
+Mi(f)ni(g)mis(h^) Dou(i)ble(h^0) mi(g)ni(f)mis:(g.) (::)
+Mi(f)ni(g)ma(h,) Mi(i)ni(h)ma(g,0) su(f)pra(g.) (::)
+Mi(f)nor(h;) Mi(g)nor(i) half(h) bar:(g.) (::)
+Ma(f)ior(h:) Ma(g)ior(i) full(h) bar:(g.) (::)
+Dot(f)ted(h:?) ma(g)ior:(i.) (::)
+Fi(f)na(g)lis(h::) dou(g)ble(f) bar.(g.) (::)
+% Dominican bars (position 1–4):
+Do(f)min(g)i(h;1)can(h;2) bars(h;3) sam(h;4)ple. (::)
+% Neume spacing:
+Half(f/0g) space. (::)
+Small(f/!g) sep(g/!h)a(h/!i)ra(i/!h)tion (same neume). (::)
+Small(fg/gh/hi) between neumes. (::)
+Me(fg//gh//hi) dium space. (::)
+Lar(fg gh hi) ge space. (::)
+Scaled(fg/[1.5]gh/[0.5]hi/[-0.5]gh) space. (::)
+Zero(f!gh) width space (break chain). (::)
+Non(fg! gh! hi) breaking space. (::)

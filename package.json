@@ -2,7 +2,7 @@
   "name": "vscode-gregorio",
   "displayName": "Gregorio (GABC/NABC)",
   "description": "Support for GABC/NABC Gregorian chant notation: tree-sitter-gregorio syntax highlighting, in-process diagnostics, formatting, note shifting, and empty-parentheses filling (via gregorio-core WASM).",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "AISCGre-BR",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -211,15 +211,15 @@
     "test": "node --test test/transform.test.ts"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
+    "vscode-languageclient": "^10.0.0",
     "web-tree-sitter": "^0.25.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^25.9.3",
     "@types/vscode": "^1.96.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.28.1",
-    "typescript": "^5.7.0"
+    "typescript": "^6.0.3"
   },
   "allowScripts": {
     "esbuild@0.24.2": true,

@@ -1,0 +1,45 @@
+% Demonstrates every possible header field defined in the GABC specification.
+%
+% Required field:
+name: Exemplum: Caput Completum;
+%
+% Copyright and attribution:
+gabc-copyright: CC0 Public Domain;
+score-copyright: Graduale Romanum 1974;
+author: Anonymus saec. IX;
+transcriber: AISCGre-BR;
+transcription-date: 20240101;
+%
+% Liturgical context:
+office-part: introitus;
+occasion: Dominica I per annum;
+mode: 1;
+mode-modifier: t.;
+mode-differentia: a;
+annotation: INT.;
+annotation: I a;
+%
+% Source bibliography:
+book: Graduale Romanum, 1974;
+manuscript: Laon 239;
+manuscript-reference: f. 12v;
+manuscript-storage-place: Bibliothèque municipale de Laon;
+commentary: Cf. Ps 24,1-3;
+arranger: Anonymus;
+date: IX c.;
+meter: ;
+language: latin;
+%
+% Staff configuration:
+staff-lines: 4;
+%
+% Macro definitions (m0-m9):
+def-m0: \GreStar{};
+def-m1: \textit{bis};
+%
+% Multi-line header value (no semicolon on first line; ends with ;;):
+user-notes: Hoc exemplum demonstrat omnia campora capitis
+  quae in specificatone GABC definita sunt.
+  Cf. sectionem 2 documentationis.;;
+%%
+(c3) Ad(f) te(g) le(h)vá(i)vi(h.) (,) á(g)ni(h)mam(g) me(f)am.(g.) (::)

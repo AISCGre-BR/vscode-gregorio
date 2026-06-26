@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Tag highlighting** — all GABC text tags now use consistent HTML/XML-style
+  scopes (`punctuation.definition.tag.begin/end`, `entity.name.tag`), so they
+  render with the same color scheme as HTML tags in the active theme.
+- **Nested tags** — tags like `<sp>` inside `<c>` (e.g. `<c><sp>V/</sp>.</c>`)
+  now keep their own coloring; all markup tags include `#special-characters` in
+  their inner patterns.
+- **`<c>` content** — plain text inside `<c>…</c>` receives a red/rubric color
+  (`markup.deleted` scope) while nested tags retain their original scopes.
+- **Self-closing tags** — `<clear/>` / `<clear>` and all `<pr>` variants
+  (`<pr/>`, `<pr>`, `<pr:0.5/>`, `<pr:0.5>`) are handled as self-closing
+  `match` rules and no longer consume subsequent code.
+- **`<eu>` and `<nlba>`** — correctly modelled as wrapping begin/end rules
+  (they enclose multiple syllables); their inner patterns delegate to
+  `#notation-body`.
+- **`<alt>`** — added `<alt>…</alt>` to `#text-markup` (text above the staff).
+- **Lyric centering `{}`** — removed differentiated coloring; `{vowel}` text
+  is now treated as plain lyric text.
+- **`$`-escaped delimiters** — `$(`, `$)`, `$[`, `$]`, `${`, `$}`, `$$` are
+  now recognized as escape sequences. The escaped character receives the
+  `string.other.escape` scope so VS Code's bracket-pair colorizer does not flag
+  them as unbalanced delimiters. The escape rule is evaluated before
+  `#notation-group` so `$(` is never mistakenly consumed as an open-notation
+  parenthesis.
+
+## [0.2.1] - 2026-06-20
+
+### Fixed
+- CI: add Rust toolchain, wasm-pack, and gregorio-lsp source checkout to
+  publish and CI workflows so the WASM build succeeds in GitHub Actions.
+
 ## [0.2.0] - 2026-06-20
 
 ### Added

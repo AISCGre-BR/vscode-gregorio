@@ -1,0 +1,29 @@
+% Demonstrates non-default staff configurations.
+%
+% Staff line counts and available pitches:
+%   staff-lines: 2  → pitches a–i
+%   staff-lines: 3  → pitches a–k
+%   staff-lines: 4  → pitches a–m  (default)
+%   staff-lines: 5  → pitches a–n and p
+%
+% This file uses a 5-line staff to demonstrate the widest pitch range.
+% The oriscus-orientation header is also demonstrated:
+%   omitted (default) = modern orientation rules (auto from following note)
+%   "legacy"          = older orientation semantics
+%
+% Tip: create separate files for each staff-lines value to test syntax
+% highlighting in the editor, since staff-lines affects which pitch
+% letters are valid.
+name: Exemplum: Systema Quinquelineare;
+staff-lines: 5;
+oriscus-orientation: legacy;
+%%
+% 5-line staff — all pitches available: a through n and p.
+% The bottom space is a; lines are c, e, g, i, k; spaces above are b, d, f, h, j, l, m, n, p.
+(c4) Quin(c)que(e) li(g)ne(h)ae(i) sys(j)te(k)ma(l) ma(m)xi(n)mum(p) a(n)pi(m.)cem. (::)
+% Oriscus on very high pitches (legacy orientation):
+Or(mo)is(no) cus(po) su(no)pra(mo) a(lo)pi(mo)cem.(no.) (::)
+% 5-line staff with wide range neumes:
+Cli(p)ma(nHG)cus(mGF) de(lFE)scen(kED)dens.(jDC) (::)
+% Quilisma ascending to apex:
+Qui(gw)lis(h)ma(i) pes(j) as(k)cen(l)dens(m) per(n) a(p)pi(n)cem.(m.) (::)

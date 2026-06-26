@@ -1,0 +1,60 @@
+% Demonstrates all pitch letters and all one-note neume shapes.
+%
+% Pitches on a 4-line staff (a through m):
+%   a b c d e f g h i j k l m
+%   (a=space below staff, d=first line, f=second line, h=third line, j=fourth line)
+%
+% One-note neume shapes:
+%   lowercase pc  = punctum quadratum (square note)
+%   uppercase Pc  = punctum inclinatum (diamond, automatic lean)
+%   Pc0           = punctum inclinatum left-leaning (descending)
+%   Pc1           = punctum inclinatum right-leaning (ascending)
+%   Pc2           = punctum inclinatum non-leaning (unison)
+%   pco           = oriscus
+%   pcw           = quilisma
+%   pcv           = virga (stem on right)
+%   pcV           = virga reversa (stem on left)
+%   pcs           = stropha
+%   pc~           = liquescent deminutus (small note)
+%   pc<           = augmented liquescent
+%   pc>           = diminished liquescent
+%   pc=           = linea (note on a line, no head)
+%   pcr           = cavum (hollow square note)
+%   pcR           = punctum quadratum surrounded by lines
+%   pcr0          = punctum cavum surrounded by lines
+name: Exemplum: Soni et Figurae;
+%%
+% All pitches (a–m) as puncta quadrata:
+(c4) a(a) b(b) c(c) d(d) e(e) f(f) g(g) h(h) i(i) j(j) k(k) l(l) m(m) (::)
+% Punctum inclinatum (diamond) — descending climacus:
+Cli(hGF)ma(fED)cus. (::)
+% Punctum inclinatum with explicit leaning:
+Des(H0G0F0)cen(F0E0D0)dens. (::)
+% Ascending punctum inclinatum:
+As(D1E1F1)cen(F1G1H1)dens. (::)
+% Unison (non-leaning) punctum inclinatum:
+U(H2H2H2)ni(F2F2F2)so(G2G2G2)nus. (::)
+% Oriscus:
+O(fo)ris(go)cus(ho) in(io) cli(ho)ma(go)cu(fo.) (::)
+% Quilisma (wavy note, indicates rising neume):
+Qui(fw)lis(g)ma(h) pes.(h.) (::)
+% Virga (stem on right):
+Vir(fv)ga(gv) (,) vir(fv)ga(h.) (::)
+% Virga reversa (stem on left):
+Vir(fV)ga(gV) re(hV)ver(gV)sa. (::)
+% Stropha:
+Stro(fs)pha(fs) bi(gs)na. (::)
+% Liquescents:
+Li(f~)ques(g~)cens(h~) de(g~)mi(f~.)nu(g~)tus. (::)
+% Augmented liquescent:
+Li(f<)ques(g<)cens(h<) auc(g<.)tus. (::)
+% Diminished liquescent:
+Li(f>)ques(g>)cens(h>.) (::)
+% Linea (note on a line):
+Li(f=)ne(h=)a. (::)
+% Cavum (hollow square note):
+Ca(fr)vum(gr) hol(hr.)low. (::)
+% Punctum quadratum surrounded by lines:
+Punc(fR)tum(gR) li(hR.)ne(gR)a(fR.)tum. (::)
+% Punctum cavum surrounded by lines:
+Ca(fr0)vum(gr0) li(hr0.)ne(gr0)a(fr0.)tum. (::)

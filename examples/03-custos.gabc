@@ -1,0 +1,38 @@
+% Demonstrates all custos (guide note) forms.
+% The custos appears at the end of a line to indicate the first note
+% of the next line.
+%
+% Line-break + custos codes (inside parentheses):
+%   (z)   = justified break; custos per \greseteolcustos setting
+%   (z+)  = justified break; always show automatic custos
+%   (z-)  = justified break; never show custos
+%
+% Standalone custos codes (may appear anywhere in the score):
+%   (z0)  = custos at pitch determined by the following note
+%   (g+)  = explicit custos at pitch g (replace g with any pitch letter)
+%
+% Suppress custos at a specific potential break point:
+%   [nocustos] = placed before the gap/space in the note section
+name: Exemplum: Custos;
+%%
+% Justified line break — custos pitch determined automatically:
+(c4) Pri(f)ma(g) li(h)ne(i)a(h) can(g)tus(f) lon(g)gi(h) or(i)di(h)nis:(g.) (z)
+con(h)ti(i)nu(h)a(g)tur(f) hic.(g.) (::)
+% Justified line break with forced automatic custos:
+Se(f)cun(g)da(h) li(i)ne(h)a(g) for(f)ti(g)ter(h) cus(i)to(h)di(g)ta:(f.) (z+)
+ter(g)tia(h) se(i)qui(h)tur.(g.) (::)
+% Justified line break without custos:
+Ter(f)tia(g) li(h)ne(i)a(h) si(g)ne(f) cus(g)to(h)de:(i.) (z-)
+quar(g)ta(h) se(i)qui(h)tur.(g.) (::)
+% Automatic pitch-aware custos anywhere (z0) — does not force a line break:
+Man(f)u(g)al(h) cus(i)tos(h) pi(g)tch-a(f)wa(g)re:(h.) (z0) (;)
+con(h)ti(i)nu(h)at(g) can(f)tus.(g.) (::)
+% Explicit custos at a specific pitch — g+:
+Ex(f)pli(g)ci(h)tus(i) cus(h)tos(g) ad(f) so(g)num(h) g:(i.) (g+) (;)
+con(f)ti(g)nu(h)at.(i.) (::)
+% Explicit custos at a higher pitch — i+:
+Al(f)tus(g) cus(h)tos(i) ad(h) so(g)num(f) i:(g.) (i+) (;)
+con(f)ti(g)nu(h)at(i) can(h)tus.(g.) (::)
+% Suppress custos at a specific potential break point ([nocustos]):
+Cus(f)tos[nocustos] (,) sup(g)pres(h)sus(i) post(h) vir(g)gu(h)lam(i.) (;)
+re(h)li(g)qua(f) can(g)tan(h)tur.(i.) (::)

@@ -309,10 +309,10 @@
     "notation-body": {
       "patterns": [
         {
-          "include": "#clef"
+          "include": "#escape-chars"
         },
         {
-          "include": "#lyric-centering"
+          "include": "#clef"
         },
         {
           "include": "#translation"
@@ -351,32 +351,6 @@
             }
           },
           "comment": "Clef notation: (c4), (f3), (cb4), (c4@c2) - @ is logical operator for clef change"
-        }
-      ]
-    },
-    "lyric-centering": {
-      "patterns": [
-        {
-          "name": "meta.lyric.centering.gabc",
-          "begin": "\\{",
-          "end": "\\}",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.centering.begin.gabc"
-            }
-          },
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.centering.end.gabc"
-            }
-          },
-          "patterns": [
-            {
-              "name": "string.other.lyric.centered.gabc",
-              "match": "[^}]+"
-            }
-          ],
-          "comment": "Lyric centering: {vowel}"
         }
       ]
     },
@@ -1048,6 +1022,9 @@
     "syllable-text": {
       "patterns": [
         {
+          "include": "#escape-chars"
+        },
+        {
           "include": "#latex-verbatim"
         },
         {
@@ -1055,6 +1032,23 @@
         },
         {
           "include": "#special-characters"
+        }
+      ]
+    },
+    "escape-chars": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.gabc",
+          "match": "(\\$)([()\\[\\]{}$])",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.escape.gabc"
+            },
+            "2": {
+              "name": "string.other.escape.gabc"
+            }
+          },
+          "comment": "Escaped literal delimiters: $( $) $[ $] ${ $} $$ — string.other on the char prevents VS Code bracket-pair matching"
         }
       ]
     },
@@ -1072,12 +1066,12 @@
               "name": "entity.name.tag.bold.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.bold.gabc"
@@ -1089,9 +1083,12 @@
           "patterns": [
             {
               "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
             }
           ],
-          "comment": "Bold text: <b>...</b> - tag name highlighted separately"
+          "comment": "Bold text: <b>...</b>"
         },
         {
           "name": "markup.italic.gabc",
@@ -1105,12 +1102,12 @@
               "name": "entity.name.tag.italic.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.italic.gabc"
@@ -1122,9 +1119,12 @@
           "patterns": [
             {
               "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
             }
           ],
-          "comment": "Italic text: <i>...</i> - tag name highlighted separately"
+          "comment": "Italic text: <i>...</i>"
         },
         {
           "name": "markup.underline.gabc",
@@ -1138,12 +1138,12 @@
               "name": "entity.name.tag.underline.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.underline.gabc"
@@ -1155,9 +1155,12 @@
           "patterns": [
             {
               "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
             }
           ],
-          "comment": "Underline text: <ul>...</ul> - tag name highlighted separately"
+          "comment": "Underline text: <ul>...</ul>"
         },
         {
           "name": "markup.other.smallcaps.gabc",
@@ -1171,12 +1174,12 @@
               "name": "entity.name.tag.smallcaps.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.smallcaps.gabc"
@@ -1188,9 +1191,12 @@
           "patterns": [
             {
               "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
             }
           ],
-          "comment": "Small caps text: <sc>...</sc> - tag name highlighted separately"
+          "comment": "Small caps text: <sc>...</sc>"
         },
         {
           "name": "markup.other.colored.gabc",
@@ -1204,12 +1210,12 @@
               "name": "entity.name.tag.colored.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.colored.gabc"
@@ -1221,19 +1227,144 @@
           "patterns": [
             {
               "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
+            },
+            {
+              "name": "markup.deleted.colored-text.gabc",
+              "match": "[^<]+",
+              "comment": "Plain text inside <c> colored red (rubric text)"
             }
           ],
-          "comment": "Colored text: <c>...</c> - tag name highlighted separately"
+          "comment": "Colored/rubric text: <c>...</c> — nested tags keep their own color; plain text gets red"
+        },
+        {
+          "name": "meta.alt.gabc",
+          "begin": "(<)(alt)(>)",
+          "end": "(</)(alt)(>)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#text-markup"
+            },
+            {
+              "include": "#special-characters"
+            }
+          ],
+          "comment": "Text above the staff: <alt>...</alt>"
         }
       ]
     },
     "special-characters": {
       "patterns": [
         {
-          "name": "meta.protrusion-tag.gabc",
-          "begin": "(<)(pr)(:)(-?\\d+\\.?\\d*)(>)",
-          "end": "(</)(pr)(>)",
+          "name": "meta.tag.self-closing.clear.gabc",
+          "match": "(<)(clear)(\\/?>)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "comment": "Self-closing clear tag: <clear/> or bare <clear> without slash"
+        },
+        {
+          "name": "meta.eu.gabc",
+          "begin": "(<)(eu)(>)",
+          "end": "(</)(eu)(>)",
           "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#notation-body"
+            }
+          ],
+          "comment": "Euouae differentia marking: <eu>...</eu> — wraps multiple syllables"
+        },
+        {
+          "name": "meta.nlba.gabc",
+          "begin": "(<)(nlba)(>)",
+          "end": "(</)(nlba)(>)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.gabc"
+            },
+            "2": {
+              "name": "entity.name.tag.gabc"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.gabc"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#notation-body"
+            }
+          ],
+          "comment": "No line break area: <nlba>...</nlba> — wraps multiple syllables"
+        },
+        {
+          "name": "meta.tag.self-closing.pr.gabc",
+          "match": "(<)(pr)(?:(:)(-?\\d+\\.?\\d*))?(\\/?>)",
+          "captures": {
             "1": {
               "name": "punctuation.definition.tag.begin.gabc"
             },
@@ -1247,28 +1378,10 @@
               "name": "constant.numeric.float.gabc"
             },
             "5": {
-              "name": "punctuation.definition.tag.begin.gabc"
-            }
-          },
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.tag.end.gabc"
-            },
-            "2": {
-              "name": "entity.name.tag.gabc"
-            },
-            "3": {
               "name": "punctuation.definition.tag.end.gabc"
             }
           },
-          "patterns": [
-            {
-              "name": "string.unquoted.protrusion-content.gabc",
-              "match": "[^<]+",
-              "comment": "Content between <pr:> tags"
-            }
-          ],
-          "comment": "Protrusion control: <pr:0.5>text</pr> - numeric value as constant.numeric.float"
+          "comment": "Protrusion tag (always self-closing): <pr/>, <pr>, <pr:0.5/>, <pr:0.5>"
         },
         {
           "name": "meta.special-character.gabc",
@@ -1282,12 +1395,12 @@
               "name": "entity.name.tag.gabc"
             },
             "3": {
-              "name": "punctuation.definition.tag.begin.gabc"
+              "name": "punctuation.definition.tag.end.gabc"
             }
           },
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.end.gabc"
+              "name": "punctuation.definition.tag.begin.gabc"
             },
             "2": {
               "name": "entity.name.tag.gabc"
