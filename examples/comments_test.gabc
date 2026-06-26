@@ -1,0 +1,12 @@
+% header comment line
+%
+%%% triple percent is also a comment
+name: Kyrie XVI;
+commentary: Graduale Romanum; % inline header comment
+mode: 8;
+%%
+% body comment
+%
+%%% triple percent in body
+%% double percent in body (comment, not separator)
+(c4) KY(f)ri(gh)e(h.) *() e(hg)lé(f)i(f)son.(f.) % inline notation comment

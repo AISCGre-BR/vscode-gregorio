@@ -1,11 +1,15 @@
 {
   "name": "vscode-gregorio",
   "displayName": "Gregorio (GABC/NABC)",
-  "description": "Support for GABC/NABC Gregorian chant notation: tree-sitter-gregorio syntax highlighting (with nabc-lines-aware GABC/NABC alternation), gregorio-lsp diagnostics and formatting, note shifting, and empty-parentheses filling.",
-  "version": "0.1.0",
+  "description": "Support for GABC/NABC Gregorian chant notation: tree-sitter-gregorio syntax highlighting, in-process diagnostics, formatting, note shifting, and empty-parentheses filling (via gregorio-core WASM).",
+  "version": "0.2.1",
   "publisher": "AISCGre-BR",
   "license": "MIT",
   "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e3a2f",
+    "theme": "dark"
+  },
   "author": {
     "name": "AISCGre Brasil"
   },
@@ -60,8 +64,9 @@
         "scopeName": "source.gabc",
         "path": "./syntaxes/gabc.tmLanguage.json",
         "embeddedLanguages": {
-          "meta.embedded.latex.gabc": "latex",
-          "meta.embedded.inline.tex": "latex"
+          "meta.embedded.block.latex": "latex",
+          "meta.embedded.inline.tex": "latex",
+          "source.tex": "latex"
         }
       }
     ],
@@ -145,17 +150,17 @@
         "gregorio.languageServer.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable the gregorio-lsp language server (diagnostics, hover, completion, document symbols, formatting)."
+          "description": "Enable language features (diagnostics, formatting, code actions). In WASM mode this controls the in-process providers; in external mode it controls whether the gregorio-lsp process is started."
         },
         "gregorio.languageServer.path": {
           "type": "string",
-          "default": "gregorio-lsp",
-          "description": "Path to the gregorio-lsp executable. If only a name is given, it is resolved from PATH."
+          "default": "",
+          "markdownDescription": "Path to an external `gregorio-lsp` binary. **Leave empty** (default) to use the built-in WASM engine — no installation required. Set to `gregorio-lsp` (bare name resolved from PATH) or an absolute path to use the external server, which additionally provides hover, completion, and document symbols. Changing this setting restarts the active language features automatically."
         },
         "gregorio.languageServer.formatting": {
           "type": "object",
           "default": {},
-          "markdownDescription": "Options forwarded to gregorio-lsp's formatter (grefmt) via workspace configuration.",
+          "markdownDescription": "Options for the GABC formatter.",
           "properties": {
             "maxLineWidth": {
               "type": "integer",
@@ -174,6 +179,18 @@
             }
           }
         },
+        "gregorio.linting.severity": {
+          "type": "string",
+          "enum": ["error", "warning", "info"],
+          "default": "info",
+          "description": "Minimum severity level of diagnostics to show."
+        },
+        "gregorio.linting.ignoreCodes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Diagnostic codes to suppress."
+        },
         "gregorio.semanticHighlighting.enabled": {
           "type": "boolean",
           "default": true,
@@ -183,25 +200,26 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build",
+    "vscode:prepublish": "npm run build:lsp-wasm && npm run build",
     "build": "node esbuild.js --production",
     "watch": "node esbuild.js --watch",
     "compile": "tsc --noEmit -p ./",
     "lint": "tsc --noEmit -p ./",
     "build:wasm": "bash scripts/build-wasm.sh",
+    "build:lsp-wasm": "bash scripts/build-lsp-wasm.sh",
     "package": "vsce package --no-dependencies",
     "test": "node --test test/transform.test.ts"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
+    "vscode-languageclient": "^10.0.0",
     "web-tree-sitter": "^0.26.9"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^25.9.3",
     "@types/vscode": "^1.96.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.24.0",
-    "typescript": "^5.7.0"
+    "typescript": "^6.0.3"
   },
   "allowScripts": {
     "esbuild@0.24.2": true,

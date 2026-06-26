@@ -1,0 +1,29 @@
+% Demonstrates all accidental forms:
+%   pcx   = flat (hard flat — always printed)
+%   pc#   = sharp (hard sharp — always printed)
+%   pcy   = natural (hard natural — always printed)
+%   pcX   = soft flat (printed only if no prior flat is in effect)
+%   pc##  = soft sharp (printed only if no prior sharp is in effect)
+%   pcY   = soft natural (printed if a prior flat/sharp is in effect)
+%   pcx?  = parenthesized flat (cautionary)
+%   pc#?  = parenthesized sharp (cautionary)
+%   pcy?  = parenthesized natural (cautionary)
+name: Exemplum: Accidentalia;
+mode: 7;
+%%
+% Hard flat on i (B-flat):
+(c4) Pla(f)na(g) can(h)ti(ix)le(h)na(g.) (::)
+% Hard sharp:
+Acu(f)ta(g) can(h#)ti(h)le(g)na. (::)
+% Hard natural (cancels a previous accidental):
+Na(fy)tu(g)ra(h)lis. (::)
+% Soft flat (printed only when no prior flat on that pitch):
+Mol(fX)lis(g) fla(h)tus(iX) can(h)ti(g.)le(f)na. (::)
+% Soft sharp:
+Mol(f##)lis(g) die(h##)sis. (::)
+% Soft natural (printed only when a prior flat/sharp is in effect):
+Mol(fY)lis(g) na(hY)tu(g)ra(f.)lis. (::)
+% Parenthesized (cautionary) accidentals:
+Cau(fx?)ti(g)o(hx?)na(h)ry(g.) flat. (::)
+Cau(f#?)ti(g)o(h#?)na(h)ry(g.) sharp. (::)
+Cau(fy?)ti(g)o(hy?)na(h)ry(g.) nat. (::)

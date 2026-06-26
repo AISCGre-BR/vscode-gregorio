@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { TreeSitterHighlighter } from "./treesitter";
-import { getNabcLines } from "./transform";
+import { getCore } from "./core-wasm";
 
 // Standard semantic token types. Themes that support semantic highlighting map
 // these to colors automatically. GABC pitches use `number` and NABC blocks use
@@ -8,12 +8,13 @@ import { getNabcLines } from "./transform";
 export const TOKEN_TYPES = [
   "keyword", // header names, clefs
   "string", // header values
-  "number", // numeric header values, GABC pitch letters
+  "number", // numeric header values (mode, staff-lines, …)
   "comment", // % comments
   "operator", // %% separator, "|" segment separator, bars, parentheses
   "function", // NABC neume segments
-  "variable", // NABC significant / Tironian letters
+  "variable", // NABC significant / Tironian letters (tree-sitter path)
   "property", // misc GABC structure
+  "type", // GABC pitch letters — maps to entity.name.type → teal in most themes
 ] as const;
 
 export const LEGEND = new vscode.SemanticTokensLegend(TOKEN_TYPES as unknown as string[]);
@@ -46,21 +47,28 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     if (fromTreeSitter) {
       return fromTreeSitter;
     }
-    return this.builtinTokens(document);
+    // Fallback: use nabc_lines from WASM if available, otherwise parse locally.
+    let nabcLines = 0;
+    try {
+      const core = await getCore();
+      nabcLines = core.nabc_lines(document.getText());
+    } catch {
+      nabcLines = parseNabcLinesLocal(document.getText());
+    }
+    return this.builtinTokens(document, nabcLines);
   }
 
   /** nabc-lines-aware fallback tokenizer (no tree-sitter dependency). */
-  private builtinTokens(document: vscode.TextDocument): vscode.SemanticTokens {
+  private builtinTokens(document: vscode.TextDocument, nabcLines: number): vscode.SemanticTokens {
     const builder = new vscode.SemanticTokensBuilder(LEGEND);
-    const nabcLines = getNabcLines(document.getText());
     let inBody = false;
 
     for (let line = 0; line < document.lineCount; line++) {
       const text = document.lineAt(line).text;
 
-      // Section separator (%% on its own line).
-      if (/^%+\s*$/.test(text)) {
-        builder.push(line, 0, text.trimEnd().length, ti("operator"));
+      // Section separator (%% — only the first one, while still in the header).
+      if (!inBody && /^%%\s*$/.test(text)) {
+        builder.push(line, 0, text.trimEnd().length, ti("keyword"));
         inBody = true;
         continue;
       }
@@ -109,6 +117,17 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       trimmed.trimEnd().length,
       isNumeric ? ti("number") : ti("string"),
     );
+
+    // Inline % comment after the header's closing semicolon: `key: value; % comment`
+    const semiIdx = text.lastIndexOf(";");
+    if (semiIdx > colonIndex) {
+      const tail = text.slice(semiIdx + 1);
+      const pctMatch = tail.match(/^(\s*)(%.*)/);
+      if (pctMatch) {
+        const commentStart = semiIdx + 1 + pctMatch[1].length;
+        builder.push(line, commentStart, pctMatch[2].length, ti("comment"));
+      }
+    }
   }
 
   private tokenizeBodyLine(
@@ -120,9 +139,6 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
     // Inline comment.
     const commentAt = text.search(/(?<!%)%(?!%)/);
     const limit = commentAt >= 0 ? commentAt : text.length;
-    if (commentAt >= 0) {
-      builder.push(line, commentAt, text.length - commentAt, ti("comment"));
-    }
 
     const groupRe = /\(([^)]*)\)/g;
     let m: RegExpExecArray | null;
@@ -132,6 +148,12 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       }
       const contentStart = m.index + 1;
       this.tokenizeGroup(builder, line, m[1], contentStart, nabcLines);
+    }
+
+    // Push the inline comment token AFTER all group tokens so the builder
+    // receives tokens in ascending column order (required by SemanticTokensBuilder).
+    if (commentAt >= 0) {
+      builder.push(line, commentAt, text.length - commentAt, ti("comment"));
     }
   }
 
@@ -184,10 +206,20 @@ export class GabcSemanticTokensProvider implements vscode.DocumentSemanticTokens
       } else if (inBrackets) {
         continue;
       } else if (PITCH.test(c)) {
-        builder.push(line, segStart + i, 1, ti("number"));
+        builder.push(line, segStart + i, 1, ti("type"));
       } else if (BAR.test(c)) {
         builder.push(line, segStart + i, 1, ti("operator"));
       }
     }
   }
+}
+
+// Pure-TS fallback for nabc-lines parsing (used when WASM is not yet available).
+function parseNabcLinesLocal(text: string): number {
+  for (const line of text.split("\n")) {
+    if (/^%+\s*$/.test(line)) break;
+    const match = line.match(/^nabc-lines\s*:\s*(\d+)/);
+    if (match) return Number.parseInt(match[1], 10);
+  }
+  return 0;
 }

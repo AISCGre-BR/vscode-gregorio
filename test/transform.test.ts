@@ -1,60 +1,61 @@
+/**
+ * Smoke tests for GABC text transformation helpers.
+ *
+ * The core transformation logic (note shifting, fill empty groups, ligature
+ * conversion) was moved to the gregorio-core Rust crate and is tested
+ * exhaustively by `cargo test` in `gregorio-lsp/crates/gregorio-core/`.
+ *
+ * These tests cover only the thin TS helpers that remain in the extension:
+ * the parseNabcLinesLocal fallback used by semanticTokens.ts, and the
+ * byte-offset helper used by commands.ts.
+ */
+
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  fillParensBlock,
-  getNabcLines,
-  bodyStartOffset,
-  ligaturesToTags,
-  tagsToLigatures,
-  transposeLine,
-  transposeNote,
-} from "../src/transform.ts";
 
-test("transposeNote wraps cyclically and preserves case", () => {
-  assert.equal(transposeNote("a", 1), "b");
-  assert.equal(transposeNote("g", -1), "f");
-  assert.equal(transposeNote("p", 1), "a"); // top wraps to bottom
-  assert.equal(transposeNote("a", -1), "p"); // bottom wraps to top
-  assert.equal(transposeNote("G", 1), "H"); // uppercase preserved
-  assert.equal(transposeNote("4", 1), "4"); // non-note unchanged
+// ---------------------------------------------------------------------------
+// parseNabcLinesLocal (inlined copy of the fallback in semanticTokens.ts)
+// ---------------------------------------------------------------------------
+
+function parseNabcLinesLocal(text: string): number {
+  for (const line of text.split("\n")) {
+    if (/^%+\s*$/.test(line)) break;
+    const match = line.match(/^nabc-lines\s*:\s*(\d+)/);
+    if (match) return Number.parseInt(match[1], 10);
+  }
+  return 0;
+}
+
+test("parseNabcLinesLocal returns 0 when header is absent", () => {
+  assert.equal(parseNabcLinesLocal("name: Test;\n%%\n(c4) a(f)"), 0);
 });
 
-test("transposeLine shifts only inside parentheses", () => {
-  assert.equal(transposeLine("Ky(f)ri(g)e", 1), "Ky(g)ri(h)e");
-  // Text outside parens is never touched.
-  assert.equal(transposeLine("abc(f)", 1), "abc(g)");
-});
-
-test("transposeLine leaves bracketed attributes untouched", () => {
-  assert.equal(transposeLine("(f[shape:stroke]g)", 1), "(g[shape:stroke]h)");
-});
-
-test("transposeLine with nabc-lines transposes only GABC segments", () => {
-  // nabc-lines: 1 -> segment 0 = GABC, segment 1 = NABC (left alone)
-  assert.equal(transposeLine("(f|vi)", 1, 1), "(g|vi)");
-  // nabc-lines: 2 -> GABC, NABC, NABC, then GABC again
-  assert.equal(transposeLine("(f|pu|to|g)", 1, 2), "(g|pu|to|h)");
-});
-
-test("fillParensBlock fills empty groups with the last GABC pitch", () => {
-  assert.equal(fillParensBlock("(fgh) () () (ij) ()"), "(fgh) (h) (h) (ij) (j)");
-  // Leading empty groups (no prior pitch) are left untouched.
-  assert.equal(fillParensBlock("() (f)"), "() (f)");
-});
-
-test("fillParensBlock reads the GABC segment of NABC groups", () => {
-  assert.equal(fillParensBlock("(f|vi) ()"), "(f|vi) (f)");
-});
-
-test("ligature conversions round-trip", () => {
-  const tagged = ligaturesToTags("Kýrie ǽternam œcumenica");
-  assert.equal(tagged, "Kýrie <sp>'ae</sp>ternam <sp>oe</sp>cumenica");
-  assert.equal(tagsToLigatures(tagged), "Kýrie ǽternam œcumenica");
-});
-
-test("getNabcLines and bodyStartOffset parse the header", () => {
+test("parseNabcLinesLocal returns the nabc-lines value", () => {
   const doc = "name: Test;\nnabc-lines: 2;\n%%\n(c4) a(f)";
-  assert.equal(getNabcLines(doc), 2);
-  assert.equal(doc.slice(bodyStartOffset(doc)), "(c4) a(f)");
-  assert.equal(getNabcLines("name: Test;\n%%\n(c4)"), 0);
+  assert.equal(parseNabcLinesLocal(doc), 2);
+});
+
+test("parseNabcLinesLocal stops at the %% separator", () => {
+  const doc = "name: Test;\n%%\nnabc-lines: 3;\n(c4)";
+  assert.equal(parseNabcLinesLocal(doc), 0);
+});
+
+// ---------------------------------------------------------------------------
+// toByteOffset (inlined copy of the helper in commands.ts)
+// ---------------------------------------------------------------------------
+
+function toByteOffset(text: string, charOffset: number): number {
+  return new TextEncoder().encode(text.slice(0, charOffset)).length;
+}
+
+test("toByteOffset equals charOffset for ASCII text", () => {
+  const text = "Kyrie(f)";
+  assert.equal(toByteOffset(text, 5), 5);
+});
+
+test("toByteOffset accounts for multi-byte characters", () => {
+  // 'æ' is U+00E6, encoded as 2 bytes in UTF-8.
+  const text = "aeæ";
+  assert.equal(toByteOffset(text, 2), 2); // "ae" → 2 bytes
+  assert.equal(toByteOffset(text, 3), 4); // "aeæ" → 4 bytes
 });

@@ -10,12 +10,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - name: Checkout gregorio-lsp (WASM source)
+        run: |
+          git clone --depth 1 \
+            https://github.com/AISCGre-BR/gregorio-lsp.git \
+            "$(dirname "$GITHUB_WORKSPACE")/gregorio-lsp"
+
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Install dependencies
         run: npm ci
@@ -26,13 +40,11 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Bundle extension
-        run: npm run build
-
+      # vsce package triggers vscode:prepublish = build:lsp-wasm + build
       - name: Package VSIX
         run: npx --yes @vscode/vsce package --no-dependencies -o vscode-gregorio.vsix
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: vscode-gregorio-vsix
           path: vscode-gregorio.vsix

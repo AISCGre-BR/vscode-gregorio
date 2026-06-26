@@ -1,0 +1,47 @@
+% Demonstrates NABC with Laon (Metz) neumes.
+%
+% Laon basic glyph descriptors (grelaon font):
+%   Same as St. Gall but with these differences:
+%   ADDED:   un=uncinus  oc=oriscus-clivis
+%   REMOVED: st (stropha), qi (2-loop quilisma), gr (gravis — rarely used)
+%
+% Laon subpunctis/prepunctis modifier letters (different from St. Gall):
+%   n = uncinus
+%   q = quilisma
+%   z = virga
+%   x = cephalicus
+%
+% Laon significant letter shorthands (different set from St. Gall):
+%   lsa=augete  lsc=celeriter  lseq=equaliter  lsf=fastigium
+%   lsh=humiliter  lshn=humiliter nectum  lshp=humiliter parum
+%   lsl=levare  lsn=non tenere / nectum  lsnl=non levare  lsnt=non tenere
+%   lsm=mediocriter  lss=sursum  lssimp=simpliciter  lssp=sursum parum
+%   lsst=sursum tenere  lst=tenere  lsth=tenere humiliter
+%   Laon allows position 5 = inside the neume (only for Laon)
+%
+% Tironian notes (Laon only, lt prefix + position, no position 5):
+%   lti=iusum  ltdo=deorsum  ltdr=devertit  ltdx=devexum
+%   ltps=prode sub eam  ltqm=quam mox  ltsb=sub  ltse=seorsum
+%   ltsj=subjice  ltsl=saltim  ltsn=sonare  ltsp=supra
+%   ltsr=sursum  ltst=saltate  ltus=ut supra
+name: Exemplum: NABC Cantus Laudunensis (Laon);
+nabc-lines: 1;
+%%
+% Laon-unique glyphs — uncinus (un) and oriscus-clivis (oc):
+(c4) Un(ef|un)ci(fg|un-)nus(gh|un>) La(h.|un~)on. (,)
+O(ef|oc)ris(fg|oc-)cus(gh|oc>)-Cli(h.|oc~)vis. (;)
+% Standard glyphs in Laon style:
+Vi(ef|vi)rga(fg|pe) pes(gh|to) tor(h.|cl)cu(g|vi)lus.(f.) (,)
+Por(ef|po)rec(fg|pf)tus(gh|sc) flex(h.|sf)us.(g.) (;)
+% Laon subpunctis with Laon-specific modifiers:
+Sub(efg|cisun2)un(fgh|clsuq2) ci(gh|pesuz2)nus(h.|cephu2) La(g|su2)on.(f.) (,)
+% Laon prepunctis:
+Pre(efg|vippn2)punc(fgh|clppq2) La(gh|peppz2)on.(h.) (;)
+% Laon significant letters with position 5 (inside neume — Laon only):
+Sig(ef|vilsl4)nif(fg|pelsst5)i(gh|tolsn4)cant(h.|vilsth2) La(g|oclsh1)on.(f.) (,)
+% All Laon significant letter shorthands:
+La(ef|vilsa2)on(fg|vilsc2) sig(gh|vilseq2)nif(h.|vilsf2)i(g|vilsh2)cant(f|vilshn2) let(g|vilshp2)ters(h|vilsl2) sam(g|vilsn2)ple.(f.) (,)
+% Tironian notes (Laon only):
+Ti(ef|vilti1)ro(fg|viltdo1)ni(gh|viltdr1)an(h.|viltdx1) no(g|viltps1)tes(f.) (,)
+Ti(ef|viltqm1)ro(fg|viltsb1)ni(gh|viltse1)an(h.|viltsj1) no(g|viltsl1)tes(f.) (,)
+Ti(ef|viltsn1)ro(fg|viltsp1)ni(gh|viltsr1)an(h.|viltst1) fi(g|viltus1)nis.(f.) (::)

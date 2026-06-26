@@ -1,0 +1,57 @@
+% Demonstrates braces, slurs, ledger lines, and choral signs.
+%
+% Braces (using size form):
+%   [ob:n;size]    = round brace above staff (n=0: end, n=1: start)
+%   [ub:n;size]    = round brace below staff
+%   [ocb:n;size]   = curly brace above staff
+%   [ocba:n;size]  = curly brace with accent above staff
+%
+% Braces (using open/close form):
+%   [ob:n{]...[ob:n}]   = round brace above
+%   [ub:n{]...[ub:n}]   = round brace below
+%   [ocb:n{]...[ocb:n}] = curly brace above
+%
+% Slurs:
+%   [oslur:shift;width,height]  = over-the-notes slur
+%   [oslur:shift{]...[oslur:shift}] = open/close form
+%   [uslur:...]                 = under-the-notes slur
+%     shift: 0=right side, 1=one punctum left, 2=half punctum left
+%
+% Custom ledger lines:
+%   [oll:left;right]  = over-staff ledger line
+%   [oll:left{right]...[oll:]}  = open/close form
+%   [ull:left;right]  = under-staff ledger line
+%   left/right: 0=at point, 1=at additionaallineswidth, or explicit TeX length
+%
+% Choral signs (text near note on staff):
+%   [cs:text]   = text choral sign
+%   [cn:nabc]   = NABC neume choral sign
+%
+% Stem length hints for bottom-line notes:
+%   [ll:0] = force short stem    [ll:1] = force long stem
+name: Exemplum: Unculi, Sluri, Lineae;
+%%
+% Round brace above staff (size form):
+(c4) Bra(f[ob:1;10mm]g)ce(h[ob:0;10mm]i) a(h)bo(g)ve. (::)
+% Round brace below staff (open/close form):
+Bra(f[ub:1{]g)ce(h[ub:0}]i) be(h)low.(g.) (::)
+% Curly brace above staff:
+Cur(f[ocb:1{]g)ly(h[ocb:0}]i) bra(h)ce.(g.) (::)
+% Curly brace with accent above:
+Cur(f[ocba:1{]g)ly(h[ocba:0}]i) ac(h)cent.(g.) (::)
+% Slur over notes (size form):
+O(f[oslur:0;15mm,3mm]g)ver(h) slur.(i.) (::)
+% Slur over notes (open/close form):
+O(f[oslur:0{]g)ver(h[oslur:0}]i) slur(h) o(g)pen.(f.) (::)
+% Slur under notes:
+Un(f[uslur:0{]g)der(h[uslur:0}]i) slur.(h.) (::)
+% Over-staff ledger line (size form):
+Le(a[oll:0;5mm]b)dger(a) over.(b.) (::)
+% Under-staff ledger line (open/close form):
+Le(a[ull:0{]b)dger(a[ull:]}b) un(a)der.(b.) (::)
+% Stem length hint on bottom-line note:
+Bot(d[ll:0])tom(d[ll:1]) short(d[ll:0]) long(d[ll:1]) stem. (::)
+% Choral signs:
+Cho(f[cs:A])ral(g[cs:B]) sign(h[cs:C]) text. (::)
+% NABC choral sign:
+NABC(f[cn:vi]) cho(g[cn:pe])ral(h[cn:ta]) sign. (::)

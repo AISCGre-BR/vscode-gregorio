@@ -1,0 +1,69 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # needed to upload VSIX to GitHub Release
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # gregorio-lsp must live next to vscode-gregorio so that
+      # scripts/build-lsp-wasm.sh can find ../gregorio-lsp/crates/gregorio-wasm
+      - name: Checkout gregorio-lsp (WASM source)
+        run: |
+          git clone --depth 1 \
+            https://github.com/AISCGre-BR/gregorio-lsp.git \
+            "$(dirname "$GITHUB_WORKSPACE")/gregorio-lsp"
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run compile
+
+      - name: Run tests
+        run: npm test
+
+      # vsce package triggers vscode:prepublish = build:lsp-wasm + build
+      - name: Package VSIX
+        run: npx @vscode/vsce package --no-dependencies -o vscode-gregorio.vsix
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce publish --packagePath vscode-gregorio.vsix
+
+      # Upload VSIX to GitHub Release (create it if it doesn't exist yet)
+      - name: Attach VSIX to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          if gh release view "$TAG" &>/dev/null; then
+            gh release upload "$TAG" vscode-gregorio.vsix --clobber
+          else
+            gh release create "$TAG" \
+              vscode-gregorio.vsix \
+              --title "$TAG" \
+              --generate-notes
+          fi

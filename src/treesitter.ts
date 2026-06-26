@@ -6,7 +6,7 @@ import * as path from "path";
 // languages/gabc/highlights.scm) to the standard semantic token types declared
 // in semanticTokens.ts. Longer (dotted) capture names are matched first.
 const CAPTURE_TO_TOKEN: Array<[string, string]> = [
-  ["constant.builtin", "number"], // GABC pitch letters
+  ["constant.builtin", "type"], // GABC pitch letters
   ["variable.special", "variable"], // NABC significant / Tironian letters
   ["string.special", "string"],
   ["string.escape", "string"],
@@ -119,26 +119,66 @@ export class TreeSitterHighlighter {
 
     try {
       const tree = this.parser.parse(document.getText());
-      const builder = new vscode.SemanticTokensBuilder(legend);
       const captures = this.query.captures(tree.rootNode);
+
+      // Collect tokens as (row, col, length, idx) tuples so we can merge
+      // the tree-sitter results with the comment fallback scan below.
+      interface Tok { row: number; col: number; len: number; idx: number }
+      const tokens: Tok[] = [];
 
       for (const { name, node } of captures) {
         const tokenType = captureToTokenType(name);
-        if (tokenType === undefined) {
-          continue;
-        }
+        if (tokenType === undefined) continue;
         const idx = typeIndex.get(tokenType);
-        if (idx === undefined) {
-          continue;
-        }
+        if (idx === undefined) continue;
+
         // Semantic tokens cannot span multiple lines.
-        if (node.startPosition.row !== node.endPosition.row) {
-          continue;
+        let endRow = node.endPosition.row;
+        let endCol = node.endPosition.column;
+        if (endRow !== node.startPosition.row) {
+          if (endRow === node.startPosition.row + 1 && endCol === 0) {
+            // Node includes trailing newline — clamp to end of start row.
+            endRow = node.startPosition.row;
+            endCol = document.lineAt(endRow).text.length;
+          } else {
+            continue; // genuinely multi-line — skip
+          }
         }
-        const length = node.endPosition.column - node.startPosition.column;
-        if (length > 0) {
-          builder.push(node.startPosition.row, node.startPosition.column, length, idx);
+        const len = endCol - node.startPosition.column;
+        if (len > 0) {
+          tokens.push({ row: node.startPosition.row, col: node.startPosition.column, len, idx });
         }
+      }
+
+      // Fallback: ensure whole-line % comments are always highlighted even if
+      // the tree-sitter query misses them (e.g., header comments in some grammars).
+      const commentIdx = typeIndex.get("comment");
+      if (commentIdx !== undefined) {
+        const coveredRows = new Set(tokens.filter(t => t.idx === commentIdx).map(t => t.row));
+        for (let lineNum = 0; lineNum < document.lineCount; lineNum++) {
+          if (coveredRows.has(lineNum)) continue;
+          const lineText = document.lineAt(lineNum).text;
+          if (/^%%/.test(lineText)) continue; // section separator
+          if (/^\s*%/.test(lineText)) {
+            const trimmed = lineText.trimEnd();
+            tokens.push({ row: lineNum, col: 0, len: trimmed.length || 1, idx: commentIdx });
+          }
+        }
+      }
+
+      // SemanticTokensBuilder requires tokens in ascending (row, col) order
+      // with no overlaps (tree-sitter sometimes emits nested nodes for the
+      // same text range, e.g. a %% body comment produces two @comment captures).
+      tokens.sort((a, b) => a.row !== b.row ? a.row - b.row : a.col - b.col);
+
+      const builder = new vscode.SemanticTokensBuilder(legend);
+      let lastRow = -1;
+      let lastColEnd = 0;
+      for (const t of tokens) {
+        if (t.row !== lastRow) { lastRow = t.row; lastColEnd = 0; }
+        if (t.col < lastColEnd) continue; // overlapping — skip
+        builder.push(t.row, t.col, t.len, t.idx);
+        lastColEnd = t.col + t.len;
       }
 
       tree.delete?.();
