@@ -51,7 +51,7 @@ Syntax highlighting works out of the box. For **language-server** features
 
 ```sh
 cargo install --git https://github.com/AISCGre-BR/gregorio-lsp \
-  --tag v0.12.0 gregorio-server --bin gregorio-lsp
+  --tag v0.13.0 gregorio-server --bin gregorio-lsp
 ```
 
 Make sure `~/.cargo/bin` (or wherever the binary lands) is on your `PATH`, or set

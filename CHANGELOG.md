@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`linting.ignoreCodes` → `ignoreRules`) and pushed on start and on change.
 - `breakAfterClef` / `breakAfterBar` documented defaults now match the
   formatter (`true`).
-- Install instructions point to gregorio-lsp `v0.12.0` (`gregorio-server` crate).
+- Install instructions point to gregorio-lsp `v0.13.0` (`gregorio-server` crate).
 
 ### Changed
 

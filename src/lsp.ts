@@ -251,7 +251,7 @@ export async function startExternalClient(
     vscode.window.showWarningMessage(
       `gregorio-lsp could not be started (${String(err)}). ` +
         "Install with: cargo install --git https://github.com/AISCGre-BR/gregorio-lsp " +
-        "--tag v0.12.0 gregorio-server --bin gregorio-lsp, then ensure it is on your PATH. " +
+        "--tag v0.13.0 gregorio-server --bin gregorio-lsp, then ensure it is on your PATH. " +
         "To use the built-in WASM engine instead, clear the " +
         "'gregorio.languageServer.path' setting.",
     );
