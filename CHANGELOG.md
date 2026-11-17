@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **gregorio-lsp 0.12.0 support** — new `gregorio.languageServer.formatting.wordPerLine`
+  setting (`auto` | `always` | `never`) for the word-per-line layout, honoured
+  by both the WASM engine and the external server. The new `isolated-strophae`
+  diagnostic can be suppressed through `gregorio.linting.ignoreCodes`.
+
+### Fixed
+
+- **External server settings** — `gregorio-lsp` reads its configuration from
+  top-level `linting` / `formatting` keys of `workspace/didChangeConfiguration`,
+  but the client sent the whole `gregorio` section, so formatting and linting
+  settings were ignored in external mode. The settings are now mapped
+  (`linting.ignoreCodes` → `ignoreRules`) and pushed on start and on change.
+- `breakAfterClef` / `breakAfterBar` documented defaults now match the
+  formatter (`true`).
+- Install instructions point to gregorio-lsp `v0.13.0` (`gregorio-server` crate).
+
 ### Changed
 
 - **Tag highlighting** — all GABC text tags now use consistent HTML/XML-style

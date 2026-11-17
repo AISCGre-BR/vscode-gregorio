@@ -51,7 +51,7 @@ Syntax highlighting works out of the box. For **language-server** features
 
 ```sh
 cargo install --git https://github.com/AISCGre-BR/gregorio-lsp \
-  --tag v0.9.0 --bin gregorio-lsp
+  --tag v0.13.0 gregorio-server --bin gregorio-lsp
 ```
 
 Make sure `~/.cargo/bin` (or wherever the binary lands) is on your `PATH`, or set
@@ -76,11 +76,14 @@ modified.
 
 | Setting | Default | Description |
 |---|---|---|
-| `gregorio.languageServer.enabled` | `true` | Enable gregorio-lsp. |
-| `gregorio.languageServer.path` | `gregorio-lsp` | Path to the server binary. |
+| `gregorio.languageServer.enabled` | `true` | Enable language features. |
+| `gregorio.languageServer.path` | `""` | Path to an external `gregorio-lsp` binary; empty uses the built-in WASM engine. |
 | `gregorio.languageServer.formatting.maxLineWidth` | `80` | Max characters per notation line. |
-| `gregorio.languageServer.formatting.breakAfterClef` | `false` | Break after each clef. |
-| `gregorio.languageServer.formatting.breakAfterBar` | `false` | Break after each bar. |
+| `gregorio.languageServer.formatting.breakAfterClef` | `true` | Blank line after each clef. |
+| `gregorio.languageServer.formatting.breakAfterBar` | `true` | Blank line after each bar. |
+| `gregorio.languageServer.formatting.wordPerLine` | `"auto"` | Each word on its own line: `auto` (when `nabc-lines` ≥ 2 or words are long), `always` or `never`. |
+| `gregorio.linting.severity` | `"info"` | Minimum severity of diagnostics shown. |
+| `gregorio.linting.ignoreCodes` | `[]` | Rule codes to suppress (e.g. `isolated-strophae`). |
 | `gregorio.semanticHighlighting.enabled` | `true` | Enable tree-sitter semantic highlighting. |
 
 Format a document with **Format Document** (`Shift+Alt+F`) or enable format on

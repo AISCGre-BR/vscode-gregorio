@@ -169,13 +169,24 @@
             },
             "breakAfterClef": {
               "type": "boolean",
-              "default": false,
-              "description": "Insert a line break after each clef token."
+              "default": true,
+              "description": "Insert a blank line after each clef token."
             },
             "breakAfterBar": {
               "type": "boolean",
-              "default": false,
-              "description": "Insert a line break after each bar token."
+              "default": true,
+              "description": "Insert a blank line after each bar token."
+            },
+            "wordPerLine": {
+              "type": "string",
+              "enum": ["auto", "always", "never"],
+              "enumDescriptions": [
+                "Place each word on its own line when the nabc-lines header is 2 or greater, or when at least 25% of the words are wider than half of maxLineWidth.",
+                "Always place each word on its own line.",
+                "Never use the word-per-line layout."
+              ],
+              "default": "auto",
+              "markdownDescription": "Place each word on its own line (requires gregorio-lsp 0.12.0 or later). Bars and `*` / `**` stay on the line of the preceding word."
             }
           }
         },
@@ -189,7 +200,7 @@
           "type": "array",
           "items": { "type": "string" },
           "default": [],
-          "description": "Diagnostic codes to suppress."
+          "markdownDescription": "Diagnostic codes to suppress, e.g. `isolated-strophae` or `quilisma-missing-connector` (see gregorio-lsp's CONFIG.md for the full list)."
         },
         "gregorio.semanticHighlighting.enabled": {
           "type": "boolean",
