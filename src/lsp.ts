@@ -18,6 +18,7 @@ import * as vscode from "vscode";
 import {
   LanguageClient,
   LanguageClientOptions,
+  DidChangeConfigurationNotification,
   ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
@@ -178,6 +179,30 @@ export function deactivateProviders(): void {
 // ---------------------------------------------------------------------------
 
 let externalClient: LanguageClient | undefined;
+let externalConfigListener: vscode.Disposable | undefined;
+
+/**
+ * Builds the settings object expected by gregorio-lsp's
+ * `workspace/didChangeConfiguration` handler (see gregorio-lsp's CONFIG.md):
+ * top-level `linting` and `formatting` keys, not the `gregorio.*` section.
+ */
+function getServerSettings(): Record<string, unknown> {
+  const cfg = vscode.workspace.getConfiguration("gregorio");
+  return {
+    linting: {
+      enabled: cfg.get<boolean>("languageServer.enabled", true),
+      severity: cfg.get<string>("linting.severity", "info"),
+      ignoreRules: cfg.get<string[]>("linting.ignoreCodes", []),
+    },
+    formatting: cfg.get<Record<string, unknown>>("languageServer.formatting", {}),
+  };
+}
+
+function sendServerSettings(): void {
+  void externalClient?.sendNotification(DidChangeConfigurationNotification.type, {
+    settings: getServerSettings(),
+  });
+}
 
 /**
  * Starts the external `gregorio-lsp` binary as a Language Server.
@@ -195,13 +220,7 @@ export async function startExternalClient(
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "gabc" }],
     synchronize: {
-      configurationSection: "gregorio",
       fileEvents: vscode.workspace.createFileSystemWatcher("**/*.gabc"),
-    },
-    initializationOptions: {
-      formatting: vscode.workspace
-        .getConfiguration("gregorio")
-        .get("languageServer.formatting", {}),
     },
   };
 
@@ -215,12 +234,24 @@ export async function startExternalClient(
   try {
     await externalClient.start();
     context.subscriptions.push(externalClient);
+    // The server reads its settings only from didChangeConfiguration, with
+    // top-level `linting` / `formatting` keys: push them now and on change.
+    sendServerSettings();
+    externalConfigListener = vscode.workspace.onDidChangeConfiguration((ev) => {
+      if (
+        ev.affectsConfiguration("gregorio.languageServer.formatting") ||
+        ev.affectsConfiguration("gregorio.linting")
+      ) {
+        sendServerSettings();
+      }
+    });
+    context.subscriptions.push(externalConfigListener);
   } catch (err) {
     externalClient = undefined;
     vscode.window.showWarningMessage(
       `gregorio-lsp could not be started (${String(err)}). ` +
         "Install with: cargo install --git https://github.com/AISCGre-BR/gregorio-lsp " +
-        "--tag v0.11.0 --bin gregorio-lsp, then ensure it is on your PATH. " +
+        "--tag v0.12.0 gregorio-server --bin gregorio-lsp, then ensure it is on your PATH. " +
         "To use the built-in WASM engine instead, clear the " +
         "'gregorio.languageServer.path' setting.",
     );
@@ -228,6 +259,8 @@ export async function startExternalClient(
 }
 
 export async function stopExternalClient(): Promise<void> {
+  externalConfigListener?.dispose();
+  externalConfigListener = undefined;
   if (externalClient) {
     await externalClient.stop();
     externalClient = undefined;
