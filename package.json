@@ -14,7 +14,7 @@
     "name": "AISCGre Brasil"
   },
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.125.0"
   },
   "repository": {
     "type": "git",
@@ -227,7 +227,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.125.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.28.1",
     "typescript": "^7.0.2"

@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
+- **Minimum VS Code version is now 1.125** (`engines.vscode` `^1.125.0`,
+  previously `^1.96.0`), together with `@types/vscode` 1.125.
 - Bump `web-tree-sitter` to 0.26.11, `vscode-languageclient` to 10.1.0,
   TypeScript to 7.0, `@types/node` to 26, and `actions/setup-node` to v7.
 
