@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-19
+
 ### Added
 
 - **gregorio-lsp 0.12.0 support** — new `gregorio.languageServer.formatting.wordPerLine`
@@ -50,6 +52,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   them as unbalanced delimiters. The escape rule is evaluated before
   `#notation-group` so `$(` is never mistakenly consumed as an open-notation
   parenthesis.
+
+### Dependencies
+
+- Bump `web-tree-sitter` to 0.26.11, `vscode-languageclient` to 10.1.0,
+  TypeScript to 7.0, `@types/node` to 26, and `actions/setup-node` to v7.
 
 ## [0.2.1] - 2026-06-20
 

@@ -1,5 +1,6 @@
 .vscode/**
 .github/**
+.devcontainer/**
 src/**
 scripts/**
 node_modules/**
