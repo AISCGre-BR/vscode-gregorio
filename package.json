@@ -222,15 +222,15 @@
     "test": "node --test test/transform.test.ts"
   },
   "dependencies": {
-    "vscode-languageclient": "^10.0.0",
-    "web-tree-sitter": "^0.26.9"
+    "vscode-languageclient": "^10.1.0",
+    "web-tree-sitter": "^0.26.11"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.1.1",
     "@types/vscode": "^1.96.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.28.1",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "allowScripts": {
     "esbuild@0.24.2": true,
