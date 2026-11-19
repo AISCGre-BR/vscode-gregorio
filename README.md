@@ -46,6 +46,9 @@ grammar and the [gregorio-lsp](https://github.com/AISCGre-BR/gregorio-lsp) langu
 
 ## Requirements
 
+- **VS Code 1.125 or later** (since extension version 0.3.0; version 0.2.1
+  supports VS Code 1.96 and later).
+
 Syntax highlighting works out of the box. For **language-server** features
 (diagnostics, hover, completion, formatting), install `gregorio-lsp`:
 
