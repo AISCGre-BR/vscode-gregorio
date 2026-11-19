@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-19
+
+### Documentation
+
+- README: state the minimum VS Code version (1.125).
+- README: diagnostics, quick fixes, and formatting are built in (bundled WASM
+  engine) and need no installation; a new *Language server* section explains
+  the built-in and external modes, the features the external `gregorio-lsp`
+  adds (hover, completion, document symbols), and how to install it from the
+  new prebuilt binaries or from source.
+
 ## [0.3.0] - 2026-11-19
 
 ### Added
