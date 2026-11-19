@@ -31,9 +31,12 @@ grammar and the [gregorio-lsp](https://github.com/AISCGre-BR/gregorio-lsp) langu
   always works.
 - **LaTeX embedding** — TeX code inside `<v>…</v>` tags and verbatim attributes
   (`[nv:…]`, `[gv:…]`, `[ev:…]`) is highlighted as LaTeX.
-- **Language server** — Diagnostics, hover, completion, document symbols, and
-  document formatting via [gregorio-lsp](https://github.com/AISCGre-BR/gregorio-lsp)
-  (formatting uses the embedded `grefmt` engine).
+- **Diagnostics, quick fixes, and formatting** — Built in, with no installation
+  required: the extension bundles the
+  [gregorio-lsp](https://github.com/AISCGre-BR/gregorio-lsp) core compiled to
+  WebAssembly (linting rules, auto-fixes, and the `grefmt` formatter).
+- **Hover, completion, and document symbols** — Optional, via an external
+  `gregorio-lsp` server (see [Language server](#language-server)).
 - **Editing commands**
   - **Shift Notes Up / Down** (`Ctrl+Alt+Up` / `Ctrl+Alt+Down`) — transpose note
     letters diatonically, wrapping cyclically. With `nabc-lines`, only GABC
@@ -49,16 +52,37 @@ grammar and the [gregorio-lsp](https://github.com/AISCGre-BR/gregorio-lsp) langu
 - **VS Code 1.125 or later** (since extension version 0.3.0; version 0.2.1
   supports VS Code 1.96 and later).
 
-Syntax highlighting works out of the box. For **language-server** features
-(diagnostics, hover, completion, formatting), install `gregorio-lsp`:
+Nothing else is needed: highlighting, diagnostics, quick fixes, formatting, and
+the editing commands work out of the box.
 
-```sh
-cargo install --git https://github.com/AISCGre-BR/gregorio-lsp \
-  --tag v0.13.0 gregorio-server --bin gregorio-lsp
-```
+## Language server
 
-Make sure `~/.cargo/bin` (or wherever the binary lands) is on your `PATH`, or set
-`gregorio.languageServer.path` to its absolute location.
+The extension has two mutually exclusive modes, selected by
+`gregorio.languageServer.path`:
+
+| Mode | When | Features |
+|---|---|---|
+| **Built-in (WASM)** | `path` is empty (default) | Diagnostics, quick fixes, formatting |
+| **External server** | `path` is set | All of the above, plus hover, completion, and document symbols |
+
+The editing commands always use the built-in engine, in both modes.
+
+To use the external server, install `gregorio-lsp` (v0.12.0 or later for
+`wordPerLine`; v0.13.0 recommended) and set `gregorio.languageServer.path` to
+`gregorio-lsp` (resolved from `PATH`) or to the binary's absolute path:
+
+- **Prebuilt binaries** for Linux, macOS, and Windows (x86-64 and ARM64) are
+  attached to the
+  [gregorio-lsp releases](https://github.com/AISCGre-BR/gregorio-lsp/releases).
+- **From source**:
+
+  ```sh
+  cargo install --git https://github.com/AISCGre-BR/gregorio-lsp \
+    --tag v0.13.0 gregorio-server --bin gregorio-lsp
+  ```
+
+Changing the setting switches modes automatically; use **Gregorio: Restart
+Language Server** after updating the binary.
 
 ## Commands
 
